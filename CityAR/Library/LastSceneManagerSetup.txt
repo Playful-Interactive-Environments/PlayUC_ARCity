@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Sonny_Test.unity
+- path: Assets/Scenes/Georgi_S6.unity
   isLoaded: 1
   isActive: 1
