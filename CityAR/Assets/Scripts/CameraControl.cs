@@ -19,10 +19,23 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0))
+        {
+
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit mouseHit;
+            if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity))
+            {
+                HexGrid.Instance.TouchCell(mouseHit.point);
+                if (mouseHit.transform.tag.Equals("GridPiece"))
+                {
+                    Debug.Log(mouseHit.transform.name);
+                }
+            }
+        }
+
 #if UNITY_ANDROID
         Ray rayCenter = Camera.main.ScreenPointToRay(new Vector3(Screen.width/2.0f, Screen.height/2.0f, 0f));
-
         if (ObjectManager.Instance != null && ObjectManager.Instance.LocalPlayerObject != null)
             _messageCommunicator = ObjectManager.Instance.LocalPlayerObject.GetComponent<MessageCommunicator>();
 
@@ -45,9 +58,29 @@ public class CameraControl : MonoBehaviour
             }
         }
 
+        if (Input.touchCount > 0)
+        {
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.phase == TouchPhase.Began)
+                {
+                    Ray rayTouch = Camera.main.ScreenPointToRay(touch.position);
+                    RaycastHit hit;
+                   
+                    if (Physics.Raycast(rayTouch, out hit, Mathf.Infinity))
+                    {
+                        
+                        UIManager.Instance.DebugText.text = hit.transform.name;
+                        
+                    }
+                }
+               
+            }
+        }
 #endif
 
     }
+    
     public void Grab()
     {
         if (!CarryingObject && objectTag == "Object")

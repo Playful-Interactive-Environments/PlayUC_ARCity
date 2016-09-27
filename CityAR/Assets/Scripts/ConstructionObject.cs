@@ -6,7 +6,6 @@ public class ConstructionObject : NetworkBehaviour
 {
     [SyncVar]
     public bool ObjectTaken;
-
     public GridPieceLogic GridPieceScript;
     [SyncVar]
     public int JobsInfluence;
