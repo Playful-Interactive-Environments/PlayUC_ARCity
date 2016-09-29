@@ -70,17 +70,18 @@ public class UIManager : AManager<UIManager>
 	public void ToggleUnemploymentMap()
 	{
 		CurrentState = HeatmapState.JobsState;
-
+		Invoke("RefreshGrid", .01f);
 	}
 	public void TogglePollutionMap()
 	{
 		CurrentState = HeatmapState.PollutionState;
-
+		Invoke("RefreshGrid", .01f);
 	}
 
 	public void ToggleClearMap()
 	{
 		CurrentState = HeatmapState.PlacementState;
+		Invoke("RefreshGrid", .01f);
 	}
 
 	public void EnterPlacementState()
@@ -98,6 +99,10 @@ public class UIManager : AManager<UIManager>
 		CurrentState = LastState;
 	}
 
+	void RefreshGrid()
+	{
+		HexGrid.Instance.Refresh();
+	}
 	public void SwitchUI()
 	{
 		if (NetworkCanvas.gameObject.activeInHierarchy == false)
