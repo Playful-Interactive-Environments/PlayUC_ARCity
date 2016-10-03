@@ -4,12 +4,21 @@ using UnityEngine.Networking;
 
 public class CellManager : NetworkBehaviour
 {
-
-	public SyncListInt UnemploymentRates = new SyncListInt();
+    public GameObject SpawnPrefab;
+    public GameObject ImageTarget;
+    public NetworkCommunicator NetworkCommunicator;
+    public static CellManager Instance = null;
+    public SyncListInt UnemploymentRates = new SyncListInt();
 	public SyncListInt PollutionRates = new SyncListInt();
 	public SyncListBool OccupiedGrid = new SyncListBool();
+
 	void Start () {
-		if (isServer)
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
+        if (isServer)
 		{
 			for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
 			{
@@ -19,7 +28,8 @@ public class CellManager : NetworkBehaviour
 			}
 		}
 		InvokeRepeating("UpdateGridVariables", 0f, 0.5f);
-	}
+        ImageTarget = GameObject.Find("ImageTarget");
+    }
 	
 	void Update () {
 	

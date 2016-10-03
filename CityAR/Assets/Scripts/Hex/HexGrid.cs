@@ -51,8 +51,6 @@ public class HexGrid : AManager<HexGrid> {
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-		//cell.color = colors[0];
-
 
 		if (x > 0) {
 			cell.SetNeighbor(HexDirection.W, cells[i - 1]);
@@ -72,20 +70,12 @@ public class HexGrid : AManager<HexGrid> {
 			}
 		}
 	}
-
+    
 	public void TouchCell(Vector3 position)
 	{
 		HexCell cell = GetCell(position);
 		EventManager.TriggerEvent("PlacementMap");
-		foreach (HexCell c in cells)
-		{
-			//c.color = colors[0];
-		}
-		int randomtest = Random.Range(1, 6);
-        cell.GetComponent<CellInterface>().CurrentState = CellInterface.InterfaceState.Menu;
-
-        //cell.color = colors[randomtest];
-		//cell.Elevation = randomtest;
-		Refresh();
+        cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .1f);
+        Refresh();
 	}
 }

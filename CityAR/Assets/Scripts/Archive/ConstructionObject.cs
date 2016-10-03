@@ -13,11 +13,8 @@ public class ConstructionObject : NetworkBehaviour
     public int PollutionInfluence;
     [SyncVar]
     public float TimeStamp;
-
     public TextMesh PollText;
     public TextMesh JobsText;
-
-
 
     void Start()
     {
@@ -70,7 +67,5 @@ public class ConstructionObject : NetworkBehaviour
                     ObjectManager.Instance.UpdateUnemploymentVar(GridPieceScript.Count, JobsInfluence);
                     GridPieceScript.UnemploymentEffect(JobsInfluence, TimeStamp);
             }
-        
-
     }
 }

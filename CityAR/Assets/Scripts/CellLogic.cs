@@ -18,11 +18,8 @@ public class CellLogic : MonoBehaviour {
     private bool Topograhic;
     public bool Occupied;
     public HeatmapState CurrentState = HeatmapState.PollutionState;
-
     int state;
-
-
-
+    
     void Start()
     {
         _hexCell = GetComponent<HexCell>();
@@ -38,6 +35,7 @@ public class CellLogic : MonoBehaviour {
     public void PlacementMap()
     {
         CurrentState = HeatmapState.PlacementState;
+        _interface.CurrentState = CellInterface.InterfaceState.Default;
     }
     public void JobsMap()
     {
@@ -52,12 +50,14 @@ public class CellLogic : MonoBehaviour {
     {
 
     }
+    void ActivateMenu()
+    {
+        Debug.Log("Get here");
+        _interface.CurrentState = CellInterface.InterfaceState.Menu;
+    }
 
     void Update()
     {
-        _interface.JobsText.text = "Jobs: " + JobsRate;
-        _interface.PollText.text = "Pollution: " + PollutionRate;
-
         switch (CurrentState)
         {
             case HeatmapState.PlacementState:

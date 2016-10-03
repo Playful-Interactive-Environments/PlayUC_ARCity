@@ -44,59 +44,29 @@ public class UIManager : AManager<UIManager>
 	void Update () {
 		Pointer.transform.position = new Vector3(Screen.width / 2.0f, Screen.height / 2.0f, 0f);
 		DebugText.transform.position = new Vector3(Screen.width / 2.0f, Screen.height / 2.0f - 100f, 0f);
-		switch (CurrentState)
-		{
-			case HeatmapState.PlacementState:
-				UnemploymentButton.interactable = true;
-				PollutionButton.interactable = true;
-				EventManager.TriggerEvent("PlacementMap");
-
-				break;
-			case HeatmapState.PollutionState:
-				PollutionButton.interactable = false;
-				UnemploymentButton.interactable = true;
-				EventManager.TriggerEvent("PollutionMap");
-
-				break;
-			case HeatmapState.JobsState:
-				UnemploymentButton.interactable = false;
-				PollutionButton.interactable = true;
-				EventManager.TriggerEvent("JobsMap");
-				break;
-
-		}
 	}
 
 	public void ToggleUnemploymentMap()
 	{
-		CurrentState = HeatmapState.JobsState;
-		Invoke("RefreshGrid", .01f);
+        UnemploymentButton.interactable = false;
+        PollutionButton.interactable = true;
+        EventManager.TriggerEvent("JobsMap");
+        Invoke("RefreshGrid", .01f);
 	}
 	public void TogglePollutionMap()
 	{
-		CurrentState = HeatmapState.PollutionState;
-		Invoke("RefreshGrid", .01f);
+        PollutionButton.interactable = false;
+        UnemploymentButton.interactable = true;
+        EventManager.TriggerEvent("PollutionMap");
+        Invoke("RefreshGrid", .01f);
 	}
 
 	public void ToggleClearMap()
 	{
-		CurrentState = HeatmapState.PlacementState;
-		Invoke("RefreshGrid", .01f);
-	}
-
-	public void EnterPlacementState()
-	{
-	   LastState = CurrentState;
-	   CurrentState = HeatmapState.PlacementState;
-	}
-
-	public void ToggleTopographic()
-	{
-		EventManager.TriggerEvent("TopographicMap");
-	}
-	public void ExitPlacementState()
-	{
-		CurrentState = LastState;
+        UnemploymentButton.interactable = true;
+        PollutionButton.interactable = true;
+        EventManager.TriggerEvent("PlacementMap");
+        Invoke("RefreshGrid", .01f);
 	}
 
 	void RefreshGrid()

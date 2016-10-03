@@ -8,39 +8,44 @@ public class CellInterface : MonoBehaviour {
 		Default, Menu, Submenu
 	}
 	public InterfaceState CurrentState = InterfaceState.Default;
-	public TextMesh PollText;
-	public TextMesh JobsText;
-	public GameObject TextBackground;
-	public TextMesh Text;
-	void Start () {
-		PollText.transform.localScale /= 297;
-		PollText.transform.position = new Vector3(transform.position.x, PollText.transform.position.y / 297, transform.position.z);
-		JobsText.transform.localScale /= 297;
-		JobsText.transform.position = new Vector3(transform.position.x, JobsText.transform.position.y / 297, transform.position.z);
-		TextBackground.transform.localScale /= 297;
-		TextBackground.transform.position = new Vector3(transform.position.x, TextBackground.transform.position.y / 297, transform.position.z);
-		Text.transform.localScale /= 297;
-		Text.transform.position = new Vector3(transform.position.x, Text.transform.position.y / 297, transform.position.z);
+    public GameObject[] ButtonObjects;
+
+    void Start () {
+        foreach(GameObject buttonObject in ButtonObjects)
+        {
+            buttonObject.transform.localScale /= 297;
+            buttonObject.transform.position = new Vector3(transform.position.x, buttonObject.transform.position.y / 297, transform.position.z);
+        }
 	}
 	
 	void Update () {
-		switch (CurrentState)
+
+        ButtonObjects[0].transform.LookAt(Camera.main.transform);
+        ButtonObjects[1].transform.LookAt(Camera.main.transform);
+        switch (CurrentState)
 		{
 			case InterfaceState.Default:
-				PollText.gameObject.SetActive(false);
-				JobsText.gameObject.SetActive(false);
-				TextBackground.gameObject.SetActive(false);
-				Text.gameObject.SetActive(false);
-
-				break;
+                foreach (GameObject buttonObject in ButtonObjects)
+                {
+                    buttonObject.SetActive(false);
+                }
+                break;
 			case InterfaceState.Menu:
-				PollText.gameObject.SetActive(true);
-				JobsText.gameObject.SetActive(true);
-				TextBackground.gameObject.SetActive(true);
-				Text.gameObject.SetActive(true);
-				break;
+                foreach (GameObject buttonObject in ButtonObjects)
+                {
+                    buttonObject.SetActive(true);
+                }
+                break;
 			case InterfaceState.Submenu:
 				break;
 		}
 	}
+    public void ButtonClick()
+    {
+        CurrentState = InterfaceState.Default;
+    }
+    public void TriggerMenu()
+    {
+        CurrentState = InterfaceState.Menu;
+    }
 }
