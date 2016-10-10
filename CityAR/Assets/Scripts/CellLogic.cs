@@ -6,18 +6,19 @@ public class CellLogic : MonoBehaviour {
 
     public enum HeatmapState
     {
-        PlacementState, JobsState, PollutionState, TopographicMap
+        PlacementState, SocialMap, EnvironmentMap, FinanceMap
     }
     HexCell _hexCell;
     HexGrid _hexGrid;
     private CellInterface _interface;
     public int Count;
-    public int JobsRate;
-    public int PollutionRate;
+    public int SocialRate;
+    public int EnvironmentRate;
+    public int FinanceRate;
     public float Height;
     private bool Topograhic;
-    public bool Occupied;
-    public HeatmapState CurrentState = HeatmapState.PollutionState;
+
+    public HeatmapState CurrentState = HeatmapState.PlacementState;
     int state;
     
     void Start()
@@ -27,28 +28,27 @@ public class CellLogic : MonoBehaviour {
         _hexGrid = HexGrid.Instance;
         _hexCell.color = _hexGrid.colors[0];
         EventManager.StartListening("PlacementMap", PlacementMap);
-        EventManager.StartListening("JobsMap", JobsMap);
-        EventManager.StartListening("PollutionMap", PollutionMap);
-        EventManager.StartListening("TopographicMap", TopographicMap);
-        
+        EventManager.StartListening("SocialMap", SocialMap);
+        EventManager.StartListening("EnvironmentMap", EnvironmentMap);
+        EventManager.StartListening("FinanceMap", FinanceMap);
+
     }
     public void PlacementMap()
     {
         CurrentState = HeatmapState.PlacementState;
         _interface.CurrentState = CellInterface.InterfaceState.Default;
     }
-    public void JobsMap()
+    public void SocialMap()
     {
-        CurrentState = HeatmapState.JobsState;
+        CurrentState = HeatmapState.SocialMap;
     }
-    public void PollutionMap()
+    public void FinanceMap()
     {
-        CurrentState = HeatmapState.PollutionState;
-
+        CurrentState = HeatmapState.FinanceMap;
     }
-    public void TopographicMap()
+    public void EnvironmentMap()
     {
-
+        CurrentState = HeatmapState.EnvironmentMap;
     }
     void ActivateMenu()
     {
@@ -65,24 +65,48 @@ public class CellLogic : MonoBehaviour {
                 _hexCell.Elevation = state;
                 _hexCell.color = _hexGrid.colors[state];
                 break;
-            case HeatmapState.JobsState:
-                if (JobsRate < 20)
+            case HeatmapState.SocialMap:
+                if (SocialRate < 20)
                     state = 1;
-                if (JobsRate >= 20 && JobsRate < 40)
+                if (SocialRate >= 20 && SocialRate < 40)
                     state = 2;
-                if (JobsRate >= 40 && JobsRate < 60)
+                if (SocialRate >= 40 && SocialRate < 60)
                     state = 3;
-                if (JobsRate >= 60 && JobsRate < 80)
+                if (SocialRate >= 60 && SocialRate < 80)
                     state = 4;
-                if (JobsRate >= 80)
+                if (SocialRate >= 80)
                     state = 5;
                 _hexCell.color = _hexGrid.colors[state];
                 _hexCell.Elevation = state - 1;
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
-            case HeatmapState.PollutionState:
-                state = 0;
-                _hexCell.Elevation = state;
+            case HeatmapState.EnvironmentMap:
+                if (EnvironmentRate < 20)
+                    state = 1;
+                if (EnvironmentRate >= 20 && EnvironmentRate < 40)
+                    state = 2;
+                if (EnvironmentRate >= 40 && EnvironmentRate < 60)
+                    state = 3;
+                if (EnvironmentRate >= 60 && EnvironmentRate < 80)
+                    state = 4;
+                if (EnvironmentRate >= 80)
+                    state = 5;
+                _hexCell.Elevation = state - 1;
+                _hexCell.color = _hexGrid.colors[state];
+                _interface.CurrentState = CellInterface.InterfaceState.Default;
+                break;
+            case HeatmapState.FinanceMap:
+                if (FinanceRate < 20)
+                    state = 1;
+                if (FinanceRate >= 20 && FinanceRate < 40)
+                    state = 2;
+                if (FinanceRate >= 40 && FinanceRate < 60)
+                    state = 3;
+                if (FinanceRate >= 60 && FinanceRate < 80)
+                    state = 4;
+                if (FinanceRate >= 80)
+                    state = 5;
+                _hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;

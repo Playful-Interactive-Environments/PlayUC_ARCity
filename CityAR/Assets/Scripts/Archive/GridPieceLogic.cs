@@ -7,7 +7,7 @@ public class GridPieceLogic : MonoBehaviour
 
 	public enum HeatmapState
 	{
-		PlacementState, JobsState, PollutionState, TopographicMap
+		PlacementState, SocialMap, EnvironmentMap, FinanceMap
 	}
 	public int Count;
 	public int JobsRate;
@@ -15,7 +15,7 @@ public class GridPieceLogic : MonoBehaviour
 	public float Height;
 	private bool Topograhic;
 	public bool Occupied;
-	public HeatmapState CurrentState = HeatmapState.PollutionState;
+	public HeatmapState CurrentState = HeatmapState.EnvironmentMap;
 	public Material[] Unemployment;
 	public Material[] Pollution;
 	public Material[] Placement;
@@ -32,23 +32,27 @@ public class GridPieceLogic : MonoBehaviour
 		_currentRenderer = GetComponent<Renderer>();
 		_currentRenderer.material = Placement[0];
 		EventManager.StartListening("PlacementMap", PlacementMap);
-		EventManager.StartListening("JobsMap", JobsMap);
-		EventManager.StartListening("PollutionMap", PollutionMap);
-		EventManager.StartListening("TopographicMap", TopographicMap);
+		EventManager.StartListening("SocialMap", SocialMap);
+		EventManager.StartListening("EnvironmentMap", EnvironmentMap);
+		EventManager.StartListening("FinanceMap", FinanceMap);
 	}
 	public void PlacementMap()
 	{
 		CurrentState = HeatmapState.PlacementState;
 	}
-	public void JobsMap()
+	public void SocialMap()
 	{
-		CurrentState = HeatmapState.JobsState;
+		CurrentState = HeatmapState.SocialMap;
 	}
-	public void PollutionMap()
+	public void FinanceMap()
 	{
-		CurrentState = HeatmapState.PollutionState;
+		CurrentState = HeatmapState.FinanceMap;
 	}
-	public void TopographicMap()
+    public void EnvironmentMap()
+    {
+        CurrentState = HeatmapState.EnvironmentMap;
+    }
+    public void TopographicMap()
 	{
 		if (Topograhic)
 		{
@@ -88,7 +92,7 @@ public class GridPieceLogic : MonoBehaviour
 				if(!Occupied)
 					_currentRenderer.material = Placement[0];
 				break;
-			case HeatmapState.JobsState:
+			case HeatmapState.SocialMap:
 				Height = JobsRate;
 				if (JobsRate < 33)
 					_currentRenderer.material = Unemployment[0];
@@ -97,7 +101,7 @@ public class GridPieceLogic : MonoBehaviour
 				if (JobsRate > 66)
 					_currentRenderer.material = Unemployment[2];
 				break;
-			case HeatmapState.PollutionState:
+			case HeatmapState.EnvironmentMap:
 				Height = PollutionRate;
 				if (PollutionRate < 33)
 					_currentRenderer.material = Pollution[0];
@@ -106,8 +110,17 @@ public class GridPieceLogic : MonoBehaviour
 				if (PollutionRate > 66)
 					_currentRenderer.material = Pollution[2];
 				break;
+            case HeatmapState.FinanceMap:
+                Height = PollutionRate;
+                if (PollutionRate < 33)
+                    _currentRenderer.material = Pollution[0];
+                if (PollutionRate >= 33 && PollutionRate <= 66)
+                    _currentRenderer.material = Pollution[1];
+                if (PollutionRate > 66)
+                    _currentRenderer.material = Pollution[2];
+                break;
 
-		}
+        }
 	}
 
 	public void PolutionEffect(int amount, float time)

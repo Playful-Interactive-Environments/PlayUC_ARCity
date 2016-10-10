@@ -1,41 +1,34 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class NetworkingManager : NetworkManager {
+public class NetworkingManager : NetworkManager
+{
 
+    //Network Connection
     public string ConnectionIP;
     public int ConnectionPort = 7777;
     public bool ClientConnected = false;
-    public static NetworkingManager Instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
+    public static NetworkingManager Instance = null;             
     public bool isServer;
     public bool isClient;
     public InputField IPInput;
     public Button HostButton;
     public Button ConnectButton;
     public Text DebugText;
-    public GameObject ObjectManager;
+    public GameObject CellManager;
+    public GameObject RoleManager;
 
-
-    void Start()
+    void Awake()
     {
-
-        //Check if instance already exists
         if (Instance == null)
-
-            //if not, set instance to this
             Instance = this;
-
-        //If instance already exists and it's not this:
         else if (Instance != this)
-
-            //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
             Destroy(gameObject);
-
-        //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
     }
 
@@ -55,19 +48,16 @@ public class NetworkingManager : NetworkManager {
             HostButton.interactable = true;
 
     }
-
-
     public void StartupHost()
     {
         SetPort();
         StartHost();
-        GameObject gobj = Instantiate(ObjectManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-        NetworkServer.Spawn(gobj);
+        GameObject cellmng = Instantiate(CellManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        GameObject rolemng = Instantiate(RoleManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        NetworkServer.Spawn(cellmng);
+        NetworkServer.Spawn(rolemng);
         isServer = true;
     }
-
-
-
     public void StopHosting()
     {
         if (isServer)
@@ -76,15 +66,15 @@ public class NetworkingManager : NetworkManager {
             NetworkServer.ClearLocalObjects();
             NetworkServer.ClearSpawners();
             NetworkServer.Reset();
+            UIManager.Instance.ResetMenus();
         }
         if (isClient)
         {
             StopClient();
             NetworkServer.Reset();
+            UIManager.Instance.ResetMenus();
         }
-
     }
-
     public void SetIPAddress()
     {
         ConnectionIP = IPInput.text;
@@ -138,7 +128,6 @@ public class NetworkingManager : NetworkManager {
         SetPort();
         SetIPAddress();
         StartClient();
-
     }
 
 
@@ -151,7 +140,7 @@ public class NetworkingManager : NetworkManager {
             isClient = true;
             Debug.Log("OnClientConnect " + conn);
         }
-
+        UIManager.Instance.RoleUI();
     }
 
     public override void OnStartClient(NetworkClient client)

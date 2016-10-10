@@ -8,9 +8,9 @@ public class CellManager : NetworkBehaviour
     public GameObject ImageTarget;
     public NetworkCommunicator NetworkCommunicator;
     public static CellManager Instance = null;
-    public SyncListInt UnemploymentRates = new SyncListInt();
-	public SyncListInt PollutionRates = new SyncListInt();
-	public SyncListBool OccupiedGrid = new SyncListBool();
+    public SyncListInt SocialRates = new SyncListInt();
+	public SyncListInt EnvironmentRates = new SyncListInt();
+	public SyncListInt FinanceRates = new SyncListInt();
 
 	void Start () {
         if (Instance == null)
@@ -22,9 +22,9 @@ public class CellManager : NetworkBehaviour
 		{
 			for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
 			{
-				    UnemploymentRates.Add(Random.Range(0, 100));
-					PollutionRates.Add(Random.Range(0, 100));
-					OccupiedGrid.Add(false);
+				    SocialRates.Add(Random.Range(0, 100));
+					EnvironmentRates.Add(Random.Range(0, 100));
+					FinanceRates.Add(Random.Range(0, 100));
 			}
 		}
 		InvokeRepeating("UpdateGridVariables", 0f, 0.5f);
@@ -36,27 +36,27 @@ public class CellManager : NetworkBehaviour
 	}
 	void UpdateGridVariables()
 	{
-		UpdateCellVars(UnemploymentRates, PollutionRates, OccupiedGrid);
+		UpdateCellVars(SocialRates, EnvironmentRates, FinanceRates);
 	}
-	public void UpdateOccupiedVar(int grid, bool value)
+	public void UpdateOccupiedVar(int grid, int value)
 	{
-		OccupiedGrid[grid] = value;
+		FinanceRates[grid] = value;
 	}
 	public void UpdateUnemploymentVar(int grid, int value)
 	{
-		UnemploymentRates[grid] += value;
+		SocialRates[grid] += value;
 	}
 	public void UpdatePollutionVar(int grid, int value)
 	{
-		PollutionRates[grid] += value;
+		EnvironmentRates[grid] += value;
 	}
-	public void UpdateCellVars(SyncListInt unemployment, SyncListInt pollution, SyncListBool occupied)
+	public void UpdateCellVars(SyncListInt social, SyncListInt environment, SyncListInt finance)
 	{
 		for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
 		{
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().JobsRate = unemployment[i];
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().PollutionRate = pollution[i];
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().Occupied = occupied[i];
+			HexGrid.Instance.cells[i].GetComponent<CellLogic>().SocialRate = social[i];
+			HexGrid.Instance.cells[i].GetComponent<CellLogic>().EnvironmentRate = environment[i];
+			HexGrid.Instance.cells[i].GetComponent<CellLogic>().FinanceRate = finance[i];
 		}
 	}
 }

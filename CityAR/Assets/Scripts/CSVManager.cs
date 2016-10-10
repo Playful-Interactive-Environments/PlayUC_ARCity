@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class CSVManager: MonoBehaviour
 {
-    /*
+    
     public class Row
     {
         public string id;
@@ -156,5 +156,5 @@ public class CSVManager: MonoBehaviour
     {
         return rowList.FindAll(x => x.result_3_id == find);
     }
-#endregion*/
+#endregion
 }

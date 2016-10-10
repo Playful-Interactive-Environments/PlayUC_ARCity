@@ -8,7 +8,6 @@ public class NetworkCommunicator : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        //transform.name = "" + connectionToClient;
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
     }
@@ -16,7 +15,6 @@ public class NetworkCommunicator : NetworkBehaviour
 	
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
@@ -33,11 +31,51 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdSpawnObject(pos);
         }
     }
+
+    public void TakeRole(string role)
+    {
+        if (isServer)
+        {
+            switch (role)
+            {
+                case "Environment":
+                    RoleManager.Instance.Environment = true;
+                    break;
+                case "Social":
+                    RoleManager.Instance.Social = true;
+                    break;
+                case "Finance":
+                    RoleManager.Instance.Finance = true;
+                    break;
+            }
+        }
+        if (isClient && !isServer)
+        {
+            CmdTakeRole(role);
+        }
+    }
     [Command]
     public void CmdSpawnObject(Vector3 pos)
     {
         GameObject gobj = Instantiate(CellManager.Instance.SpawnPrefab, pos, Quaternion.identity) as GameObject;
         NetworkServer.Spawn(gobj);
 
+    }
+
+    [Command]
+    public void CmdTakeRole(string role)
+    {
+        switch (role)
+        {
+            case "Environment":
+                RoleManager.Instance.Environment = true;
+                break;
+            case "Social":
+                RoleManager.Instance.Social = true;
+                break;
+            case "Finance":
+                RoleManager.Instance.Finance = true;
+                break;
+        }
     }
 }
