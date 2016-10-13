@@ -3,21 +3,21 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CSVManager: MonoBehaviour
+public class CSVManager: AManager<CSVManager>
 {
     
     public class Row
     {
         public string id;
-        public string type;
         public string title;
+        public string content;
         public string choice_1;
         public string choice_2;
         public string choice_3;
         public string result_1_id;
         public string result_2_id;
         public string result_3_id;
-
+        public string effect;
     }
     public TextAsset File;
     List<Row> rowList = new List<Row>();
@@ -34,7 +34,7 @@ public class CSVManager: MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log(Find_ID("1").type + "");
+            Debug.Log(Find_ID(1).content + "");
         }
     }
 
@@ -42,7 +42,6 @@ public class CSVManager: MonoBehaviour
     public List<Row> GetRowList()
     {
         return rowList;
-
     }
 
     public bool IsLoaded()
@@ -57,15 +56,15 @@ public class CSVManager: MonoBehaviour
         {
             Row row = new Row();
             row.id = grid[i][0];
-            row.type = grid[i][1];
-            row.title = grid[i][2];
+            row.title = grid[i][1];
+            row.content = grid[i][2];
             row.choice_1 = grid[i][3];
             row.choice_2 = grid[i][4];
             row.choice_3 = grid[i][5];
             row.result_1_id = grid[i][6];
             row.result_2_id = grid[i][7];
             row.result_3_id = grid[i][8];
-
+            row.effect = grid[i][9];
             rowList.Add(row);
         }
         isLoaded = true;
@@ -83,21 +82,13 @@ public class CSVManager: MonoBehaviour
         return rowList[i];
     }
 
-    public Row Find_ID(string find)
+    public Row Find_ID(int find)
     {
-        return rowList.Find(x => x.id == find);
+        return rowList.Find(x => x.id == find.ToString());
     }
     public List<Row> Find_ID_All(string find)
     {
         return rowList.FindAll(x => x.id == find);
-    }
-    public Row Find_EventID(string find)
-    {
-        return rowList.Find(x => x.type == find);
-    }
-    public List<Row> Find_EventID_All(string find)
-    {
-        return rowList.FindAll(x => x.type == find);
     }
     public Row Find_Title(string find)
     {
@@ -106,6 +97,14 @@ public class CSVManager: MonoBehaviour
     public List<Row> Find_Title_All(string find)
     {
         return rowList.FindAll(x => x.title == find);
+    }
+    public Row Find_Content(string find)
+    {
+        return rowList.Find(x => x.content == find);
+    }
+    public List<Row> Find_Content_All(string find)
+    {
+        return rowList.FindAll(x => x.content == find);
     }
     public Row Find_Choice_1(string find)
     {
@@ -156,5 +155,13 @@ public class CSVManager: MonoBehaviour
     {
         return rowList.FindAll(x => x.result_3_id == find);
     }
-#endregion
+    public Row Find_Effect(string find)
+    {
+        return rowList.Find(x => x.effect == find);
+    }
+    public List<Row> Find_Effect_All(string find)
+    {
+        return rowList.FindAll(x => x.effect == find);
+    }
+    #endregion
 }

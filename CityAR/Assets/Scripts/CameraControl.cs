@@ -8,12 +8,10 @@ public class CameraControl : MonoBehaviour
     private UIManager _uiManager;
     public bool CarryingObject;
     private GameObject _carriedObject;
-    private GridPieceLogic _gridLogic;
-    private MessageCommunicator _messageCommunicator;
     string objectTag;
+
     void Start()
     {
-
         _uiManager = UIManager.Instance;
     }
 

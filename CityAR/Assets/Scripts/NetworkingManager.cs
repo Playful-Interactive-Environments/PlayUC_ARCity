@@ -20,8 +20,9 @@ public class NetworkingManager : NetworkManager
     public Button HostButton;
     public Button ConnectButton;
     public Text DebugText;
-    public GameObject CellManager;
-    public GameObject RoleManager;
+    public GameObject GameManager;
+
+
 
     void Awake()
     {
@@ -52,10 +53,8 @@ public class NetworkingManager : NetworkManager
     {
         SetPort();
         StartHost();
-        GameObject cellmng = Instantiate(CellManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-        GameObject rolemng = Instantiate(RoleManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-        NetworkServer.Spawn(cellmng);
-        NetworkServer.Spawn(rolemng);
+        GameObject gamemng = Instantiate(GameManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        NetworkServer.Spawn(gamemng);
         isServer = true;
     }
     public void StopHosting()
