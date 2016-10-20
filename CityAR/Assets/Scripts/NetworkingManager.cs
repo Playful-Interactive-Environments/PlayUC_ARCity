@@ -145,23 +145,22 @@ public class NetworkingManager : NetworkManager
     public override void OnStartClient(NetworkClient client)
     {
         base.OnStartClient(client);
-        //debugTextClient.text = "Client Started";
         Debug.Log("OnStartClient");
     }
 
     public override void OnStopClient()
     {
+
         base.OnStopClient();
-        DebugText.text = "Client Stopped";
         ClientScene.DestroyAllClientObjects();
         ClientScene.ClearSpawners();
-        Debug.Log("OnStopClient");
         isClient = false;
 
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+        UIManager.Instance.ResetMenus();
         base.OnClientDisconnect(conn);
         Debug.Log("OnClientDisconnect");
     }

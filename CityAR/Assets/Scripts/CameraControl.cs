@@ -29,17 +29,17 @@ public class CameraControl : MonoBehaviour
                 if (mouseHit.transform.name.Equals("HexMesh"))
                 {
                     HexGrid.Instance.TouchCell(mouseHit.point);
-                    UIManager.Instance.DebugText.text = mouseHit.transform.name;
+                    _uiManager.DebugText.text = mouseHit.transform.name;
                 }
                 if (mouseHit.transform.name.Equals("Build"))
                 {
                     CellManager.Instance.NetworkCommunicator.SpawnObject(mouseHit.point);
-                    UIManager.Instance.DebugText.text = mouseHit.transform.name;
+                    _uiManager.DebugText.text = mouseHit.transform.name;
                 }
                 if (mouseHit.transform.name.Equals("Show"))
                 {
                     mouseHit.transform.GetComponentInParent<CellInterface>().ButtonClick();
-                    UIManager.Instance.DebugText.text = mouseHit.transform.name;
+                    _uiManager.DebugText.text = mouseHit.transform.name;
                 }
             }
         }
@@ -56,8 +56,8 @@ public class CameraControl : MonoBehaviour
                    
                     if (Physics.Raycast(rayTouch, out hit, Mathf.Infinity))
                     {
-                        
-                        UIManager.Instance.DebugText.text = hit.transform.name;
+
+                        _uiManager.DebugText.text = hit.transform.name;
 
                     }
                 }

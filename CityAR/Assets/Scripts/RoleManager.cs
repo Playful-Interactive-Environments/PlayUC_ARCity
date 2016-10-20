@@ -5,10 +5,9 @@ using UnityEngine.Networking;
 public class RoleManager : NetworkBehaviour
 {
 	public static RoleManager Instance = null;
-	public enum RoleType
-	{
-		Environment, Finance, Social
-	}
+	public NetworkCommunicator EnvironmentPlayer;
+	public NetworkCommunicator SocialPlayer;
+	public NetworkCommunicator FinancePlayer;
 
 	[SyncVar]
 	public bool Environment;
@@ -16,15 +15,34 @@ public class RoleManager : NetworkBehaviour
 	public bool Finance;
 	[SyncVar]
 	public bool Social;
-	public RoleType CurrentRole;
-	public float Rating;
-	public float Budget;
+
+
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
+		InvokeRepeating("Refresh", 0f, .1f);
 	}
 
+
+
+	void Update()
+	{
+
+	}
+
+	void Refresh()
+	{
+		if (isServer)
+		{
+			if (EnvironmentPlayer == null)
+				Environment = false;
+			if (SocialPlayer == null)
+				Social = false;
+			if (FinancePlayer == null)
+				Finance = false;
+		}
+	}
 }

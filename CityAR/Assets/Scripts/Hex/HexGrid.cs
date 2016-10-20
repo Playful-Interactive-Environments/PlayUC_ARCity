@@ -50,6 +50,8 @@ public class HexGrid : AManager<HexGrid> {
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
+		cell.transform.name = "" + HexCoordinates.FromOffsetCoordinates(x, z);
+
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
 		if (x > 0) {
@@ -70,12 +72,12 @@ public class HexGrid : AManager<HexGrid> {
 			}
 		}
 	}
-    
+	
 	public void TouchCell(Vector3 position)
 	{
 		HexCell cell = GetCell(position);
 		EventManager.TriggerEvent("PlacementMap");
-        cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .1f);
-        Invoke("Refresh", .1f);
+		cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .1f);
+		Invoke("Refresh", .1f);
 	}
 }
