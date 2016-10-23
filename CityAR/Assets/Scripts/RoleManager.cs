@@ -15,7 +15,7 @@ public class RoleManager : NetworkBehaviour
 	public bool Finance;
 	[SyncVar]
 	public bool Social;
-
+    public string RoleType;
 
 	void Awake () {
 		if (Instance == null)
@@ -25,8 +25,6 @@ public class RoleManager : NetworkBehaviour
 		DontDestroyOnLoad(gameObject);
 		InvokeRepeating("Refresh", 0f, .1f);
 	}
-
-
 
 	void Update()
 	{
@@ -44,5 +42,8 @@ public class RoleManager : NetworkBehaviour
 			if (FinancePlayer == null)
 				Finance = false;
 		}
-	}
+	    RoleType = Environment ? "Environment" : "";
+	    RoleType = Social ? "Social" : "";
+        RoleType = Finance ? "Finance" : "";
+    }
 }

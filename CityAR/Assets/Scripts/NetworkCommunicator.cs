@@ -63,7 +63,7 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void Vote(string vote, int projectnum)
+    public void Vote(string vote, string owner, int projectnum)
     {
 
         if (isServer)
@@ -72,23 +72,23 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "StartVote":
                     //VoteManager.Instance.TriggerVote(projectnum);
-                    VoteManager.Instance.StartNewVote(projectnum);
+                    VoteManager.Instance.StartNewVote(projectnum, owner);
                     UIManager.Instance.EnableVoteUI();
-                    RpcVote(vote, projectnum);
+                    RpcVote(vote, owner, projectnum);
                     break;
                 case "Choice1":
-                    VoteManager.Instance.AddVote(projectnum, 1);
+                    VoteManager.Instance.AddVote(projectnum, 0);
                     break;
                 case "Choice2":
-                    VoteManager.Instance.AddVote(projectnum, 0);
+                    VoteManager.Instance.AddVote(projectnum, 1);
                     break;
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    RpcVote(vote, projectnum);
+                    RpcVote(vote, owner, projectnum);
                     break;
                 case "Result_Choice2":
                     ProjectManager.Instance.ProjectRejected(projectnum);
-                    RpcVote(vote, projectnum);
+                    RpcVote(vote, owner, projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");
@@ -97,9 +97,11 @@ public class NetworkCommunicator : NetworkBehaviour
         }
         if (isClient && !isServer)
         {
-            CmdVote(vote, projectnum);
+            CmdVote(vote, owner, projectnum);
         }
     }
+
+
 
     [Command]
     public void CmdSpawnObject(Vector3 pos)
@@ -114,29 +116,65 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    public void CmdVote(string vote, int num)
+    public void CmdVote(string vote, string owner, int num)
     {
-        Vote(vote, num);
+        Vote(vote, owner, num);
     }
     [ClientRpc]
-    public void RpcVote(string vote, int num)
+    public void RpcVote(string vote, string owner, int num)
     {
         switch (vote)
         {
             case "StartVote":
-                VoteManager.Instance.StartNewVote(num);
+                UIManager.Instance.AddNotification("Vote", owner, num);
                 break;
             case "Result_Choice1":
                 ProjectManager.Instance.ProjectApproved(num);
-                RpcVote(vote, num);
+                RpcVote(vote, owner, num);
                 break;
             case "Result_Choice2":
                 ProjectManager.Instance.ProjectRejected(num);
-                RpcVote(vote, num);
+                RpcVote(vote,owner, num);
                 break;
             default:
                 Debug.Log("something wrong in Vote switch");
                 break;
         }
     }
+
+/*
+    public void SendCommandPlayer(string player, string command)
+    {
+        if (isServer)
+        {
+            switch (command)
+            {
+                case "StartVote":
+
+                    break;
+
+            }
+        }
+        if (isClient && !isServer)
+        {
+            CmdSendCommandPlayer(player, command);
+        }
+    }
+
+    [Command]
+    void CmdSendCommandPlayer(string player, string command)
+    {
+        SendCommandPlayer(player, command);
+    }
+
+    [ClientRpc]
+    void RpcSendCommandPlayer(string player, string command)
+    {
+        switch (command)
+        {
+            case "StartVote":
+                break;
+
+        }
+    }*/
 }

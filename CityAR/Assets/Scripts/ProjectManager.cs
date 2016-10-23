@@ -17,8 +17,10 @@ public class ProjectManager : NetworkBehaviour
 	public int Pro1_ID;
 	public int Pro2_ID;
 	public int Pro3_ID;
+    public SyncListInt ProjectIDs = new SyncListInt();
 
-	void Awake () {
+
+    void Awake () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
@@ -28,24 +30,34 @@ public class ProjectManager : NetworkBehaviour
 
 	void Start()
 	{
+        Invoke("PopulateIds", .1f);
 		Quests = QuestManager.Instance;
 		VoteManager = VoteManager.Instance;
-		Pro1_ID = GenerateRandomProject();
-		Pro2_ID = GenerateRandomProject();
-		Pro3_ID = GenerateRandomProject();
 	}
-	
+
+    void PopulateIds()
+    {
+        if (isServer)
+        {
+            for (int i = 0; i <= Quests.CSVProjects.rowList.Count; i++)
+            {
+                ProjectIDs.Add(i);
+            }
+            Pro1_ID = GenerateRandomProject();
+            Pro2_ID = GenerateRandomProject();
+            Pro3_ID = GenerateRandomProject();
+        }
+    }
 	void Update ()
 	{
-		
-	}
+
+    }
 
 	public void ProjectApproved(int num)
 	{
 		if (ProjectProposer)
 		{
 			GameObject gobj = Instantiate(ProjectPrefab, transform.position, Quaternion.identity) as GameObject;
-
 			Project project = gobj.GetComponent<Project>();
 			project.Radius = Quests.GetRadius(num);
 			project.Social = Quests.GetSocial(num);
@@ -58,9 +70,8 @@ public class ProjectManager : NetworkBehaviour
 			ProjectProposer = false;
 		}
 		UIManager.Instance.VoteStatus.text = "Project Approved. Game will resume in 5 sec." +
-			"\n Voted Yes: " + VoteManager.Choice1_Votes +
-			"\n Voted No: " + VoteManager.Choice2_Votes;
-
+			"\n Voted Yes: " + VoteManager.Votes[num].Choice1 +
+			"\n Voted No: " + VoteManager.Votes[num].Choice2;
 	}
 
 	public void ProjectRejected(int num)
@@ -71,14 +82,25 @@ public class ProjectManager : NetworkBehaviour
 			UIManager.Instance.Invoke("EndVoteButton", 5f);
 		}
 		UIManager.Instance.VoteStatus.text = "Project Rejected. Game will resume in 5 sec." +
-			"\n Voted Yes: " + VoteManager.Choice1_Votes +
-			"\n Voted No: " + VoteManager.Choice2_Votes;
+			"\n Voted Yes: " + VoteManager.Votes[num].Choice1 +
+			"\n Voted No: " + VoteManager.Votes[num].Choice2;
 	}
 
 	public int GenerateRandomProject()
 	{
-		return (int)Random.Range(1, Quests.CSVProjects.GetRowList().Count + 1);
+        if (ProjectIDs.Count == 0)
+            PopulateIds();
+        int randomProject = Random.Range(0, ProjectIDs.Count);
+        int returnId = ProjectIDs[randomProject];
+        Debug.Log(randomProject + " " + returnId);
+        ProjectIDs.RemoveAt(randomProject);
+        return returnId;
 	}
+
+    public void AddProject()
+    {
+        CurrentID = GenerateRandomProject();
+    }
 
 	public void GetProject(int buttonnum)
 	{

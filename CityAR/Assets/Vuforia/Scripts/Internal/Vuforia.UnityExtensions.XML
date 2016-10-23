@@ -5687,7 +5687,7 @@
             Returns false if the hint is unknown or deprecated.
             </summary>
         </member>
-        <member name="M:Vuforia.VuforiaUnity.GetProjectionGL(System.Single,System.Single,UnityEngine.ScreenOrientation)">
+        <member name="M:Vuforia.VuforiaUnity.GenerateRandomProjectionGL(System.Single,System.Single,UnityEngine.ScreenOrientation)">
             <summary>
             Returns the Vuforia projection matrix
             </summary>

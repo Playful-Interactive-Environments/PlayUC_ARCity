@@ -18,7 +18,7 @@ public class CSVManagerProjects : AManager<CSVManagerProjects>
 
     }
     public TextAsset File;
-    List<Row> rowList = new List<Row>();
+    public List<Row> rowList = new List<Row>();
 
     bool isLoaded = false;
 

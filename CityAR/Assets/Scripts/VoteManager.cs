@@ -10,18 +10,12 @@ public class VoteManager : NetworkBehaviour
 		public int Choice1;
 		public int Choice2;
 		public int Votes;
-		public bool VoteFinished;
-	}
-
+        public string ProjectOwner;
+    }
+    [SerializeField]
 	public Dictionary<int, Vote> Votes = new Dictionary<int, Vote>();
 	public static VoteManager Instance = null;
-	public int testint;
-	[SyncVar]
-	public int Choice1_Votes;
-	[SyncVar]
-	public int Choice2_Votes;
-	[SyncVar]
-	public bool VoteStarted;
+
 	void Start () {
 		if (Instance == null)
 			Instance = this;
@@ -29,35 +23,55 @@ public class VoteManager : NetworkBehaviour
 			Destroy(gameObject);
 	}
 	
-	public void StartNewVote(int projectnum)
+	public void StartNewVote(int projectnum, string owner)
 	{
 		if (isServer)
-		{
-			Vote v = new Vote();
-			Votes.Add(projectnum, v);
-			v.ProjectNumber = projectnum;
-			testint = projectnum;
-		}
+        {
+            if (!Votes.ContainsKey(projectnum))
+            {
+                Vote v = new Vote();
+                Votes.Add(projectnum, v);
+                v.ProjectNumber = projectnum;
+                v.ProjectOwner = owner;
+                Debug.Log(projectnum + " " + owner);
+            }
+            else
+            {
+                Debug.Log("Project already in Votes.");
+            }
 
+        }
+    }
 
-		string title = QuestManager.Instance.GetTitle(projectnum);
-		string content = QuestManager.Instance.GetProjectDescription(projectnum);
-		UIManager.Instance.AddNotification("Vote", title, content, projectnum);
-	}
-
-	public void AddVote(int projectnum, int vote)
+	public void AddVote(int projectnum, int choice)
 	{
 		Vote v;
-		if (Votes.TryGetValue(projectnum, out v))
-		{
-			v.Votes += vote;
-			Debug.Log(v.Votes);
-		}
+	    if (Votes.TryGetValue(projectnum, out v))
+	    {
+            //add one vote
+	        v.Votes += 1;
+            //voted for choice1
+	        if (choice == 0)
+	        {
+	            v.Choice1 += 1;
+                Debug.Log(v.Choice1);
+
+            }
+            //voted for choice2
+            else if (choice == 1)
+	        {
+	            v.Choice2 += 1;
+	        }
+	    }
+	    else
+	    {
+	        Debug.Log("Project not found " + projectnum);
+	    }
 	}
 
 	void Update ()
 	{
-		if (Votes != null)
+		if (Votes != null && Votes.Keys.Count > 0)
 		{
 			foreach (int key in Votes.Keys)
 			{
@@ -66,50 +80,20 @@ public class VoteManager : NetworkBehaviour
 				    if (Votes[key].Choice1 > Votes[key].Choice2)
 				    {
                         Debug.Log("Yes" + Votes[key].Choice1);
-                        Votes.Remove(key);
+                        UIManager.Instance.FindNotification("Choice1", Votes[key].ProjectNumber);
                     }
 	
-                    else if (Votes[key].Votes == 3)
+                    else if (Votes[key].Choice1 < Votes[key].Choice2)
                     {
                         Debug.Log("No" + Votes[key].Votes);
-                        Votes.Remove(key);
+                        UIManager.Instance.FindNotification("Choice2", Votes[key].ProjectNumber);
 
                     }
+                    Votes[key].Choice1 = 0;
+                    Votes[key].Choice2 = 0;
+                    Votes[key].Votes = 0;
                 }
-				
-
 			}
-		}
-
-		if ((Choice1_Votes + Choice2_Votes) == 3 && VoteStarted && isServer)
-		{
-			if (Choice1_Votes > Choice2_Votes)
-			{
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectManager.Instance.CurrentID);
-				Debug.Log("Result_Choice1");
-				VoteStarted = false;
-			}
-			else if (Choice2_Votes > Choice1_Votes)
-			{
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectManager.Instance.CurrentID);
-				Debug.Log("Result_Choice2");
-				VoteStarted = false;
-			}
-			else
-			{
-				Debug.Log("There is a bug");
-			}
-		}
-	}
-	public void TriggerVote(int num)
-	{
-		ProjectManager.Instance.CurrentID = num;
-		UIManager.Instance.ProjectDescription(num);
-		if (!VoteStarted)
-		{
-			Choice1_Votes = 0;
-			Choice2_Votes = 0;
-			VoteStarted = true;
 		}
 	}
 }

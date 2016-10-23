@@ -44,23 +44,40 @@ public class UIManager : AManager<UIManager>
 	//NOTIFICATION CANVAS
 	public GridLayoutGroup GridGroup;
 	public Button ButtonTemplate;
+    public List<Button> NotificationButtons = new List<Button>();
 	public GameObject CurrentNotification;
 	public ProjectManager Projects;
 
 
-	public void AddNotification(string type, string title, string content, int id)
+    public void AddNotification(string type, string owner, int projectnum)
 	{
 		Button button = Instantiate(ButtonTemplate, transform.position, Quaternion.identity) as Button;
 		button.transform.parent = GridGroup.transform;
 		button.transform.localScale = new Vector3(1, 1, 1);
 		button.gameObject.SetActive(true);
-		Notification notification = button.GetComponent<Notification>();
+        NotificationButtons.Add(button);
+        string title = QuestManager.Instance.GetTitle(projectnum);
+        string content = QuestManager.Instance.GetProjectDescription(projectnum);
+        Notification notification = button.GetComponent<Notification>();
 		notification.NotificationType = type;
 		notification.NotificationTitle = title;
 		notification.NotificationContent = content;
-		notification.NotificationID = id;
+		notification.NotificationID = projectnum;
+	    notification.NotificationOwner = owner;
 	}
 
+    public void FindNotification(string type, int projectnum)
+    {
+        foreach (Button b in NotificationButtons)
+        {
+            Notification n = b.GetComponent<Notification>();
+            if (n.NotificationID == projectnum)
+            {
+                n.NotificationType = type;
+                n.AccessNotification();
+            }
+        }
+    }
 	public void RemoveNotification()
 	{
 		Destroy(CurrentNotification);
@@ -236,13 +253,9 @@ public class UIManager : AManager<UIManager>
 		}
 	}
 	public void ProposeProject()
-	{
-		if (!VoteManager.Instance.VoteStarted)
-		{
-			CellManager.Instance.NetworkCommunicator.Vote("StartVote", Projects.CurrentID);
-			Projects.ProjectProposer = true;
-		}
-	}
+    {
+        CellManager.Instance.NetworkCommunicator.Vote("StartVote", RoleManager.Instance.RoleType, Projects.CurrentID);
+    }
 
 	public void EnableVoteUI()
 	{
@@ -253,7 +266,7 @@ public class UIManager : AManager<UIManager>
 	}
 	public void Vote_Choice1()
 	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice1", 0);
+		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.CurrentID);
 		VoteStatus.text = "You Voted. Please wait for other players.";
 		Vote_Choice1_Button.interactable = false;
 		Vote_Choice2_Button.interactable = false;
@@ -263,7 +276,7 @@ public class UIManager : AManager<UIManager>
 
 	public void Vote_Choice2()
 	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice2", 0);
+		CellManager.Instance.NetworkCommunicator.Vote("Choice2","", ProjectManager.Instance.CurrentID);
 		VoteStatus.text = "You Voted. Please wait for other players.";
 		Vote_Choice1_Button.interactable = false;
 		Vote_Choice2_Button.interactable = false;
@@ -292,9 +305,11 @@ public class UIManager : AManager<UIManager>
 		Proposed_Description.text = QuestManager.Instance.GetProjectDescription(projectnum);
 	}
 	#endregion
+
 	#region Notifications
 
 	#endregion
+
 	#region Choose Roles
 
 	public void ChooseEnvironment()
@@ -371,11 +386,11 @@ public class UIManager : AManager<UIManager>
 		ResultCanvas.gameObject.SetActive(false);
 		ProjectCanvas.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(false);
-		//NotificationCanvas.gameObject.SetActive(false);
+		NotificationCanvas.gameObject.SetActive(false);
 	}
 	public void DebugButton()
 	{
-		VoteManager.Instance.AddVote(VoteManager.Instance.testint, 1);
+		//VoteManager.Instance.AddVote(ProjectManager.Instance.CurrentID, 0);
+	    ProjectManager.Instance.AddProject();
 	}
 }
-

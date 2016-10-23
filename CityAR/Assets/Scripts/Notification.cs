@@ -8,17 +8,15 @@ public class Notification : MonoBehaviour
 	public string NotificationTitle;
 	public string NotificationContent;
 	public int NotificationID;
-
+    public string NotificationOwner;
 	void Start ()
 	{
 		
-
 	}
 	
-	void Update () {
-		GetComponentInChildren<Text>().text = NotificationType + ": " + NotificationTitle;
-
-		
+	void Update ()
+    {
+		GetComponentInChildren<Text>().text = NotificationOwner + " Proposes: " + NotificationType + " " + NotificationTitle;	
 	}
 
 	public void AccessNotification()
@@ -28,14 +26,21 @@ public class Notification : MonoBehaviour
 			case "Vote":
 				UIManager.Instance.CurrentNotification = this.gameObject;
 				UIManager.Instance.GameUI();
-				UIManager.Instance.Invoke("EnableVoteUI", .1f);
+                UIManager.Instance.ProjectDescription(NotificationID);
+                UIManager.Instance.Invoke("EnableVoteUI", .1f);
+		        ProjectManager.Instance.CurrentID = NotificationID;
+                break;
+			case "Choice1":
+                //UIManager.Instance.AddNotification("Event", NotificationID);
+                Debug.Log("Notification 1");
 				break;
-			case "Event":
+			case "Choice2":
+                Debug.Log("Notification 2");
 
-				break;
-			case "Quest":
+                break;
+            case "Event":
 
-				break;
+		        break;
 			default:
 				break;
 		}
