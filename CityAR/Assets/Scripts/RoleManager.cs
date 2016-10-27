@@ -42,8 +42,5 @@ public class RoleManager : NetworkBehaviour
 			if (FinancePlayer == null)
 				Finance = false;
 		}
-	    RoleType = Environment ? "Environment" : "";
-	    RoleType = Social ? "Social" : "";
-        RoleType = Finance ? "Finance" : "";
     }
 }

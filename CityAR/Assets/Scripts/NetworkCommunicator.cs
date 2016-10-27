@@ -45,14 +45,17 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "Environment":
                     RoleManager.Instance.Environment = true;
+                    RoleManager.Instance.RoleType = "Environment";
                     RoleManager.Instance.EnvironmentPlayer = this;
                     break;
                 case "Social":
                     RoleManager.Instance.Social = true;
+                    RoleManager.Instance.RoleType = "Social";
                     RoleManager.Instance.SocialPlayer = this;
                     break;
                 case "Finance":
                     RoleManager.Instance.Finance = true;
+                    RoleManager.Instance.RoleType = "Finance";
                     RoleManager.Instance.FinancePlayer = this;
                     break;
             }
@@ -65,16 +68,21 @@ public class NetworkCommunicator : NetworkBehaviour
 
     public void Vote(string vote, string owner, int projectnum)
     {
-
         if (isServer)
         {
             switch (vote)
             {
                 case "StartVote":
-                    //VoteManager.Instance.TriggerVote(projectnum);
                     VoteManager.Instance.StartNewVote(projectnum, owner);
-                    UIManager.Instance.EnableVoteUI();
+                    VoteManager.Instance.AddNotification("Vote", owner, projectnum);
                     RpcVote(vote, owner, projectnum);
+                    if (RoleManager.Instance.RoleType == owner)
+                    {
+                        Debug.Log("Server " + RoleManager.Instance.RoleType + owner);
+                        UIManager.Instance.GameUI();
+                        UIManager.Instance.ProjectDescription(projectnum);
+                        UIManager.Instance.EnableVoteUI();
+                    }
                     break;
                 case "Choice1":
                     VoteManager.Instance.AddVote(projectnum, 0);
@@ -83,11 +91,20 @@ public class NetworkCommunicator : NetworkBehaviour
                     VoteManager.Instance.AddVote(projectnum, 1);
                     break;
                 case "Result_Choice1":
-                    ProjectManager.Instance.ProjectApproved(projectnum);
+                    if (RoleManager.Instance.RoleType == owner)
+                        ProjectManager.Instance.ProjectApproved(projectnum);
+                    VoteManager.Instance.RemoveNotification(projectnum);
+                    VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
+                    Debug.Log("great success");
                     RpcVote(vote, owner, projectnum);
+
                     break;
                 case "Result_Choice2":
-                    ProjectManager.Instance.ProjectRejected(projectnum);
+                    if (RoleManager.Instance.RoleType == owner)
+                        ProjectManager.Instance.ProjectRejected(projectnum);
+                    VoteManager.Instance.RemoveNotification(projectnum);
+                    VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
+                    Debug.Log("fail");
                     RpcVote(vote, owner, projectnum);
                     break;
                 default:
@@ -100,8 +117,6 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdVote(vote, owner, projectnum);
         }
     }
-
-
 
     [Command]
     public void CmdSpawnObject(Vector3 pos)
@@ -121,60 +136,44 @@ public class NetworkCommunicator : NetworkBehaviour
         Vote(vote, owner, num);
     }
     [ClientRpc]
-    public void RpcVote(string vote, string owner, int num)
+    public void RpcVote(string vote, string owner, int projectnum)
     {
-        switch (vote)
+        if (!isServer)
         {
-            case "StartVote":
-                UIManager.Instance.AddNotification("Vote", owner, num);
-                break;
-            case "Result_Choice1":
-                ProjectManager.Instance.ProjectApproved(num);
-                RpcVote(vote, owner, num);
-                break;
-            case "Result_Choice2":
-                ProjectManager.Instance.ProjectRejected(num);
-                RpcVote(vote,owner, num);
-                break;
-            default:
-                Debug.Log("something wrong in Vote switch");
-                break;
-        }
-    }
-
-/*
-    public void SendCommandPlayer(string player, string command)
-    {
-        if (isServer)
-        {
-            switch (command)
+            switch (vote)
             {
                 case "StartVote":
+                    VoteManager.Instance.AddNotification("Vote", owner, projectnum);
+                    if (RoleManager.Instance.RoleType == owner)
+                    {
+                        Debug.Log("Client " + RoleManager.Instance.RoleType + owner);
+                        UIManager.Instance.DebugText.text = RoleManager.Instance.RoleType + owner + "";
+                        UIManager.Instance.GameUI();
+                        UIManager.Instance.ProjectDescription(projectnum);
+                        UIManager.Instance.EnableVoteUI();
+                    }
 
                     break;
+                case "Result_Choice1":
+                    if (RoleManager.Instance.RoleType == owner)
+                        ProjectManager.Instance.ProjectApproved(projectnum);
 
+                    VoteManager.Instance.RemoveNotification(projectnum);
+                    VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
+                    UIManager.Instance.DebugText.text = projectnum + " success";
+                    break;
+                case "Result_Choice2":
+                    if (RoleManager.Instance.RoleType == owner)
+                        ProjectManager.Instance.ProjectRejected(projectnum);
+
+                    VoteManager.Instance.RemoveNotification(projectnum);
+                    VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
+                    UIManager.Instance.DebugText.text = projectnum + "fail";
+                    break;
+                default:
+                    Debug.Log("something wrong in Vote switch");
+                    break;
             }
         }
-        if (isClient && !isServer)
-        {
-            CmdSendCommandPlayer(player, command);
-        }
     }
-
-    [Command]
-    void CmdSendCommandPlayer(string player, string command)
-    {
-        SendCommandPlayer(player, command);
-    }
-
-    [ClientRpc]
-    void RpcSendCommandPlayer(string player, string command)
-    {
-        switch (command)
-        {
-            case "StartVote":
-                break;
-
-        }
-    }*/
 }
