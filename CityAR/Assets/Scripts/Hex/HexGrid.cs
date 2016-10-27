@@ -77,7 +77,14 @@ public class HexGrid : AManager<HexGrid> {
 	{
 		HexCell cell = GetCell(position);
 		EventManager.TriggerEvent("PlacementMap");
-		cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .1f);
+		//cancel previous invokes
+		cell.GetComponent<CellInterface>().CancelInvoke();
+		cell.GetComponent<CellLogic>().CancelInvoke();
+		CancelInvoke();
+		//show menu
+		cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .01f);
+		//make selected cell black
+		cell.GetComponent<CellLogic>().Invoke("CellSelected", .05f);
 		Invoke("Refresh", .1f);
 	}
 }

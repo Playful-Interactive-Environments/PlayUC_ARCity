@@ -6,7 +6,7 @@ public class CellLogic : MonoBehaviour {
 
     public enum HeatmapState
     {
-        PlacementState, SocialMap, EnvironmentMap, FinanceMap
+        PlacementState, SocialMap, EnvironmentMap, FinanceMap, CellSelected
     }
     HexCell _hexCell;
     HexGrid _hexGrid;
@@ -50,6 +50,11 @@ public class CellLogic : MonoBehaviour {
     {
         CurrentState = HeatmapState.EnvironmentMap;
     }
+
+    public void CellSelected()
+    {
+        CurrentState = HeatmapState.CellSelected;
+    }
     void ActivateMenu()
     {
         Debug.Log("Get here");
@@ -63,6 +68,11 @@ public class CellLogic : MonoBehaviour {
             case HeatmapState.PlacementState:
                 state = 0;
                 _hexCell.Elevation = state;
+                _hexCell.color = _hexGrid.colors[state];
+                break;
+            case HeatmapState.CellSelected:
+                state = 6;
+                _hexCell.Elevation = 0;
                 _hexCell.color = _hexGrid.colors[state];
                 break;
             case HeatmapState.SocialMap:

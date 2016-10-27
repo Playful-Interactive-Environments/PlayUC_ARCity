@@ -45,7 +45,7 @@ public class UIManager : AManager<UIManager>
 	public Button Vote_Choice2_Button;
 	public Text Proposed_Description;
 	public Text EventText;
-
+	public int CurrentProject;
 
 
 	void Start ()
@@ -104,6 +104,7 @@ public class UIManager : AManager<UIManager>
 		NetworkingManager.Instance.StopHosting();
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
+
 	public void NotificationUI()
 	{
 		if (NotificationCanvas.enabled == false)
@@ -151,16 +152,19 @@ public class UIManager : AManager<UIManager>
 
 	public void Choose_1()
 	{
+
 		QuestManager.Instance.GetResult(1);
 		MakeChoice();
 	}
 	public void Choose_2()
 	{
+
 		QuestManager.Instance.GetResult(2);
 		MakeChoice();
 	}
 	public void Choose_3()
 	{
+
 		QuestManager.Instance.GetResult(3);
 		MakeChoice();
 	}
@@ -196,25 +200,25 @@ public class UIManager : AManager<UIManager>
 
 	public void PressProjectButton_1()
 	{
-		Projects.GetProject(1);
+		CurrentProject = 1;
+		Projects.GetProject(CurrentProject);
 		ProjectContent(Projects.CurrentID);
 		ProjectUI();
-		ProjectButton_1.interactable = false;
 	}
 	public void PressProjectButton_2()
 	{
-		Projects.GetProject(2);
+		CurrentProject = 2;
+		Projects.GetProject(CurrentProject);
 		ProjectContent(Projects.CurrentID);
 		ProjectUI();
-		ProjectButton_2.interactable = false;
 
 	}
 	public void PressProjectButton_3()
 	{
-		Projects.GetProject(3);
+		CurrentProject = 3;
+		Projects.GetProject(CurrentProject);
 		ProjectContent(Projects.CurrentID);
 		ProjectUI();
-		ProjectButton_3.interactable = false;
 
 	}
 
@@ -233,6 +237,19 @@ public class UIManager : AManager<UIManager>
 	}
 	public void ProposeProject()
 	{
+		switch (CurrentProject)
+		{
+			case 1:
+				ProjectButton_1.interactable = false;
+				break;
+			case 2:
+				ProjectButton_2.interactable = false;
+				break;
+			case 3:
+				ProjectButton_3.interactable = false;
+				break;
+
+		}
 		CellManager.Instance.NetworkCommunicator.Vote("StartVote", RoleManager.Instance.RoleType, Projects.CurrentID);
 	}
 
@@ -380,10 +397,13 @@ public class UIManager : AManager<UIManager>
 		ResultCanvas.gameObject.SetActive(false);
 		ProjectCanvas.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(false);
+		Switch.gameObject.SetActive(false);
+
+		NotificationCanvas.gameObject.SetActive(true);
+		EventCanvas.gameObject.SetActive(true);
 		NotificationCanvas.enabled = false;
 		EventCanvas.enabled = false;
-		Switch.gameObject.SetActive(false);
-		
+
 	}
 	public void DebugButton()
 	{
