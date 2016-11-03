@@ -26,6 +26,12 @@ public class HexGrid : AManager<HexGrid> {
 		}
 	}
 
+	public Vector3 GetRandomPos()
+	{
+
+		Vector3 pos = cells[Random.Range(0, cells.Length-1)].transform.position;
+		return pos;
+	}
 	void Start () {
 		hexMesh.Triangulate(cells);
 	}
@@ -48,6 +54,7 @@ public class HexGrid : AManager<HexGrid> {
 		position.z = z * (HexMetrics.outerRadius * 1.5f);
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
+	    cell.CellId = i;
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.transform.name = "" + HexCoordinates.FromOffsetCoordinates(x, z);

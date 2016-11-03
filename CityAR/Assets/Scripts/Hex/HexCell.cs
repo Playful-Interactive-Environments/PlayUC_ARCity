@@ -5,7 +5,8 @@ public class HexCell : MonoBehaviour {
 	public HexCoordinates coordinates;
 
 	public Color color;
-
+	public int CellId;
+	public Vector3 CellPos;
 	public RectTransform uiRect;
 
 	public int Elevation {
@@ -29,6 +30,10 @@ public class HexCell : MonoBehaviour {
 		return neighbors[(int)direction];
 	}
 
+	void Start()
+	{
+		CellPos = transform.position;
+	}
 	public void SetNeighbor (HexDirection direction, HexCell cell) {
 		neighbors[(int)direction] = cell;
 		cell.neighbors[(int)direction.Opposite()] = this;

@@ -29,6 +29,8 @@ public class VoteManager : NetworkBehaviour
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
+		ButtonTemplate = GameObject.Find("NotificationTemplate").GetComponent<Button>();
+
 	}
 	
 	public void StartNewVote(int projectnum, string owner)
@@ -80,7 +82,7 @@ public class VoteManager : NetworkBehaviour
 		{
 			foreach (int key in Votes.Keys)
 			{
-				if (Votes[key].Votes == 3)
+				if (Votes[key].Votes >= 3)
 				{
 					if (Votes[key].Choice1 > Votes[key].Choice2 && !Votes[key].VoteFinished)
 					{
@@ -88,7 +90,6 @@ public class VoteManager : NetworkBehaviour
 						Votes[key].Votes = 0;
 						Votes[key].Choice2 = 0;
 						Votes[key].Choice1 = 0;
-						Debug.Log("Yes " + Votes[key].Choice1);
 						CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", Votes[key].ProjectOwner, Votes[key].ProjectNumber);
 					}
 
@@ -98,11 +99,7 @@ public class VoteManager : NetworkBehaviour
 						Votes[key].Votes = 0;
 						Votes[key].Choice2 = 0;
 						Votes[key].Choice1 = 0;
-						Debug.Log("No " + Votes[key].Votes);
 						CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", Votes[key].ProjectOwner, Votes[key].ProjectNumber);
-
-
-
 					}
 				}
 			}
@@ -112,7 +109,8 @@ public class VoteManager : NetworkBehaviour
 	public void AddNotification(string type, string owner, int projectnum)
 	{
 		//create new notification button
-		ButtonTemplate = GameObject.Find("ButtonTemplate").GetComponent<Button>();
+
+
 		GridGroup = GameObject.Find("GridLayout").GetComponent<GridLayoutGroup>();
 		Button button = Instantiate(ButtonTemplate, transform.position, Quaternion.identity) as Button;
 		button.transform.parent = GridGroup.transform;
@@ -129,6 +127,7 @@ public class VoteManager : NetworkBehaviour
 		notification.NotificationID = projectnum;
 		notification.NotificationOwner = owner;
 		notification.UpdateButtonTitle();
+		UIManager.Instance.SetNotificationState(true);
 	}
 
 	public Notification GetNotification(int projectnum)

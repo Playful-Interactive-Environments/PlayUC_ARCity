@@ -5,7 +5,12 @@ using UnityEngine.Networking;
 
 public class ProjectManager : NetworkBehaviour
 {
-
+	public class ProjectTab
+	{
+		public int ID;
+		public bool Proposed;
+		public bool Approved;
+	}
 	public static ProjectManager Instance = null;
 	public GameObject ChosenProject;
 	public GameObject ProjectPrefab;
@@ -13,11 +18,10 @@ public class ProjectManager : NetworkBehaviour
 	public QuestManager Quests;
 	public VoteManager VoteManager;
 	public int CurrentID;
-	public int Pro1_ID;
-	public int Pro2_ID;
-	public int Pro3_ID;
+	public ProjectTab Pro1 = new ProjectTab();
+	public ProjectTab Pro2 = new ProjectTab();
+	public ProjectTab Pro3 = new ProjectTab();
 	public SyncListInt ProjectIDs = new SyncListInt();
-
 
 	void Awake () {
 		if (Instance == null)
@@ -38,15 +42,16 @@ public class ProjectManager : NetworkBehaviour
 	{
 		if (isServer)
 		{
-			for (int i = 0; i <= Quests.CSVProjects.rowList.Count; i++)
+			for (int i = 1; i <= Quests.CSVProjects.rowList.Count; i++)
 			{
 				ProjectIDs.Add(i);
 			}
 		}
-		Pro1_ID = GenerateRandomProject();
-		Pro2_ID = GenerateRandomProject();
-		Pro3_ID = GenerateRandomProject();
+		Pro1.ID = GenerateRandomProject();
+		Pro2.ID = GenerateRandomProject();
+		Pro3.ID = GenerateRandomProject();
 	}
+
 	void Update ()
 	{
 		if (VoteManager.Instance!=null)
@@ -55,32 +60,80 @@ public class ProjectManager : NetworkBehaviour
 		}
 	}
 
-	public void ProjectApproved(int num)
+	public void BuildProject(Vector3 pos, int id)
 	{
-		GameObject gobj = Instantiate(ProjectPrefab, transform.position, Quaternion.identity) as GameObject;
+		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity) as GameObject;
 		Project project = gobj.GetComponent<Project>();
-		project.Radius = Quests.GetRadius(num);
-		project.Social = Quests.GetSocial(num);
-		project.Finance = Quests.GetFinance(num);
-		project.Environment = Quests.GetEnvironment(num);
-		gobj.SetActive(false);
+		project.ProjectId = id;
+		project.Title = Quests.GetTitle(id);
+		project.Description = Quests.GetContent(id);
+		project.Rating = Quests.GetRating(id);
+		project.Social = Quests.GetSocial(id);
+		project.Finance = Quests.GetFinance(id);
+		project.Environment = Quests.GetEnvironment(id);
+		project.Cost = Quests.GetCost(id);
 		ChosenProject = gobj;
 		Projects.Add(gobj);
-		UIManager.Instance.Invoke("EndVote", 5f);
+		CellManager.Instance.NetworkCommunicator.SpawnObject(pos);
 
-	    UIManager.Instance.VoteStatus.text = "Project Approved. Game will resume in 5 sec.";
-		if(num == Pro1_ID)
-			Add_Project1();
-		if(num == Pro2_ID)
-			Add_Project2();
-		if(num == Pro3_ID)
-			Add_Project3();
+		ResetUI();
+	}
+
+	public void ResetUI()
+	{
+		UIManager.Instance.DebugText.text = "spawn";
+		UIManager.Instance.VoteStatus.text = "";
+		if (CurrentID == Pro1.ID)
+		{
+			Pro1.ID = GenerateRandomProject();
+			Pro1.Approved = false;
+			Pro1.Proposed = false;
+			UIManager.Instance.BuildButton.interactable = false;
+			UIManager.Instance.ProposeButton.interactable = true;
+		}
+		if (CurrentID == Pro2.ID)
+		{
+			Pro2.ID = GenerateRandomProject();
+			Pro2.Approved = false;
+			Pro2.Proposed = false;
+			UIManager.Instance.BuildButton.interactable = false;
+			UIManager.Instance.ProposeButton.interactable = true;
+		}
+		if (CurrentID == Pro3.ID)
+		{
+			Pro3.ID = GenerateRandomProject();
+			Pro3.Approved = false;
+			Pro3.Proposed = false;
+			UIManager.Instance.BuildButton.interactable = false;
+			UIManager.Instance.ProposeButton.interactable = true;
+		}
+	}
+	public void ProjectApproved(int num)
+	{
+		UIManager.Instance.VoteStatus.text = "Project Approved. You may now build it.";
+		UIManager.Instance.BuildButton.interactable = true;
+		if (num == Pro1.ID)
+		{
+			Pro1.Approved = true;
+		}
+
+		if (num == Pro2.ID)
+		{
+			Pro2.Approved = true;
+		}
+
+		if (num == Pro3.ID)
+		{
+			Pro3.Approved = true;
+		}
+
 	}
 
 	public void ProjectRejected(int num)
 	{
-		UIManager.Instance.Invoke("EndVote", 5f);
-	    UIManager.Instance.VoteStatus.text = "Project Rejected. Game will resume in 5 sec.";
+		ResetUI();
+		//UIManager.Instance.Invoke("EndVote", 5f);
+		//UIManager.Instance.VoteStatus.text = "Project Rejected.";
 	}
 
 	public int GenerateRandomProject()
@@ -97,38 +150,37 @@ public class ProjectManager : NetworkBehaviour
 	{
 		CurrentID = GenerateRandomProject();
 	}
-
-	public void Add_Project1()
-	{
-		UIManager.Instance.ProjectButton_1.interactable = true;
-		Pro1_ID = GenerateRandomProject();
-	}
-
-	public void Add_Project2()
-	{
-		UIManager.Instance.ProjectButton_2.interactable = true;
-		Pro2_ID = GenerateRandomProject();
-	}
-
-	public void Add_Project3()
-	{
-		UIManager.Instance.ProjectButton_3.interactable = true;
-		Pro3_ID = GenerateRandomProject();
-	}
-
-
+	
 	public void GetProject(int buttonnum)
 	{
 		switch (buttonnum)
 		{
 			case 1:
-				CurrentID = Pro1_ID;
+				CurrentID = Pro1.ID;
+				if (Pro1.Proposed) UIManager.Instance.ProposeButton.interactable = false;
+				else UIManager.Instance.ProposeButton.interactable = true;
+
+				if (Pro1.Approved)
+					UIManager.Instance.BuildButton.interactable = true;
+				else UIManager.Instance.BuildButton.interactable = false;
 				break;
 			case 2:
-				CurrentID = Pro2_ID;
+				CurrentID = Pro2.ID;
+				if (Pro2.Proposed)
+					UIManager.Instance.ProposeButton.interactable = false;
+				else UIManager.Instance.ProposeButton.interactable = true;
+				if (Pro2.Approved)
+					UIManager.Instance.BuildButton.interactable = true;
+				else UIManager.Instance.BuildButton.interactable = false;
 				break;
 			case 3:
-				CurrentID = Pro3_ID;
+				CurrentID = Pro3.ID;
+				if (Pro3.Proposed)
+					UIManager.Instance.ProposeButton.interactable = false;
+				else UIManager.Instance.ProposeButton.interactable = true;
+				if (Pro3.Approved)
+					UIManager.Instance.BuildButton.interactable = true;
+				else UIManager.Instance.BuildButton.interactable = false;
 				break;
 			default:
 				break;

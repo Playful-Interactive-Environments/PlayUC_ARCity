@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using UnityEngine.Networking;
 
 public class QuestManager : MonoBehaviour {
 
@@ -10,6 +11,13 @@ public class QuestManager : MonoBehaviour {
 	public CSVManagerProjects CSVProjects;
 	public UIManager UI;
 	private int questnum;
+
+	public GameObject QuestPrefab;
+	public int MaxQuests;
+	public int CurrentQuests;
+	public List<int> QuestIDs = new List<int>();
+	public string[] meanings = new[] {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
+	public float SpawnRate;
 
 	void Awake () {
 		if (Instance == null)
@@ -20,18 +28,30 @@ public class QuestManager : MonoBehaviour {
 		Quests = CSVManager.Instance;
 		UI = UIManager.Instance;
 		CSVProjects = CSVManagerProjects.Instance;
-
+		InvokeRepeating("GenerateQuests", 5f, SpawnRate);
+		Invoke("PopulateIds", .1f);
 	}
 
+	void PopulateIds()
+	{
+		MaxQuests = Quests.rowList.Count;
+
+		for (int i = 1; i <= MaxQuests; i++)
+		{
+			QuestIDs.Add(i);
+		}
+	}
 	public string GetProjectDescription(int projectnum)
 	{
 		string description = "";
 		return description = CSVProjects.Find_ID(projectnum).title
-			+ "\n" + CSVProjects.Find_ID(projectnum).content
-			+ "\nRadius: " + CSVProjects.Find_ID(projectnum).radius
-			+ "\nSocial: " + CSVProjects.Find_ID(projectnum).social
-			+ "\nEnvironment: " + CSVProjects.Find_ID(projectnum).environment
-			+ "\nFinance: " + CSVProjects.Find_ID(projectnum).finance;
+							 + "\n" + CSVProjects.Find_ID(projectnum).content
+							 + "\nRating: " + CSVProjects.Find_ID(projectnum).rating
+							 + "\nCost: " + CSVProjects.Find_ID(projectnum).cost
+							 +"\nSocial: " + TranslateMeaning(GetSocial(projectnum))
+							 + "\nEnvironment: " + TranslateMeaning(GetEnvironment(projectnum))
+							 + "\nFinance: " + TranslateMeaning(GetFinance(projectnum));
+
 	}
 
 	void Update ()
@@ -39,16 +59,72 @@ public class QuestManager : MonoBehaviour {
 
 	}
 
-	public void GetQuest()
+	public string TranslateMeaning(int number)
 	{
-		questnum = (int)Random.Range(1, Quests.GetRowList().Count + 1);
-		//Debug.Log(questnum);
-		UI.Title.text = Quests.Find_ID(questnum).title;
-		UI.Content.text = Quests.Find_ID(questnum).content;
-		UI.Choice1.text = Quests.Find_ID(questnum).choice_1;
-		UI.Choice2.text = Quests.Find_ID(questnum).choice_2;
-		UI.Choice3.text = Quests.Find_ID(questnum).choice_3;
-		//Debug.Log("" + Quests.Find_ID(questnum).title);
+		string meaning = "";
+		switch (number)
+		{
+			case -3:
+				meaning = meanings[0];
+				break;
+			case -2:
+				meaning = meanings[1];
+				break;
+			case -1:
+				meaning = meanings[2];
+				break;
+			case 0:
+				meaning = meanings[3];
+				break;
+			case 1:
+				meaning = meanings[4];
+				break;
+			case 2:
+				meaning = meanings[5];
+				break;
+			case 3:
+				meaning = meanings[6];
+				break;
+		}
+
+		return meaning;
+	}
+	public void GenerateQuests()
+	{
+		if (CurrentQuests < MaxQuests)
+		{
+			Vector3 pos = HexGrid.Instance.GetRandomPos();
+			GameObject obj = Instantiate(QuestPrefab, pos, Quaternion.identity) as GameObject;
+			obj.transform.parent = CellManager.Instance.ImageTarget.transform;
+			obj.transform.name = "Quest";
+			Quest _quest = obj.GetComponent<Quest>();
+
+			_quest.ID = GetRandomQuest();
+			_quest.Title = Quests.Find_ID(_quest.ID).title;
+			_quest.Content = Quests.Find_ID(_quest.ID).content;
+
+			_quest.Choice1 = Quests.Find_ID(_quest.ID).choice_1;
+			_quest.Choice2 = Quests.Find_ID(_quest.ID).choice_2;
+
+			_quest.Result1 = Quests.Find_ID(_quest.ID).result_1;
+			_quest.Result2 = Quests.Find_ID(_quest.ID).result_2;
+
+			_quest.Effect1 = Quests.Find_ID(_quest.ID).effect_1;
+			_quest.Effect2 = Quests.Find_ID(_quest.ID).effect_2;
+
+			CurrentQuests++;
+		}
+	}
+
+	int GetRandomQuest()
+	{
+		if (QuestIDs.Count == 0)
+			PopulateIds();
+		int randomQuest = Random.Range(0, QuestIDs.Count);
+
+		int returnId = QuestIDs[randomQuest];
+		QuestIDs.RemoveAt(randomQuest);
+		return returnId;
 	}
 
 	public string GetTitle(int num)
@@ -72,15 +148,21 @@ public class QuestManager : MonoBehaviour {
 		//Debug.Log(ConvertString(finance));
 		return ConvertString(finance);
 	}
-	public int GetRadius(int num)
+	public int GetRating(int num)
 	{
-		string radius = CSVProjects.Find_ID(num).radius;
+		string rating = CSVProjects.Find_ID(num).rating;
 		//Debug.Log(ConvertString(radius));
-		return ConvertString(radius);
+		return ConvertString(rating);
 	}
 	public int GetEnvironment(int num)
 	{
 		string environment = CSVProjects.Find_ID(num).environment;
+		//Debug.Log(ConvertString(environment));
+		return ConvertString(environment);
+	}
+	public int GetCost(int num)
+	{
+		string environment = CSVProjects.Find_ID(num).cost;
 		//Debug.Log(ConvertString(environment));
 		return ConvertString(environment);
 	}
@@ -92,20 +174,5 @@ public class QuestManager : MonoBehaviour {
 		return parsedInt;
 
 	}
-	public void GetResult(int result)
-	{
-		switch (result)
-		{
-			case 1:
-				UI.Result.text = Quests.Find_ID(questnum).result_1_id;
-				break;
-			case 2:
-				UI.Result.text = Quests.Find_ID(questnum).result_2_id;
-				break;
-			case 3:
-				UI.Result.text = Quests.Find_ID(questnum).result_3_id;
-				break;
-		}
 
-	}
 }

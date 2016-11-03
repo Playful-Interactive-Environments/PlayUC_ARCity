@@ -8,18 +8,35 @@ public class CellInterface : MonoBehaviour {
 		Default, Menu, Submenu
 	}
 	public InterfaceState CurrentState = InterfaceState.Default;
-	public GameObject[] ButtonObjects;
+	public TextMesh CellText;
 
 	void Start () {
-		foreach(GameObject buttonObject in ButtonObjects)
-		{
-			buttonObject.transform.localScale /= 297;
-			buttonObject.transform.position = new Vector3(transform.position.x, buttonObject.transform.position.y / 297, transform.position.z);
-		}
+
+		CellText.transform.localScale /= 297;
+		CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
+		CellText.text = GetComponent<HexCell>().CellId +"";
 	}
 	
 	void Update () {
 
+
+	}
+	public void ButtonClick()
+	{
+		CurrentState = InterfaceState.Default;
+	}
+	public void TriggerMenu()
+	{
+		CurrentState = InterfaceState.Menu;
+	}
+}
+
+/*		foreach(GameObject buttonObject in ButtonObjects)
+		{
+			buttonObject.transform.localScale /= 297;
+			buttonObject.transform.position = new Vector3(transform.position.x, buttonObject.transform.position.y / 297, transform.position.z);
+
+		}
 		ButtonObjects[0].transform.LookAt(Camera.main.transform);
 		ButtonObjects[1].transform.LookAt(Camera.main.transform);
 		switch (CurrentState)
@@ -27,7 +44,7 @@ public class CellInterface : MonoBehaviour {
 			case InterfaceState.Default:
 				foreach (GameObject buttonObject in ButtonObjects)
 				{
-					buttonObject.SetActive(false);
+					buttonObject.SetActive(true);
 				}
 				break;
 			case InterfaceState.Menu:
@@ -39,13 +56,4 @@ public class CellInterface : MonoBehaviour {
 			case InterfaceState.Submenu:
 				break;
 		}
-	}
-	public void ButtonClick()
-	{
-		CurrentState = InterfaceState.Default;
-	}
-	public void TriggerMenu()
-	{
-		CurrentState = InterfaceState.Menu;
-	}
-}
+*/

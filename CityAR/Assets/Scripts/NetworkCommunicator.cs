@@ -20,6 +20,21 @@ public class NetworkCommunicator : NetworkBehaviour
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
     }
+
+    public void BuildProject(Vector3 pos, int id)
+    {
+        if (isServer)
+        {
+            ProjectManager.Instance.BuildProject(pos, id);
+        }
+        if (isClient && !isServer)
+        {
+            ProjectManager.Instance.ResetUI();
+            CmdBuildProject(pos, id);
+        }
+    }
+
+
     public void SpawnObject(Vector3 pos)
     {
         if (isServer && ProjectManager.Instance.ChosenProject != null)
@@ -28,7 +43,6 @@ public class NetworkCommunicator : NetworkBehaviour
             NetworkServer.Spawn(project);
             project.transform.position = pos;
             project.GetComponent<Project>().PlaceProject(pos);
-            project.SetActive(true);
             ProjectManager.Instance.ChosenProject = null;
         }
         if (isClient && !isServer)
@@ -78,7 +92,7 @@ public class NetworkCommunicator : NetworkBehaviour
                     RpcVote(vote, owner, projectnum);
                     if (RoleManager.Instance.RoleType == owner)
                     {
-                        Debug.Log("Server " + RoleManager.Instance.RoleType + owner);
+                        UIManager.Instance.DebugText.text = RoleManager.Instance.RoleType + owner;
                         UIManager.Instance.GameUI();
                         UIManager.Instance.ProjectDescription(projectnum);
                         UIManager.Instance.EnableVoteUI();
@@ -86,16 +100,18 @@ public class NetworkCommunicator : NetworkBehaviour
                     break;
                 case "Choice1":
                     VoteManager.Instance.AddVote(projectnum, 0);
+                    UIManager.Instance.DebugText.text = "1";
                     break;
                 case "Choice2":
                     VoteManager.Instance.AddVote(projectnum, 1);
+                    UIManager.Instance.DebugText.text = "2";
                     break;
                 case "Result_Choice1":
                     if (RoleManager.Instance.RoleType == owner)
                         ProjectManager.Instance.ProjectApproved(projectnum);
                     VoteManager.Instance.RemoveNotification(projectnum);
                     VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
-                    Debug.Log("great success");
+                    UIManager.Instance.DebugText.text = "success";
                     RpcVote(vote, owner, projectnum);
 
                     break;
@@ -104,7 +120,7 @@ public class NetworkCommunicator : NetworkBehaviour
                         ProjectManager.Instance.ProjectRejected(projectnum);
                     VoteManager.Instance.RemoveNotification(projectnum);
                     VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
-                    Debug.Log("fail");
+                    UIManager.Instance.DebugText.text = "fail";
                     RpcVote(vote, owner, projectnum);
                     break;
                 default:
@@ -117,7 +133,11 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdVote(vote, owner, projectnum);
         }
     }
-
+    [Command]
+    void CmdBuildProject(Vector3 pos, int id)
+    {
+        BuildProject(pos, id);
+    }
     [Command]
     public void CmdSpawnObject(Vector3 pos)
     {
@@ -146,7 +166,6 @@ public class NetworkCommunicator : NetworkBehaviour
                     VoteManager.Instance.AddNotification("Vote", owner, projectnum);
                     if (RoleManager.Instance.RoleType == owner)
                     {
-                        Debug.Log("Client " + RoleManager.Instance.RoleType + owner);
                         UIManager.Instance.DebugText.text = RoleManager.Instance.RoleType + owner + "";
                         UIManager.Instance.GameUI();
                         UIManager.Instance.ProjectDescription(projectnum);
@@ -156,8 +175,9 @@ public class NetworkCommunicator : NetworkBehaviour
                     break;
                 case "Result_Choice1":
                     if (RoleManager.Instance.RoleType == owner)
+                    {
                         ProjectManager.Instance.ProjectApproved(projectnum);
-
+                    }
                     VoteManager.Instance.RemoveNotification(projectnum);
                     VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
                     UIManager.Instance.DebugText.text = projectnum + " success";
@@ -165,7 +185,7 @@ public class NetworkCommunicator : NetworkBehaviour
                 case "Result_Choice2":
                     if (RoleManager.Instance.RoleType == owner)
                         ProjectManager.Instance.ProjectRejected(projectnum);
-
+                    Debug.Log("3");
                     VoteManager.Instance.RemoveNotification(projectnum);
                     VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
                     UIManager.Instance.DebugText.text = projectnum + "fail";

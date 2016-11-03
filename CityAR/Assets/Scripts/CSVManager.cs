@@ -13,14 +13,13 @@ public class CSVManager: AManager<CSVManager>
         public string content;
         public string choice_1;
         public string choice_2;
-        public string choice_3;
-        public string result_1_id;
-        public string result_2_id;
-        public string result_3_id;
-        public string effect;
+        public string result_1;
+        public string result_2;
+        public string effect_1;
+        public string effect_2;
     }
     public TextAsset File;
-    List<Row> rowList = new List<Row>();
+    public List<Row> rowList = new List<Row>();
 
     bool isLoaded = false;
 
@@ -60,11 +59,10 @@ public class CSVManager: AManager<CSVManager>
             row.content = grid[i][2];
             row.choice_1 = grid[i][3];
             row.choice_2 = grid[i][4];
-            row.choice_3 = grid[i][5];
-            row.result_1_id = grid[i][6];
-            row.result_2_id = grid[i][7];
-            row.result_3_id = grid[i][8];
-            row.effect = grid[i][9];
+            row.result_1 = grid[i][5];
+            row.result_2 = grid[i][6];
+            row.effect_1 = grid[i][7];
+            row.effect_2 = grid[i][8];
             rowList.Add(row);
         }
         isLoaded = true;
@@ -122,46 +120,38 @@ public class CSVManager: AManager<CSVManager>
     {
         return rowList.FindAll(x => x.choice_2 == find);
     }
-    public Row Find_Choice_3(string find)
-    {
-        return rowList.Find(x => x.choice_3 == find);
-    }
-    public List<Row> Find_Choice_3_All(string find)
-    {
-        return rowList.FindAll(x => x.choice_3 == find);
-    }
 
     public Row Find_Result_1(string find)
     {
-        return rowList.Find(x => x.result_1_id == find);
+        return rowList.Find(x => x.result_1 == find);
     }
     public List<Row> Find_Result_1_All(string find)
     {
-        return rowList.FindAll(x => x.result_1_id == find);
+        return rowList.FindAll(x => x.result_1 == find);
     }
     public Row Find_Result_2(string find)
     {
-        return rowList.Find(x => x.result_2_id == find);
+        return rowList.Find(x => x.result_2 == find);
     }
     public List<Row> Find_Result_2_All(string find)
     {
-        return rowList.FindAll(x => x.result_2_id == find);
+        return rowList.FindAll(x => x.result_2 == find);
     }
     public Row Find_Result_3(string find)
     {
-        return rowList.Find(x => x.result_3_id == find);
+        return rowList.Find(x => x.effect_1 == find);
     }
     public List<Row> Find_Result_3_All(string find)
     {
-        return rowList.FindAll(x => x.result_3_id == find);
+        return rowList.FindAll(x => x.effect_1 == find);
     }
     public Row Find_Effect(string find)
     {
-        return rowList.Find(x => x.effect == find);
+        return rowList.Find(x => x.effect_2 == find);
     }
     public List<Row> Find_Effect_All(string find)
     {
-        return rowList.FindAll(x => x.effect == find);
+        return rowList.FindAll(x => x.effect_2 == find);
     }
     #endregion
 }

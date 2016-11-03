@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.Networking.NetworkSystem;
 
 public class NetworkingManager : NetworkManager
 {
@@ -146,6 +147,7 @@ public class NetworkingManager : NetworkManager
     {
         base.OnStartClient(client);
         Debug.Log("OnStartClient");
+        client.RegisterHandler(MsgType.Error, OnError);
     }
 
     public override void OnStopClient()
@@ -162,13 +164,32 @@ public class NetworkingManager : NetworkManager
     {
         UIManager.Instance.ResetMenus();
         base.OnClientDisconnect(conn);
-        Debug.Log("OnClientDisconnect");
+        Debug.Log("OnClientDisconnect " + conn.lastMessageTime);
+        ReconnectClient();
     }
 
     public void ReconnectClient()
     {
         StopClient();
         StartCoroutine("Reconnect");
+    }
+
+    public override void OnClientError(NetworkConnection conn, int errorCode)
+    {
+        base.OnClientError(conn, errorCode);
+
+        Debug.Log(errorCode);
+    }
+
+    public override void OnServerError(NetworkConnection conn, int errorCode)
+    {
+        base.OnServerError(conn, errorCode);
+        Debug.Log(errorCode);
+    }
+    void OnError(NetworkMessage netMsg)
+    {
+        var errorMsg = netMsg.ReadMessage<ErrorMessage>();
+        Debug.Log(errorMsg);
     }
 
     IEnumerator Reconnect()

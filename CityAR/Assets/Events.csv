@@ -1,7 +1,0 @@
-id,title,content,choice_1,choice_2,choice_3,result_1,result_2,result_3,effect_1,effect_2,effect_3
-1,Lobbying,You are offered one free project in exchange for your cooperation with company X. Will you accept?,Yes,No,Maybe,You cooperated with the lobbysts,You Decided to not cooperate. You lose rating,The question might come up again.,0,,
-2,Bank,Bank loan,Yes,No,Maybe,bank1,bank2,bank3,0,,
-3,Shop,New shop open,Yes,No,Maybe,shop1,shop2,shop3,,,
-4,Office,Office space required,Yes,No,Maybe,office1,office2,office3,,,
-5,Industry,New steel factory,Yes,No,Maybe,steel1,steel2,steel3,,,
-6,Park,New park,Yes,No,Maybe,park1,park2,park3,,,

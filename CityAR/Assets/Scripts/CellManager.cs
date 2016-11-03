@@ -38,15 +38,15 @@ public class CellManager : NetworkBehaviour
 	{
 		UpdateCellVars(SocialRates, EnvironmentRates, FinanceRates);
 	}
-	public void UpdateOccupiedVar(int grid, int value)
+	public void UpdateFinance(int grid, int value)
 	{
-		FinanceRates[grid] = value;
+		FinanceRates[grid] += value;
 	}
-	public void UpdateUnemploymentVar(int grid, int value)
+	public void UpdateSocial(int grid, int value)
 	{
 		SocialRates[grid] += value;
 	}
-	public void UpdatePollutionVar(int grid, int value)
+	public void UpdateEnvironment(int grid, int value)
 	{
 		EnvironmentRates[grid] += value;
 	}

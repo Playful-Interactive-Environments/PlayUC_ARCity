@@ -67,12 +67,12 @@ public class CellLogic : MonoBehaviour {
         {
             case HeatmapState.PlacementState:
                 state = 0;
-                _hexCell.Elevation = state;
+               // _hexCell.Elevation = state;
                 _hexCell.color = _hexGrid.colors[state];
                 break;
             case HeatmapState.CellSelected:
                 state = 6;
-                _hexCell.Elevation = 0;
+                //_hexCell.Elevation = 0;
                 _hexCell.color = _hexGrid.colors[state];
                 break;
             case HeatmapState.SocialMap:
@@ -87,7 +87,7 @@ public class CellLogic : MonoBehaviour {
                 if (SocialRate >= 80)
                     state = 5;
                 _hexCell.color = _hexGrid.colors[state];
-                _hexCell.Elevation = state - 1;
+                //_hexCell.Elevation = state - 1;
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
             case HeatmapState.EnvironmentMap:
@@ -101,7 +101,7 @@ public class CellLogic : MonoBehaviour {
                     state = 4;
                 if (EnvironmentRate >= 80)
                     state = 5;
-                _hexCell.Elevation = state - 1;
+                //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
@@ -116,10 +116,16 @@ public class CellLogic : MonoBehaviour {
                     state = 4;
                 if (FinanceRate >= 80)
                     state = 5;
-                _hexCell.Elevation = state - 1;
+                //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
         }
+    }
+
+    public string GetVars()
+    {
+        string vars = " Environment " + EnvironmentRate + " Social " + SocialRate  + " Finance "+ FinanceRate;
+        return vars;
     }
 }

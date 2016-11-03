@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-
+using UnityEngine.UI;
 public class RoleManager : NetworkBehaviour
 {
 	public static RoleManager Instance = null;
@@ -15,7 +15,10 @@ public class RoleManager : NetworkBehaviour
 	public bool Finance;
 	[SyncVar]
 	public bool Social;
-    public string RoleType;
+	public string RoleType;
+
+	public int Rating;
+	public int Budget;
 
 	void Awake () {
 		if (Instance == null)
@@ -24,11 +27,13 @@ public class RoleManager : NetworkBehaviour
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
 		InvokeRepeating("Refresh", 0f, .1f);
+
 	}
 
 	void Update()
 	{
-
+		UIManager.Instance.RatingText.text = "Rating: " + Rating;
+		UIManager.Instance.BudgetText.text = "Budget: " + Budget;
 	}
 
 	void Refresh()
@@ -42,5 +47,5 @@ public class RoleManager : NetworkBehaviour
 			if (FinancePlayer == null)
 				Finance = false;
 		}
-    }
+	}
 }

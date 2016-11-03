@@ -11,10 +11,11 @@ public class CSVManagerProjects : AManager<CSVManagerProjects>
         public string id;
         public string title;
         public string content;
-        public string radius;
+        public string rating;
         public string social;
         public string environment;
         public string finance;
+        public string cost;
 
     }
     public TextAsset File;
@@ -56,10 +57,11 @@ public class CSVManagerProjects : AManager<CSVManagerProjects>
             row.id = grid[i][0];
             row.title = grid[i][1];
             row.content = grid[i][2];
-            row.radius = grid[i][3];
+            row.rating = grid[i][3];
             row.social = grid[i][4];
             row.environment = grid[i][5];
             row.finance = grid[i][6];
+            row.cost = grid[i][7];
             rowList.Add(row);
         }
         isLoaded = true;
