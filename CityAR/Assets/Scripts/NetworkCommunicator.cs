@@ -33,7 +33,7 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdBuildProject(pos, id);
         }
     }
-
+    
 
     public void SpawnObject(Vector3 pos)
     {
@@ -171,7 +171,6 @@ public class NetworkCommunicator : NetworkBehaviour
                         UIManager.Instance.ProjectDescription(projectnum);
                         UIManager.Instance.EnableVoteUI();
                     }
-
                     break;
                 case "Result_Choice1":
                     if (RoleManager.Instance.RoleType == owner)

@@ -26,9 +26,9 @@ public class Notification : MonoBehaviour
 		{
 			case "Vote":
 				ProjectManager.Instance.CurrentID = NotificationID;
-				UIManager.Instance.GameUI();
 				UIManager.Instance.ProjectDescription(NotificationID);
-				UIManager.Instance.Invoke("EnableVoteUI", .1f);
+                UIManager.Instance.NotificationUI();
+                UIManager.Instance.EnableVoteUI();
 				break;
 			case "Choice1":
 				ProjectManager.Instance.CurrentID = NotificationID;
@@ -43,9 +43,11 @@ public class Notification : MonoBehaviour
 				VoteManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Waiting":
-				UIManager.Instance.EventText.text = "Waiting for votes on: " + NotificationTitle;
+                ProjectManager.Instance.CurrentID = NotificationID;
+                UIManager.Instance.EventText.text = "Waiting for votes on: " + NotificationTitle;
 				UIManager.Instance.DisplayEventCanvas();
-				break;
+                VoteManager.Instance.RemoveNotification(NotificationID);
+                break;
 			default:
 				break;
 		}

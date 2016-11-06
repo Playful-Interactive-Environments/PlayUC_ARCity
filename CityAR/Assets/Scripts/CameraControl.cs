@@ -88,6 +88,5 @@ public class CameraControl : AManager<CameraControl>
             }
         }
 #endif
-
     }
 }

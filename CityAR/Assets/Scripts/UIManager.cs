@@ -296,7 +296,6 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.BuildProject(CameraControl.Instance.LastTouchedCell.CellPos, ProjectManager.Instance.CurrentID);
 		GameCanvas.gameObject.SetActive(true);
 		NotificationButton.gameObject.SetActive(true);
-
 		BuildCanvas.gameObject.SetActive(false);
 	}
 
@@ -320,8 +319,6 @@ public class UIManager : AManager<UIManager>
 		Vote_Choice1_Button.interactable = false;
 		Vote_Choice2_Button.interactable = false;
 		Project_Content.gameObject.SetActive(false);
-		//Proposed_Description.gameObject.SetActive(false);
-		//Invoke("EndVote", 2f);
 	}
 
 	public void Vote_Choice2()
@@ -334,8 +331,7 @@ public class UIManager : AManager<UIManager>
 		Vote_Choice1_Button.interactable = false;
 		Vote_Choice2_Button.interactable = false;
 		Project_Content.gameObject.SetActive(false);
-		//Proposed_Description.gameObject.SetActive(false);
-		//Invoke("EndVote", 2f);
+
 	}
 
 	public void EndVote()
@@ -386,7 +382,6 @@ public class UIManager : AManager<UIManager>
 		{
 			NotificationButton.GetComponentInChildren<Text>().text = "!";
 			NotificationButton.image.color = Color.white;
-
 		}
 	}
 	#endregion
@@ -473,8 +468,7 @@ public class UIManager : AManager<UIManager>
 		EventCanvas.enabled = false;
 		ProjectInfoCanvas.gameObject.SetActive(false);
 		Switch.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
-
+		NotificationButton.gameObject.SetActive(false);    
 	}
 
 	public void DebugButton()

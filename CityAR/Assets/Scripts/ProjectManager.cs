@@ -63,8 +63,12 @@ public class ProjectManager : NetworkBehaviour
 	public void BuildProject(Vector3 pos, int id)
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity) as GameObject;
-		Project project = gobj.GetComponent<Project>();
-		project.ProjectId = id;
+        ChosenProject = gobj;
+        Projects.Add(gobj);
+        CellManager.Instance.NetworkCommunicator.SpawnObject(pos);
+
+        Project project = gobj.GetComponent<Project>();
+        project.ProjectId = id;
 		project.Title = Quests.GetTitle(id);
 		project.Description = Quests.GetContent(id);
 		project.Rating = Quests.GetRating(id);
@@ -72,10 +76,7 @@ public class ProjectManager : NetworkBehaviour
 		project.Finance = Quests.GetFinance(id);
 		project.Environment = Quests.GetEnvironment(id);
 		project.Cost = Quests.GetCost(id);
-		ChosenProject = gobj;
-		Projects.Add(gobj);
-		CellManager.Instance.NetworkCommunicator.SpawnObject(pos);
-
+        
 		ResetUI();
 	}
 
@@ -90,24 +91,27 @@ public class ProjectManager : NetworkBehaviour
 			Pro1.Proposed = false;
 			UIManager.Instance.BuildButton.interactable = false;
 			UIManager.Instance.ProposeButton.interactable = true;
-		}
-		if (CurrentID == Pro2.ID)
+            UIManager.Instance.ProjectButton_1.image.color = Color.white;
+        }
+        if (CurrentID == Pro2.ID)
 		{
 			Pro2.ID = GenerateRandomProject();
 			Pro2.Approved = false;
 			Pro2.Proposed = false;
 			UIManager.Instance.BuildButton.interactable = false;
 			UIManager.Instance.ProposeButton.interactable = true;
-		}
-		if (CurrentID == Pro3.ID)
+            UIManager.Instance.ProjectButton_2.image.color = Color.white;
+        }
+        if (CurrentID == Pro3.ID)
 		{
 			Pro3.ID = GenerateRandomProject();
 			Pro3.Approved = false;
 			Pro3.Proposed = false;
 			UIManager.Instance.BuildButton.interactable = false;
 			UIManager.Instance.ProposeButton.interactable = true;
-		}
-	}
+            UIManager.Instance.ProjectButton_3.image.color = Color.white;
+        }
+    }
 	public void ProjectApproved(int num)
 	{
 		UIManager.Instance.VoteStatus.text = "Project Approved. You may now build it.";
@@ -115,19 +119,21 @@ public class ProjectManager : NetworkBehaviour
 		if (num == Pro1.ID)
 		{
 			Pro1.Approved = true;
+            UIManager.Instance.ProjectButton_1.image.color = Color.red;
 		}
 
 		if (num == Pro2.ID)
 		{
 			Pro2.Approved = true;
-		}
+            UIManager.Instance.ProjectButton_2.image.color = Color.red;
+        }
 
-		if (num == Pro3.ID)
+        if (num == Pro3.ID)
 		{
 			Pro3.Approved = true;
-		}
-
-	}
+            UIManager.Instance.ProjectButton_3.image.color = Color.red;
+        }
+    }
 
 	public void ProjectRejected(int num)
 	{

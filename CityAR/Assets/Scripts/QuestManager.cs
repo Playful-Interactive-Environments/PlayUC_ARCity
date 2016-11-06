@@ -15,9 +15,10 @@ public class QuestManager : MonoBehaviour {
 	public GameObject QuestPrefab;
 	public int MaxQuests;
 	public int CurrentQuests;
-	public List<int> QuestIDs = new List<int>();
-	public string[] meanings = new[] {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
-	public float SpawnRate;
+    public float SpawnRate;
+    public List<int> QuestIDs = new List<int>();
+	public string[] Meanings = {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
+
 
 	void Awake () {
 		if (Instance == null)
@@ -65,25 +66,25 @@ public class QuestManager : MonoBehaviour {
 		switch (number)
 		{
 			case -3:
-				meaning = meanings[0];
+				meaning = Meanings[0];
 				break;
 			case -2:
-				meaning = meanings[1];
+				meaning = Meanings[1];
 				break;
 			case -1:
-				meaning = meanings[2];
+				meaning = Meanings[2];
 				break;
 			case 0:
-				meaning = meanings[3];
+				meaning = Meanings[3];
 				break;
 			case 1:
-				meaning = meanings[4];
+				meaning = Meanings[4];
 				break;
 			case 2:
-				meaning = meanings[5];
+				meaning = Meanings[5];
 				break;
 			case 3:
-				meaning = meanings[6];
+				meaning = Meanings[6];
 				break;
 		}
 
