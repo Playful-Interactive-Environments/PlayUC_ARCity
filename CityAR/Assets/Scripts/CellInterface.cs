@@ -19,13 +19,22 @@ public class CellInterface : MonoBehaviour {
 	
 	void Update () {
 
-
+		switch (CurrentState)
+		{
+			case InterfaceState.Default:
+				CellText.gameObject.SetActive(false);
+				break;
+			case InterfaceState.Menu:
+				CellText.text = "  Environment " + GetComponent<CellLogic>().EnvironmentRate + "\n  Social " + GetComponent<CellLogic>().SocialRate + "\n  Finance " + GetComponent<CellLogic>().FinanceRate;
+				CellText.gameObject.SetActive(true);
+				break;
+		}
 	}
-	public void ButtonClick()
+	public void ResetCell()
 	{
 		CurrentState = InterfaceState.Default;
 	}
-	public void TriggerMenu()
+	public void DisplayCell()
 	{
 		CurrentState = InterfaceState.Menu;
 	}

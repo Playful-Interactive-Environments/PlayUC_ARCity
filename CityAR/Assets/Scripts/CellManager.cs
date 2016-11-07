@@ -22,9 +22,9 @@ public class CellManager : NetworkBehaviour
 		{
 			for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
 			{
-					SocialRates.Add(Random.Range(0, 100));
-					EnvironmentRates.Add(Random.Range(0, 100));
-					FinanceRates.Add(Random.Range(0, 100));
+					SocialRates.Add(Random.Range(0, (int)GlobalManager.Instance.CellMaxValue));
+					EnvironmentRates.Add(Random.Range(0, (int)GlobalManager.Instance.CellMaxValue));
+					FinanceRates.Add(Random.Range(0, (int)GlobalManager.Instance.CellMaxValue));
 			}
 		}
 		InvokeRepeating("UpdateGridVariables", 0f, 0.5f);

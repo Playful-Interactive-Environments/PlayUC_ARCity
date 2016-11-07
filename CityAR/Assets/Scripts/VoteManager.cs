@@ -21,8 +21,10 @@ public class VoteManager : NetworkBehaviour
 	//NOTIFICATION CANVAS
 	public GridLayoutGroup GridGroup;
 	public Button ButtonTemplate;
-	public List<Button> NotificationButtons = new List<Button>();
 	public GameObject CurrentNotification;
+	//saves all notifications
+	public List<Button> NotificationButtons = new List<Button>();
+
 
 	void Start () {
 		if (Instance == null)
@@ -109,8 +111,6 @@ public class VoteManager : NetworkBehaviour
 	public void AddNotification(string type, string owner, int projectnum)
 	{
 		//create new notification button
-
-
 		GridGroup = GameObject.Find("GridLayout").GetComponent<GridLayoutGroup>();
 		Button button = Instantiate(ButtonTemplate, transform.position, Quaternion.identity) as Button;
 		button.transform.parent = GridGroup.transform;

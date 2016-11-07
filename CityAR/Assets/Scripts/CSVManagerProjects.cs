@@ -28,15 +28,6 @@ public class CSVManagerProjects : AManager<CSVManagerProjects>
         Load(File);
     }
 
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Debug.Log(Find_ID(1).content + "");
-        }
-    }
-
     #region CSV Commands
     public List<Row> GetRowList()
     {

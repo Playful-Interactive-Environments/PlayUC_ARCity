@@ -33,6 +33,7 @@ public class UIManager : AManager<UIManager>
 	public Button NotificationButton;
 	public Text RatingText;
 	public Text BudgetText;
+	public Text TimeText;
 	//QUEST & RESULT CANVAS
 	public Text Title;
 	public Text Content;

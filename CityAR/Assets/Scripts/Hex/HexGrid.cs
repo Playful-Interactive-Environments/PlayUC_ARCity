@@ -89,7 +89,7 @@ public class HexGrid : AManager<HexGrid> {
 		cell.GetComponent<CellLogic>().CancelInvoke();
 		CancelInvoke();
 		//show menu
-		cell.GetComponent<CellInterface>().Invoke("TriggerMenu", .01f);
+		//cell.GetComponent<CellInterface>().Invoke("DisplayCell", .1f);
 		//make selected cell black
 		cell.GetComponent<CellLogic>().Invoke("CellSelected", .05f);
 		Invoke("Refresh", .1f);

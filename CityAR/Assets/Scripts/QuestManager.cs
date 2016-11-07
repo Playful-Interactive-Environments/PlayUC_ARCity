@@ -13,10 +13,10 @@ public class QuestManager : MonoBehaviour {
 	private int questnum;
 
 	public GameObject QuestPrefab;
-	public int MaxQuests;
+	public int MaxQuests = 5;
 	public int CurrentQuests;
-    public float SpawnRate;
-    public List<int> QuestIDs = new List<int>();
+	public float SpawnRate;
+	public List<int> QuestIDs = new List<int>();
 	public string[] Meanings = {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
 
 
@@ -35,8 +35,6 @@ public class QuestManager : MonoBehaviour {
 
 	void PopulateIds()
 	{
-		MaxQuests = Quests.rowList.Count;
-
 		for (int i = 1; i <= MaxQuests; i++)
 		{
 			QuestIDs.Add(i);
@@ -45,14 +43,13 @@ public class QuestManager : MonoBehaviour {
 	public string GetProjectDescription(int projectnum)
 	{
 		string description = "";
-		return description = CSVProjects.Find_ID(projectnum).title
-							 + "\n" + CSVProjects.Find_ID(projectnum).content
-							 + "\nRating: " + CSVProjects.Find_ID(projectnum).rating
-							 + "\nCost: " + CSVProjects.Find_ID(projectnum).cost
+		return description = GetTitle(projectnum)
+							 + "\n" + GetContent(projectnum)
+							 + "\nRating: " + GetRating(projectnum)
+							 + "\nCost: " + GetCost(projectnum)
 							 +"\nSocial: " + TranslateMeaning(GetSocial(projectnum))
 							 + "\nEnvironment: " + TranslateMeaning(GetEnvironment(projectnum))
 							 + "\nFinance: " + TranslateMeaning(GetFinance(projectnum));
-
 	}
 
 	void Update ()
@@ -163,9 +160,9 @@ public class QuestManager : MonoBehaviour {
 	}
 	public int GetCost(int num)
 	{
-		string environment = CSVProjects.Find_ID(num).cost;
+		string cost = CSVProjects.Find_ID(num).cost;
 		//Debug.Log(ConvertString(environment));
-		return ConvertString(environment);
+		return ConvertString(cost);
 	}
 
 	private int ConvertString(string input)
@@ -175,5 +172,4 @@ public class QuestManager : MonoBehaviour {
 		return parsedInt;
 
 	}
-
 }

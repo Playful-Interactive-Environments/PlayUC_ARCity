@@ -59,17 +59,19 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "Environment":
                     RoleManager.Instance.Environment = true;
-                    RoleManager.Instance.RoleType = "Environment";
+                    RoleManager.Instance.RoleType = role;
                     RoleManager.Instance.EnvironmentPlayer = this;
+                    GlobalManager.Instance.LoadPlayerData(role);
                     break;
                 case "Social":
                     RoleManager.Instance.Social = true;
-                    RoleManager.Instance.RoleType = "Social";
+                    RoleManager.Instance.RoleType = role;
                     RoleManager.Instance.SocialPlayer = this;
+
                     break;
                 case "Finance":
                     RoleManager.Instance.Finance = true;
-                    RoleManager.Instance.RoleType = "Finance";
+                    RoleManager.Instance.RoleType = role;
                     RoleManager.Instance.FinancePlayer = this;
                     break;
             }
@@ -133,6 +135,7 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdVote(vote, owner, projectnum);
         }
     }
+
     [Command]
     void CmdBuildProject(Vector3 pos, int id)
     {

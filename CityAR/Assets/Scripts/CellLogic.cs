@@ -17,7 +17,7 @@ public class CellLogic : MonoBehaviour {
     public int FinanceRate;
     public float Height;
     private bool Topograhic;
-
+    private float _chunkValue;
     public HeatmapState CurrentState = HeatmapState.PlacementState;
     int state;
     
@@ -37,6 +37,7 @@ public class CellLogic : MonoBehaviour {
     {
         CurrentState = HeatmapState.PlacementState;
         _interface.CurrentState = CellInterface.InterfaceState.Default;
+        GetComponent<CellInterface>().ResetCell();
     }
     public void SocialMap()
     {
@@ -54,6 +55,7 @@ public class CellLogic : MonoBehaviour {
     public void CellSelected()
     {
         CurrentState = HeatmapState.CellSelected;
+        GetComponent<CellInterface>().DisplayCell();
     }
     void ActivateMenu()
     {
@@ -63,6 +65,8 @@ public class CellLogic : MonoBehaviour {
 
     void Update()
     {
+        if(GlobalManager.Instance!=null)
+            _chunkValue = GlobalManager.Instance.CellMaxValue / 5;
         switch (CurrentState)
         {
             case HeatmapState.PlacementState:
@@ -76,45 +80,45 @@ public class CellLogic : MonoBehaviour {
                 _hexCell.color = _hexGrid.colors[state];
                 break;
             case HeatmapState.SocialMap:
-                if (SocialRate < 20)
+                if (SocialRate < _chunkValue)
                     state = 1;
-                if (SocialRate >= 20 && SocialRate < 40)
+                if (SocialRate >= _chunkValue && SocialRate < _chunkValue * 2)
                     state = 2;
-                if (SocialRate >= 40 && SocialRate < 60)
+                if (SocialRate >= _chunkValue * 2 && SocialRate < _chunkValue * 3)
                     state = 3;
-                if (SocialRate >= 60 && SocialRate < 80)
+                if (SocialRate >= _chunkValue * 3 && SocialRate < _chunkValue * 4)
                     state = 4;
-                if (SocialRate >= 80)
+                if (SocialRate >= _chunkValue * 4)
                     state = 5;
                 _hexCell.color = _hexGrid.colors[state];
                 //_hexCell.Elevation = state - 1;
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
             case HeatmapState.EnvironmentMap:
-                if (EnvironmentRate < 20)
+                if (EnvironmentRate < _chunkValue)
                     state = 1;
-                if (EnvironmentRate >= 20 && EnvironmentRate < 40)
+                if (EnvironmentRate >= _chunkValue && EnvironmentRate < _chunkValue * 2)
                     state = 2;
-                if (EnvironmentRate >= 40 && EnvironmentRate < 60)
+                if (EnvironmentRate >= _chunkValue * 2 && EnvironmentRate < _chunkValue * 3)
                     state = 3;
-                if (EnvironmentRate >= 60 && EnvironmentRate < 80)
+                if (EnvironmentRate >= _chunkValue * 3 && EnvironmentRate < _chunkValue * 4)
                     state = 4;
-                if (EnvironmentRate >= 80)
+                if (EnvironmentRate >= _chunkValue * 4)
                     state = 5;
                 //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
             case HeatmapState.FinanceMap:
-                if (FinanceRate < 20)
+                if (FinanceRate < _chunkValue)
                     state = 1;
-                if (FinanceRate >= 20 && FinanceRate < 40)
+                if (FinanceRate >= _chunkValue && FinanceRate < _chunkValue * 2)
                     state = 2;
-                if (FinanceRate >= 40 && FinanceRate < 60)
+                if (FinanceRate >= _chunkValue * 2 && FinanceRate < _chunkValue * 3)
                     state = 3;
-                if (FinanceRate >= 60 && FinanceRate < 80)
+                if (FinanceRate >= _chunkValue * 3 && FinanceRate < _chunkValue * 4)
                     state = 4;
-                if (FinanceRate >= 80)
+                if (FinanceRate >= _chunkValue * 4)
                     state = 5;
                 //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];

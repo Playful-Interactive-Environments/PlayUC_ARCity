@@ -13,7 +13,7 @@ public class Project : NetworkBehaviour
 	public int Cost;
 	public int ProjectId;
 
-    public TextMesh EffectText;
+	public TextMesh EffectText;
 	public HexCell Cell;
 
 	public int EffectiveTime = 12;
@@ -21,11 +21,10 @@ public class Project : NetworkBehaviour
 	void Start () {
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
-        iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .1f));
+		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .1f));
+	}
 
-    }
-
-    void Update () {
+	void Update () {
 	
 	}
 
@@ -34,13 +33,13 @@ public class Project : NetworkBehaviour
 		CellManager.Instance.UpdateFinance(Cell.CellId, Finance);
 		CellManager.Instance.UpdateSocial(Cell.CellId, Social);
 		CellManager.Instance.UpdateEnvironment(Cell.CellId, Environment);
-	    EffectText.text = "Finance: " + Finance + "\nSocial: " + Social + "\nEnvironment: " + Environment;
-        if (EffectiveTime == 0)
+		EffectText.text = "Finance: " + Finance + "\nSocial: " + Social + "\nEnvironment: " + Environment;
+		if (EffectiveTime == 0)
 		{
 			Debug.Log(Cell.GetComponent<CellLogic>().GetVars());
 			CancelInvoke("ProjectEffect");
 		}
-	    StartCoroutine(AnimateText());
+		StartCoroutine(AnimateText());
 		EffectiveTime--;
 	}
 
@@ -54,19 +53,18 @@ public class Project : NetworkBehaviour
 	{
 		Cell = HexGrid.Instance.GetCell(pos);
 
-		RoleManager.Instance.Budget += Cost;
-		RoleManager.Instance.Rating += Rating;
 
 		InvokeRepeating("ProjectEffect", 0f, GlobalManager.Instance.MonthDuration);
-        Debug.Log(Cell.GetComponent<CellLogic>().GetVars());
-        
+		//Debug.Log(Cell.GetComponent<CellLogic>().GetVars());
+		Debug.Log(RoleManager.Instance.Budget + " " + Cost);
+
 	}
 
-    IEnumerator AnimateText()
-    {
-        iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
-        yield return new WaitForSeconds(3f);
-        iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .5f));
+	IEnumerator AnimateText()
+	{
+		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
+		yield return new WaitForSeconds(3f);
+		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .5f));
 
-    }
+	}
 }
