@@ -43,9 +43,7 @@ public class GlobalManager : NetworkBehaviour
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
-
-
-		//InvokeRepeating("SaveData", 1f, 1f);
+		//InvokeRepeating("SendData", 1f, 1f);
 	}
 
 	void Update ()
@@ -73,37 +71,58 @@ public class GlobalManager : NetworkBehaviour
 		EnvironmentPlayer = new PlayerData("Environment", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
 		SocialPlayer = new PlayerData("Social", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
 		FinancePlayer = new PlayerData("Finance", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
-
 	}
 
-	void SaveData()
+	void SendData()
 	{
-		if (isClient)
-		{
 			if (RoleManager.Instance.Environment)
 			{
-				EnvironmentPlayer.RoleType = "Environment";
-				EnvironmentPlayer.Budget = RoleManager.Instance.Budget;
-				EnvironmentPlayer.Rating = RoleManager.Instance.Rating;
-			}
+                string roletype = "Environment";
+				int budget = RoleManager.Instance.Budget;
+                int rating = RoleManager.Instance.Rating;
+                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
+            }
 			if (RoleManager.Instance.Social)
 			{
-				SocialPlayer.RoleType = "Social";
-				SocialPlayer.Budget = RoleManager.Instance.Budget;
-				SocialPlayer.Rating = RoleManager.Instance.Rating;
-
-			}
-			if (RoleManager.Instance.Finance)
+                string roletype = "Social";
+                int budget = RoleManager.Instance.Budget;
+                int rating = RoleManager.Instance.Rating;
+                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
+            }
+            if (RoleManager.Instance.Finance)
 			{
-				FinancePlayer.RoleType = "Finance";
-				FinancePlayer.Budget = RoleManager.Instance.Budget;
-				FinancePlayer.Rating = RoleManager.Instance.Rating;
-			}
-		}
+                string roletype = "Finance";
+                int budget = RoleManager.Instance.Budget;
+                int rating = RoleManager.Instance.Rating;
+                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
+        }
 	}
-	
-	public void LoadPlayerData(string roletype)
+    public void SavePlayerData(string roletype, int rating, int budget)
+    {
+        //Debug.Log(roletype + rating + budget);
+        switch (roletype)
+        {
+            case "Environment":
+                EnvironmentPlayer.RoleType = roletype;
+                EnvironmentPlayer.Rating = rating;
+                EnvironmentPlayer.Budget = budget;
+                break;
+            case "Social":
+                SocialPlayer.RoleType = roletype;
+                SocialPlayer.Rating = rating;
+                SocialPlayer.Budget = budget;
+                break;
+            case "Finance":
+                FinancePlayer.RoleType = roletype;
+                FinancePlayer.Rating = rating;
+                FinancePlayer.Budget = budget;
+                break;
+        }
+    }
+
+    public void LoadPlayerData(string roletype)
 	{
+        UIManager.Instance.DebugText.text = roletype;
 		switch (roletype)
 		{
 			case "Environment":
@@ -113,7 +132,6 @@ public class GlobalManager : NetworkBehaviour
 			case "Social":
 				RoleManager.Instance.Budget = SocialPlayer.Budget;
 				RoleManager.Instance.Rating = SocialPlayer.Rating;
-
 				break;
 			case "Finance":
 				RoleManager.Instance.Budget = FinancePlayer.Budget;

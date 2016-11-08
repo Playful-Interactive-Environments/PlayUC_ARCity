@@ -77,8 +77,6 @@ public class ProjectManager : NetworkBehaviour
 		project.Cost = Quests.GetCost(id);
 
 
-		RoleManager.Instance.Budget += Quests.GetCost(id); ;
-		RoleManager.Instance.Rating += Quests.GetRating(id); ;
 		CellManager.Instance.NetworkCommunicator.SpawnObject(pos);
 		ResetUI();
 	}
@@ -119,7 +117,10 @@ public class ProjectManager : NetworkBehaviour
 	{
 		UIManager.Instance.VoteStatus.text = "Project Approved. You may now build it.";
 		UIManager.Instance.BuildButton.interactable = true;
-		if (num == Pro1.ID)
+
+        RoleManager.Instance.Budget += Quests.GetCost(num);
+        RoleManager.Instance.Rating += Quests.GetRating(num);
+        if (num == Pro1.ID)
 		{
 			Pro1.Approved = true;
 			UIManager.Instance.ProjectButton_1.image.color = Color.red;

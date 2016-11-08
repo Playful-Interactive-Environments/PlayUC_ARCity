@@ -33,7 +33,24 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdBuildProject(pos, id);
         }
     }
-    
+
+    public void SavePlayerData(string roletype, int rating, int budget)
+    {
+        if (isServer)
+        {
+            GlobalManager.Instance.SavePlayerData(roletype, rating, budget);
+        }
+        if (isClient && !isServer)
+        {
+            CmdSavePlayerData(roletype, rating, budget);
+        }
+    }
+
+    [Command]
+    void CmdSavePlayerData(string roletype, int rating, int budget)
+    {
+        SavePlayerData(roletype, rating, budget);
+    }
 
     public void SpawnObject(Vector3 pos)
     {
@@ -61,13 +78,11 @@ public class NetworkCommunicator : NetworkBehaviour
                     RoleManager.Instance.Environment = true;
                     RoleManager.Instance.RoleType = role;
                     RoleManager.Instance.EnvironmentPlayer = this;
-                    GlobalManager.Instance.LoadPlayerData(role);
                     break;
                 case "Social":
                     RoleManager.Instance.Social = true;
                     RoleManager.Instance.RoleType = role;
                     RoleManager.Instance.SocialPlayer = this;
-
                     break;
                 case "Finance":
                     RoleManager.Instance.Finance = true;
