@@ -186,6 +186,7 @@ public class NetworkCommunicator : NetworkBehaviour
                     {
                         UIManager.Instance.DebugText.text = RoleManager.Instance.RoleType + owner + "";
                         UIManager.Instance.GameUI();
+                        ProjectManager.Instance.CurrentID = projectnum;
                         UIManager.Instance.ProjectDescription(projectnum);
                         UIManager.Instance.EnableVoteUI();
                     }
