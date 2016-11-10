@@ -28,11 +28,11 @@ public class Quest : MonoBehaviour
 	{
 		if (GetString(Effect1) == "Rating")
 		{
-			RoleManager.Instance.Rating += GetInt(Effect1);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", GetInt(Effect1));
 		}
 		if (GetString(Effect1) == "Budget")
 		{
-			RoleManager.Instance.Budget += GetInt(Effect1);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", GetInt(Effect1));
 		}
 		RemoveQuest();
 	}
@@ -41,11 +41,11 @@ public class Quest : MonoBehaviour
 
 		if (GetString(Effect2) == "Rating")
 		{
-			RoleManager.Instance.Rating += GetInt(Effect2);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", GetInt(Effect2));
 		}
 		if (GetString(Effect2) == "Budget")
 		{
-			RoleManager.Instance.Budget += GetInt(Effect2);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", GetInt(Effect2));
 		}
 		RemoveQuest();
 	}

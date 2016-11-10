@@ -16,6 +16,7 @@ public class Notification : MonoBehaviour
 	
 	void Update ()
 	{
+
 	}
 
 	public void AccessNotification()
@@ -46,7 +47,7 @@ public class Notification : MonoBehaviour
 				ProjectManager.Instance.CurrentID = NotificationID;
 				UIManager.Instance.EventText.text = "Waiting for votes on: " + NotificationTitle;
 				UIManager.Instance.DisplayEventCanvas();
-				VoteManager.Instance.RemoveNotification(NotificationID);
+				//VoteManager.Instance.RemoveNotification(NotificationID);
 				break;
 			default:
 				break;

@@ -17,7 +17,7 @@ public class CellLogic : MonoBehaviour {
     public int FinanceRate;
     public float Height;
     private bool Topograhic;
-    private float _chunkValue;
+    private float _chunkValue; // based on max value, must be dividable by 5 due to 5 heatmap steps
     public HeatmapState CurrentState = HeatmapState.PlacementState;
     int state;
     

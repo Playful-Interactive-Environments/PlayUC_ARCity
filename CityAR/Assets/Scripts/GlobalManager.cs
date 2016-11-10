@@ -7,36 +7,33 @@ using UnityEngine.UI;
 public class GlobalManager : NetworkBehaviour
 {
 	public static GlobalManager Instance = null;
-	public class PlayerData
-	{
-		[SyncVar]
-		public string RoleType;
-		[SyncVar]
-		public int Rating;
-		[SyncVar]
-		public int Budget;
-
-		public PlayerData(string roletype, int rating, int budget)
-		{
-		    RoleType = roletype;
-		    Rating = rating;
-		    Budget = budget;
-		}
-	}
-
+	//GameDuration
 	[SyncVar]
-	public float GameDuration;
+	public float GameDuration; //game end 
 	[SyncVar]
 	private int CurrentMonth;
 	[SyncVar]
 	public int CurrentYear;
 	private float _currentTime;
 	private string[] _months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-	public int MonthDuration = 10;
-	public float CellMaxValue = 50;
-	public PlayerData EnvironmentPlayer;
-	public PlayerData SocialPlayer;
-	public PlayerData FinancePlayer;
+	public int MonthDuration = 10; //in seconds - time for month change
+	public float CellMaxValue = 50; //5 heatmap steps!
+	public int StartingBudget;
+	public int StartingRating;
+	//Storing Player Data
+	public struct PlayerData
+	{
+		public string RoleType;
+		public bool Taken;
+		public int Rating;
+		public int Budget;
+	}
+	[SyncVar] public PlayerData EnvironmentPlayer;
+	[SyncVar] public PlayerData SocialPlayer;
+	[SyncVar] public PlayerData FinancePlayer;
+	public NetworkCommunicator EnvironmentCommunicator;
+	public NetworkCommunicator SocialCommunicator;
+	public NetworkCommunicator FinanceCommunicator;
 
 	void Awake () {
 		if (Instance == null)
@@ -44,6 +41,7 @@ public class GlobalManager : NetworkBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		//InvokeRepeating("SendData", 1f, 1f);
+		InvokeRepeating("Refresh", 0f, .1f);
 	}
 
 	void Update ()
@@ -63,124 +61,72 @@ public class GlobalManager : NetworkBehaviour
 			}
 		}
 		UIManager.Instance.TimeText.text = "Year " + CurrentYear + ": " + _months[CurrentMonth];
-		
 	}
 
 	void Start()
 	{
-		EnvironmentPlayer = new PlayerData("Environment", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
-		SocialPlayer = new PlayerData("Social", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
-		FinancePlayer = new PlayerData("Finance", RoleManager.Instance.Budget, RoleManager.Instance.Rating);
+		EnvironmentPlayer.Budget = StartingBudget;
+		EnvironmentPlayer.Rating = StartingRating;
+		SocialPlayer.Budget = StartingBudget;
+		SocialPlayer.Rating = StartingRating;
+		FinancePlayer.Budget = StartingBudget;
+		FinancePlayer.Rating = StartingRating;
 	}
-
-	void SendData()
-	{
-			if (RoleManager.Instance.Environment)
-			{
-                string roletype = "Environment";
-				int budget = RoleManager.Instance.Budget;
-                int rating = RoleManager.Instance.Rating;
-                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
-            }
-			if (RoleManager.Instance.Social)
-			{
-                string roletype = "Social";
-                int budget = RoleManager.Instance.Budget;
-                int rating = RoleManager.Instance.Rating;
-                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
-            }
-            if (RoleManager.Instance.Finance)
-			{
-                string roletype = "Finance";
-                int budget = RoleManager.Instance.Budget;
-                int rating = RoleManager.Instance.Rating;
-                CellManager.Instance.NetworkCommunicator.SavePlayerData(roletype, rating, budget);
-        }
-	}
-    public void SavePlayerData(string roletype, int rating, int budget)
-    {
-        //Debug.Log(roletype + rating + budget);
-        switch (roletype)
-        {
-            case "Environment":
-                EnvironmentPlayer.RoleType = roletype;
-                EnvironmentPlayer.Rating = rating;
-                EnvironmentPlayer.Budget = budget;
-                break;
-            case "Social":
-                SocialPlayer.RoleType = roletype;
-                SocialPlayer.Rating = rating;
-                SocialPlayer.Budget = budget;
-                break;
-            case "Finance":
-                FinancePlayer.RoleType = roletype;
-                FinancePlayer.Rating = rating;
-                FinancePlayer.Budget = budget;
-                break;
-        }
-    }
-
-    public void LoadPlayerData(string roletype)
-	{
-        UIManager.Instance.DebugText.text = roletype;
-		switch (roletype)
-		{
-			case "Environment":
-				RoleManager.Instance.Budget = EnvironmentPlayer.Budget;
-				RoleManager.Instance.Rating = EnvironmentPlayer.Rating;
-				break;
-			case "Social":
-				RoleManager.Instance.Budget = SocialPlayer.Budget;
-				RoleManager.Instance.Rating = SocialPlayer.Rating;
-				break;
-			case "Finance":
-				RoleManager.Instance.Budget = FinancePlayer.Budget;
-				RoleManager.Instance.Rating = FinancePlayer.Rating;
-				break;
-		}
-	}
-}
-
-/*
-	public void SavePlayerData(string roletype, int rating, int budget)
-	{
-		switch (roletype)
-		{
-			case "Environment":
-				EnvironmentPlayer.RoleType = roletype;
-				EnvironmentPlayer.Rating = rating;
-				EnvironmentPlayer.Budget = budget;
-
-				break;
-			case "Social":
-				SocialPlayer.RoleType = roletype;
-				SocialPlayer.Rating = rating;
-				SocialPlayer.Budget = budget;
-				break;
-			case "Finance":
-				FinancePlayer.RoleType = roletype;
-				FinancePlayer.Rating = rating;
-				FinancePlayer.Budget = budget;
-				break;
-
-		}
-	}
-		public void SavePlayerData(string roletype, int rating, int budget)
+	void Refresh()
 	{
 		if (isServer)
 		{
-			GlobalManager.Instance.SavePlayerData(roletype, rating, budget);
-		}
-		if (isClient && !isServer)
-		{
-			ProjectManager.Instance.ResetUI();
-			CmdSavePlayerData(roletype, rating, budget);
+			if (EnvironmentCommunicator == null)
+				EnvironmentPlayer.Taken = false;
+			if (SocialCommunicator == null)
+				SocialPlayer.Taken = false;
+			if (FinanceCommunicator == null)
+				FinancePlayer.Taken = false;
 		}
 	}
 
-	[Command]
-	void CmdSavePlayerData(string roletype, int rating, int budget)
+	public void UpdateData(string roletype, string datatype, int amount)
 	{
-		SavePlayerData(roletype, rating, budget);
+		switch (roletype)
+		{
+			case "Environment":
+				switch (datatype)
+				{
+					case "Budget":
+						EnvironmentPlayer.Budget += amount;
+						break;
+					case "Rating":
+						EnvironmentPlayer.Rating += amount;
+						break;
+				}
+				break;
+			case "Social":
+				switch (datatype)
+				{
+					case "Budget":
+						SocialPlayer.Budget += amount;
+
+						break;
+					case "Rating":
+						SocialPlayer.Rating += amount;
+
+						break;
+				}
+				break;
+			case "Finance":
+				switch (datatype)
+				{
+					case "Budget":
+						FinancePlayer.Budget += amount;
+						break;
+					case "Rating":
+						FinancePlayer.Rating += amount;
+						break;
+				}
+				break;
+		}
+		Debug.Log(roletype + datatype + amount);
 	}
-*/
+}
+
+

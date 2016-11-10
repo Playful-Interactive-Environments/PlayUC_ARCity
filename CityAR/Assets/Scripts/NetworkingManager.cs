@@ -71,6 +71,8 @@ public class NetworkingManager : NetworkManager
         if (isClient)
         {
             StopClient();
+            NetworkServer.ClearLocalObjects();
+            NetworkServer.ClearSpawners();
             NetworkServer.Reset();
             UIManager.Instance.ResetMenus();
         }
@@ -164,7 +166,7 @@ public class NetworkingManager : NetworkManager
     {
         UIManager.Instance.ResetMenus();
         base.OnClientDisconnect(conn);
-        Debug.Log("OnClientDisconnect " + conn.lastMessageTime);
+        Debug.Log("OnClientDisconnect " + conn.logNetworkMessages);
         ReconnectClient();
     }
 

@@ -22,7 +22,6 @@ public class CameraControl : AManager<CameraControl>
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
-            
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit mouseHit;
             if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
@@ -43,9 +42,8 @@ public class CameraControl : AManager<CameraControl>
                 }
                 if (mouseHit.transform.name.Equals("Project"))
                 {
-                   mouseHit.transform.gameObject.GetComponent<Project>().ShowProjectInfo();
+                   mouseHit.transform.gameObject.GetComponent<Project>().ShowProjectCanvas();
                 }
-
             }
         }
 #endif
@@ -80,9 +78,8 @@ public class CameraControl : AManager<CameraControl>
                         }
                         if (hit.transform.name.Equals("Project"))
                         {
-                            hit.transform.gameObject.GetComponent<Project>().ShowProjectInfo();
+                            hit.transform.gameObject.GetComponent<Project>().ShowProjectCanvas();
                         }
-
                     }
                 }
             }
