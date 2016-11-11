@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 public class NetworkCommunicator : NetworkBehaviour
 {
 
+    public int ConnectionId;
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -13,9 +15,11 @@ public class NetworkCommunicator : NetworkBehaviour
             CellManager.Instance.NetworkCommunicator = this;
     }
     void Start () {
-    
+        if(isServer)
+            ConnectionId = connectionToClient.connectionId;
+
     }
-    
+
     void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
@@ -58,16 +62,13 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (role)
             {
                 case "Environment":
-                    GlobalManager.Instance.EnvironmentPlayer.Taken = true;
-                    GlobalManager.Instance.EnvironmentCommunicator = this;
+                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
                 case "Social":
-                    GlobalManager.Instance.SocialPlayer.Taken = true;
-                    GlobalManager.Instance.SocialCommunicator = this;
+                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
                 case "Finance":
-                    GlobalManager.Instance.FinancePlayer.Taken = true;
-                    GlobalManager.Instance.FinanceCommunicator = this;
+                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
             }
         }

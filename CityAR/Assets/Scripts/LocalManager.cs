@@ -15,29 +15,20 @@ public class LocalManager : MonoBehaviour
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
 
-		InvokeRepeating("Refresh", 0f, .1f);
+		InvokeRepeating("Refresh", 0f, 1f);
 	}
 
 	void Update()
 	{
 
 	}
+    
 	void Refresh()
 	{
-		switch (RoleType)
-		{
-			case "Environment":
-				UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.EnvironmentPlayer.Rating;
-				UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.EnvironmentPlayer.Budget;
-				break;
-			case "Social":
-				UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.SocialPlayer.Rating;
-				UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.SocialPlayer.Budget;
-				break;
-			case"Finance":
-				UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.FinancePlayer.Rating;
-				UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.FinancePlayer.Budget;
-				break;
-		}
-	}
+        if (GlobalManager.Instance != null)
+        {
+            UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.GetRating(RoleType);
+            UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.GetBudget(RoleType);
+        }
+    }
 }

@@ -411,11 +411,12 @@ public class UIManager : AManager<UIManager>
 
 		Invoke("GameUI", .1f);
 	}
+    
 	void UpdateRoleButtons()
 	{
 		if (GlobalManager.Instance != null)
-		{
-			if (GlobalManager.Instance.EnvironmentPlayer.Taken)
+        {
+            if (GlobalManager.Instance.GetTaken("Environment"))
 			{
 				Environment.interactable = false;
 			}
@@ -423,7 +424,7 @@ public class UIManager : AManager<UIManager>
 			{
 				Environment.interactable = true;
 			}
-			if (GlobalManager.Instance.SocialPlayer.Taken)
+			if (GlobalManager.Instance.GetTaken("Social"))
 			{
 				Social.interactable = false;
 			}
@@ -431,7 +432,7 @@ public class UIManager : AManager<UIManager>
 			{
 				Social.interactable = true;
 			}
-			if (GlobalManager.Instance.FinancePlayer.Taken)
+			if (GlobalManager.Instance.GetTaken("Finance"))
 			{
 				Finance.interactable = false;
 			}
@@ -442,7 +443,7 @@ public class UIManager : AManager<UIManager>
 		}
 	}
 
-	public void RoleUI()
+    public void RoleUI()
 	{
 		NetworkCanvas.gameObject.SetActive(false);
 		RoleCanvas.gameObject.SetActive(true);

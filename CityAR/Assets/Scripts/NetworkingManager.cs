@@ -22,9 +22,7 @@ public class NetworkingManager : NetworkManager
     public Button ConnectButton;
     public Text DebugText;
     public GameObject GameManager;
-
-
-
+    
     void Awake()
     {
         if (Instance == null)
@@ -71,8 +69,6 @@ public class NetworkingManager : NetworkManager
         if (isClient)
         {
             StopClient();
-            NetworkServer.ClearLocalObjects();
-            NetworkServer.ClearSpawners();
             NetworkServer.Reset();
             UIManager.Instance.ResetMenus();
         }
@@ -112,7 +108,8 @@ public class NetworkingManager : NetworkManager
     }
     public override void OnServerConnect(NetworkConnection conn)
     {
-        Debug.Log("OnServerConnect");
+        base.OnServerConnect(conn);
+        Debug.Log("OnServerConnect" + conn.connectionId);
     }
 
     public override void OnServerRemovePlayer(NetworkConnection conn, PlayerController player)
@@ -120,6 +117,12 @@ public class NetworkingManager : NetworkManager
         base.OnServerRemovePlayer(conn, player);
         NetworkServer.DestroyPlayersForConnection(conn);
         Debug.Log("OnServerRemovePlayer " + player);
+    }
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+        Debug.Log("OnServerDisconnect " + conn.connectionId);
+        GlobalManager.Instance.SetTaken(conn.connectionId, false);
     }
 
     #endregion
