@@ -6,7 +6,10 @@ public class Project : NetworkBehaviour
 {
 	public TextMesh EffectText;
 	public HexCell Cell;
-
+	public CellLogic CellLogic;
+	public GameObject[] BuildingSets;
+	public GameObject RepresentationParent;
+	public GameObject ProjectLogo;
 	public string ProjectOwner;
 	public int EffectiveTime = 12;
 	public string Title;
@@ -19,7 +22,6 @@ public class Project : NetworkBehaviour
 	//voting
 	[SyncVar]
 	public int ProjectId;
-	[SyncVar]
 	public bool Approved;
 	public int Choice1;
 	public int Choice2;
@@ -30,7 +32,18 @@ public class Project : NetworkBehaviour
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .1f));
-		ProjectManager.Instance.CurrentProject = GetComponent<Project>();
+		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		Invoke("CreateRepresentation", .1f);
+	}
+
+	void CreateRepresentation()
+	{
+		GameObject representation = Instantiate(BuildingSets[Random.Range(0, BuildingSets.Length-1)], transform.position, Quaternion.identity) as GameObject;
+		representation.transform.parent = RepresentationParent.transform;
+		representation.transform.localScale = new Vector3(1, 1, 1);
+		representation.transform.localEulerAngles += new Vector3(0,180,0);
+		transform.position += CellLogic.GetPositionOffset();
+
 	}
 
 	void Update () {
@@ -48,35 +61,27 @@ public class Project : NetworkBehaviour
 		}
 	}
 
-	public void ProjectEffect()
+	public void InitiateProject()
 	{
-		CellManager.Instance.UpdateFinance(Cell.CellId, Finance);
-		CellManager.Instance.UpdateSocial(Cell.CellId, Social);
-		CellManager.Instance.UpdateEnvironment(Cell.CellId, Environment);
-		EffectText.text = "Finance: " + Finance + "\nSocial: " + Social + "\nEnvironment: " + Environment;
-		if (EffectiveTime == 0)
-		{
-			Debug.Log(Cell.GetComponent<CellLogic>().GetVars());
-			CancelInvoke("ProjectEffect");
-		}
-		StartCoroutine(AnimateText());
+		int financeeffect = Finance * GlobalManager.Instance.MonthDuration;
+		int socialeffect = Finance * GlobalManager.Instance.MonthDuration;
+		int environmenteffect = Finance * GlobalManager.Instance.MonthDuration;
+
+		CellManager.Instance.UpdateFinance(Cell.CellId, financeeffect);
+		CellManager.Instance.UpdateSocial(Cell.CellId, socialeffect);
+		CellManager.Instance.UpdateEnvironment(Cell.CellId, environmenteffect);
+		EffectText.text = "F: " + financeeffect + "\nS: " + socialeffect + "\nE: " + environmenteffect;
+		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
+		iTween.FadeTo(ProjectLogo, iTween.Hash("alpha", 0, "time", .5f));
 		EffectiveTime--;
+		//HexGrid.Instance.Invoke("Refresh", .1f);
 	}
 
 	public void SetCell(Vector3 pos)
 	{
 		Cell = HexGrid.Instance.GetCell(pos);
-	}
-	public void PlaceProject()
-	{
-		InvokeRepeating("ProjectEffect", 0f, GlobalManager.Instance.MonthDuration);
-	}
-
-	IEnumerator AnimateText()
-	{
-		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
-		yield return new WaitForSeconds(3f);
-		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .5f));
+		CellLogic = Cell.GetComponent<CellLogic>();
+		CellLogic.AddOccupied();
 	}
 
 	public void ShowProjectCanvas()
@@ -89,13 +94,12 @@ public class Project : NetworkBehaviour
 		{
 			ShowVoteCanvas();
 		}
-
 	}
 
 	public void ShowVoteCanvas()
 	{
-		ProjectManager.Instance.CurrentProject = GetComponent<Project>();
-		ProjectManager.Instance.CurrentID = ProjectId;
+		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		ProjectManager.Instance.SelectedProjectId = ProjectId;
 		UIManager.Instance.ProjectDescription(ProjectId);
 		UIManager.Instance.EnableVoteUI();
 	}
@@ -108,6 +112,7 @@ public class Project : NetworkBehaviour
 
 	public void RemoveProject()
 	{
+		CellLogic.RemoveOccupied();
 		Destroy(gameObject);
 	}
 }

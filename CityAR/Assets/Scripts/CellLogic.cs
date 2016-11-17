@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CellLogic : MonoBehaviour {
 
@@ -19,8 +20,11 @@ public class CellLogic : MonoBehaviour {
     private bool Topograhic;
     private float _chunkValue; // based on max value, must be dividable by 5 due to 5 heatmap steps
     public HeatmapState CurrentState = HeatmapState.PlacementState;
-    int state;
-    
+    private HeatmapState PreviousState = HeatmapState.PlacementState;
+    private int state;
+    public int OccupiedSlots;
+    public List<int> Slots = new List<int>();
+     
     void Start()
     {
         _hexCell = GetComponent<HexCell>();
@@ -31,25 +35,60 @@ public class CellLogic : MonoBehaviour {
         EventManager.StartListening("SocialMap", SocialMap);
         EventManager.StartListening("EnvironmentMap", EnvironmentMap);
         EventManager.StartListening("FinanceMap", FinanceMap);
+    }
 
+    public void AddOccupied()
+    {
+        OccupiedSlots += 1;
+    }
+    public void RemoveOccupied()
+    {
+        OccupiedSlots -= 1;
+    }
+    public Vector3 GetPositionOffset()
+    {
+        Vector3 vector = new Vector3();
+        if (OccupiedSlots == 1)
+            vector = new Vector3(0, 0, 0);
+        if (OccupiedSlots == 2)
+            vector = new Vector3(10, 0, 0);
+        if (OccupiedSlots == 3)
+            vector = new Vector3(-10, 0, 0);
+        if (OccupiedSlots == 4)
+            vector = new Vector3(-10, 0, 10);
+        if (OccupiedSlots == 5)
+            vector = new Vector3(10, 0, 10);
+        if (OccupiedSlots == 6)
+            vector = new Vector3(-10, 0, -10);
+        if (OccupiedSlots == 7)
+            vector = new Vector3(0, 0, -10);
+        if (OccupiedSlots == 8)
+            vector = new Vector3(0, 0, 10);
+        if (OccupiedSlots == 9)
+            vector = new Vector3(10, 0, -10);
+        return vector;
     }
     public void PlacementMap()
     {
-        CurrentState = HeatmapState.PlacementState;
+        CurrentState = PreviousState;
+        //CurrentState = HeatmapState.PlacementState;
         _interface.CurrentState = CellInterface.InterfaceState.Default;
         GetComponent<CellInterface>().ResetCell();
     }
     public void SocialMap()
     {
         CurrentState = HeatmapState.SocialMap;
+        PreviousState = CurrentState;
     }
     public void FinanceMap()
     {
         CurrentState = HeatmapState.FinanceMap;
+        PreviousState = CurrentState;
     }
     public void EnvironmentMap()
     {
         CurrentState = HeatmapState.EnvironmentMap;
+        PreviousState = CurrentState;
     }
 
     public void CellSelected()
@@ -79,6 +118,7 @@ public class CellLogic : MonoBehaviour {
                 //_hexCell.Elevation = 0;
                 _hexCell.color = _hexGrid.colors[state];
                 break;
+                //5 - terrible social state, civil unreast; 1 - great social state, happyness
             case HeatmapState.SocialMap:
                 if (SocialRate < _chunkValue)
                     state = 1;
@@ -94,6 +134,7 @@ public class CellLogic : MonoBehaviour {
                 //_hexCell.Elevation = state - 1;
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
+                //5- high polution; 1 - low polution
             case HeatmapState.EnvironmentMap:
                 if (EnvironmentRate < _chunkValue)
                     state = 1;
@@ -109,17 +150,18 @@ public class CellLogic : MonoBehaviour {
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
+                //5- finance state worst 1 - finance state best
             case HeatmapState.FinanceMap:
                 if (FinanceRate < _chunkValue)
-                    state = 1;
+                    state = 5;
                 if (FinanceRate >= _chunkValue && FinanceRate < _chunkValue * 2)
-                    state = 2;
+                    state = 4;
                 if (FinanceRate >= _chunkValue * 2 && FinanceRate < _chunkValue * 3)
                     state = 3;
                 if (FinanceRate >= _chunkValue * 3 && FinanceRate < _chunkValue * 4)
-                    state = 4;
+                    state = 2;
                 if (FinanceRate >= _chunkValue * 4)
-                    state = 5;
+                    state = 1;
                 //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;

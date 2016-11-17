@@ -15,13 +15,33 @@ public class Quest : MonoBehaviour
 	public string Result2;
 	public string Effect1;
 	public string Effect2;
+	public HexCell Cell;
+	public CellLogic CellLogic;
+	public GameObject[] RepresentationSets;
+	public GameObject RepresentationParent;
 
 	void Start () {
-	
+		Invoke("CreateRepresentation", .1f);
 	}
-	
+
+	void CreateRepresentation()
+	{
+		GameObject representation = Instantiate(RepresentationSets[UnityEngine.Random.Range(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity) as GameObject;
+		representation.transform.parent = RepresentationParent.transform;
+		representation.transform.localScale = new Vector3(3, 3, 3);
+		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
+		transform.position += CellLogic.GetPositionOffset();
+
+	}
+
 	void Update () {
 	
+	}
+	public void SetCell(HexCell cell)
+	{
+		Cell = cell;
+		CellLogic = Cell.GetComponent<CellLogic>();
+		CellLogic.AddOccupied();
 	}
 
 	public void ChooseEffect1()
@@ -36,6 +56,7 @@ public class Quest : MonoBehaviour
 		}
 		RemoveQuest();
 	}
+
 	public void ChooseEffect2()
 	{
 
@@ -67,7 +88,8 @@ public class Quest : MonoBehaviour
 
 	public void RemoveQuest()
 	{
+		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		Destroy(gameObject);
+		CellLogic.RemoveOccupied();
 	}
 }

@@ -5,20 +5,15 @@ using UnityEngine.Networking;
 
 public class ProjectManager : NetworkBehaviour
 {
-	public class ProjectTab
-	{
-		public int ID;
-	}
+
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
 	public List<Project> Projects;
 	public QuestManager Quests;
 	public VoteManager VoteManager;
-	public int CurrentID;
-	public Project CurrentProject;
-	public ProjectTab Pro1 = new ProjectTab();
-	public ProjectTab Pro2 = new ProjectTab();
-	public ProjectTab Pro3 = new ProjectTab();
+	public int SelectedProjectId;
+	public Project SelectedProject;
+	public int CurrentAvailableProject;
 	public SyncListInt ProjectIDs = new SyncListInt();
 
 	void Awake () {
@@ -45,9 +40,7 @@ public class ProjectManager : NetworkBehaviour
 				ProjectIDs.Add(i);
 			}
 		}
-		Pro1.ID = GenerateRandomProject();
-		Pro2.ID = GenerateRandomProject();
-		Pro3.ID = GenerateRandomProject();
+		CurrentAvailableProject = GenerateRandomProject();
 	}
 
 	void Update ()
@@ -76,7 +69,7 @@ public class ProjectManager : NetworkBehaviour
 		project.SetCell(pos);
 		project.transform.position = pos;
 
-		CurrentProject = project;
+		SelectedProject = project;
 		NetworkServer.Spawn(gobj);
 	}
 
@@ -94,47 +87,17 @@ public class ProjectManager : NetworkBehaviour
 
 	public void ResetUI()
 	{
-		if (CurrentID == Pro1.ID)
+		if (SelectedProjectId == CurrentAvailableProject)
 		{
-			Pro1.ID = GenerateRandomProject();
-			//UIManager.Instance.ProjectButton_1.image.color = Color.white;
-			UIManager.Instance.ProjectButtonState(1, true);
-		}
-		if (CurrentID == Pro2.ID)
-		{
-			Pro2.ID = GenerateRandomProject();
-			UIManager.Instance.ProjectButtonState(2, true);
-
-			//UIManager.Instance.ProjectButton_2.image.color = Color.white;
-		}
-		if (CurrentID == Pro3.ID)
-		{
-			Pro3.ID = GenerateRandomProject();
-			UIManager.Instance.ProjectButtonState(3, true);
-
-			//UIManager.Instance.ProjectButton_3.image.color = Color.white;
+			CurrentAvailableProject = GenerateRandomProject();
+			UIManager.Instance.SetProjectButton(true);
 		}
 	}
+
 	public void ProjectApproved(int num)
 	{
-		UIManager.Instance.VoteStatus.text = "Project Approved. You may now build it.";
+		FindProject(num).InitiateProject();
 		ResetUI();
-		/*
-		if (num == Pro1.ID)
-		{
-			UIManager.Instance.ProjectButton_1.image.color = Color.red;
-		}
-
-		if (num == Pro2.ID)
-		{
-			UIManager.Instance.ProjectButton_2.image.color = Color.red;
-		}
-
-		if (num == Pro3.ID)
-		{
-			UIManager.Instance.ProjectButton_3.image.color = Color.red;
-		}*/
-
 	}
 
 	public void ProjectRejected(int num)
@@ -155,26 +118,15 @@ public class ProjectManager : NetworkBehaviour
 		return returnId;
 	}
 
-	public void AddProject()
+	public void AddNewProject()
 	{
-		CurrentID = GenerateRandomProject();
+		CurrentAvailableProject = GenerateRandomProject();
 	}
 	
-	public void GetProject(int buttonnum)
+	public void GetProject()
 	{
-		switch (buttonnum)
-		{
-			case 1:
-				CurrentID = Pro1.ID;
-				break;
-			case 2:
-				CurrentID = Pro2.ID;
-				break;
-			case 3:
-				CurrentID = Pro3.ID;
-				break;
-			default:
-				break;
-		}
+		SelectedProjectId = CurrentAvailableProject;
+		GlobalManager.Instance.SetCurrentProject(LocalManager.Instance.RoleType, SelectedProjectId);
+
 	}
 }

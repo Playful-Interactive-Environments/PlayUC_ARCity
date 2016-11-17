@@ -26,25 +26,25 @@ public class Notification : MonoBehaviour
 		switch (NotificationType)
 		{
 			case "Vote":
-				ProjectManager.Instance.CurrentID = NotificationID;
+				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.ProjectDescription(NotificationID);
 				UIManager.Instance.NotificationUI();
 				UIManager.Instance.EnableVoteUI();
 				break;
 			case "Choice1":
-				ProjectManager.Instance.CurrentID = NotificationID;
+				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " passed!";
 				UIManager.Instance.DisplayEventCanvas();
 				VoteManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Choice2":
-				ProjectManager.Instance.CurrentID = NotificationID;
+				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " failed!";
 				UIManager.Instance.DisplayEventCanvas();
 				VoteManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Waiting":
-				ProjectManager.Instance.CurrentID = NotificationID;
+				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Waiting for votes on: " + NotificationTitle;
 				UIManager.Instance.DisplayEventCanvas();
 				//VoteManager.Instance.RemoveNotification(NotificationID);

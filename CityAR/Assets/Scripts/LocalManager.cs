@@ -14,6 +14,7 @@ public class LocalManager : MonoBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
+		Application.targetFrameRate = 30;
 
 		InvokeRepeating("Refresh", 0f, 1f);
 	}
@@ -22,13 +23,13 @@ public class LocalManager : MonoBehaviour
 	{
 
 	}
-    
+	
 	void Refresh()
 	{
-        if (GlobalManager.Instance != null)
-        {
-            UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.GetRating(RoleType);
-            UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.GetBudget(RoleType);
-        }
-    }
+		if (GlobalManager.Instance != null)
+		{
+			UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.GetRating(RoleType);
+			UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.GetBudget(RoleType);
+		}
+	}
 }

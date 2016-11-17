@@ -24,13 +24,18 @@ public class HexGrid : AManager<HexGrid> {
 				CreateCell(x, z, i++);
 			}
 		}
+	    InvokeRepeating("Refresh", 1f, .1f);
 	}
 
 	public Vector3 GetRandomPos()
 	{
-
-		Vector3 pos = cells[Random.Range(0, cells.Length-1)].transform.position;
+		Vector3 pos = cells[Random.Range(0, cells.Length - 1)].transform.position;
 		return pos;
+	}
+	public HexCell GetRandomCell()
+	{
+		HexCell cell = cells[Random.Range(0, cells.Length - 1)];
+		return cell;
 	}
 	void Start () {
 		hexMesh.Triangulate(cells);
@@ -54,7 +59,7 @@ public class HexGrid : AManager<HexGrid> {
 		position.z = z * (HexMetrics.outerRadius * 1.5f);
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-	    cell.CellId = i;
+		cell.CellId = i;
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.transform.name = "" + HexCoordinates.FromOffsetCoordinates(x, z);
@@ -85,13 +90,13 @@ public class HexGrid : AManager<HexGrid> {
 		HexCell cell = GetCell(position);
 		EventManager.TriggerEvent("PlacementMap");
 		//cancel previous invokes
-		cell.GetComponent<CellInterface>().CancelInvoke();
-		cell.GetComponent<CellLogic>().CancelInvoke();
-		CancelInvoke();
+		//cell.GetComponent<CellInterface>().CancelInvoke();
+		//cell.GetComponent<CellLogic>().CancelInvoke();
+		//CancelInvoke();
 		//show menu
 		//cell.GetComponent<CellInterface>().Invoke("DisplayCell", .1f);
 		//make selected cell black
 		cell.GetComponent<CellLogic>().Invoke("CellSelected", .05f);
-		Invoke("Refresh", .1f);
+		//Invoke("Refresh", .1f);
 	}
 }

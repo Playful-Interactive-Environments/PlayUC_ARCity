@@ -27,37 +27,39 @@ public class GlobalManager : NetworkBehaviour
 		public bool Taken;
 		public int Rating;
 		public int Budget;
-        public int ConnectionId;
-        public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid)
-        {
-            RoleType = roletype;
-            Taken = taken;
-            Rating = rating;
-            Budget = budget;
-            ConnectionId = connectionid;
-        }
-    }
-    public class PlayerData: SyncListStruct<PlayerDataSave> { }
-    public PlayerData Players = new PlayerData();
-    private int defaultConnId = -1;
+		public int ConnectionId;
+		public int CurrentProjectId;
+		public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid, int currentprojectid)
+		{
+			RoleType = roletype;
+			Taken = taken;
+			Rating = rating;
+			Budget = budget;
+			ConnectionId = connectionid;
+			CurrentProjectId = currentprojectid;
+		}
+	}
+	public class PlayerData: SyncListStruct<PlayerDataSave> { }
+	public PlayerData Players = new PlayerData();
+	private int defaultConnId = -1;
 
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
-    }
-    void Start()
-    {
-        if (isServer)
-        {
-            Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId));
-            Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId));
-            Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId));
-        }
-    }
+	}
+	void Start()
+	{
+		if (isServer)
+		{
+			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId, -1));
+			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId, -1));
+			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId, -1));
+		}
+	}
 
-    void Update ()
+	void Update ()
 	{
 		if (isServer)
 		{
@@ -74,121 +76,150 @@ public class GlobalManager : NetworkBehaviour
 			}
 		}
 		UIManager.Instance.TimeText.text = "Year " + CurrentYear + ": " + _months[CurrentMonth];
-    }
+	}
 
-    public void SetTaken(int connectionId, bool taken)
-    {
-        PlayerDataSave dataOld = new PlayerDataSave();
-        PlayerDataSave dataNew = new PlayerDataSave();
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.ConnectionId == connectionId)
-            {
-                dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId);
-                dataOld = playerdata;
-            }
-        }
-        Players.Remove(dataOld);
-        Players.Add(dataNew);
-    }
+	public void SetCurrentProject(string roletype, int currentprojectid)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget, playerdata.ConnectionId, currentprojectid);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
 
-    public void SetTaken(string roletype, bool taken, int connectionid)
-    {
-        PlayerDataSave dataOld = new PlayerDataSave();
-        PlayerDataSave dataNew = new PlayerDataSave();
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid);
-                dataOld = playerdata;
-            }
-        }
-        Players.Remove(dataOld);
-        Players.Add(dataNew);
-    }
-    public bool GetTaken(string roletype)
-    {
-        bool returnVar = false;
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                returnVar = playerdata.Taken;
-            }
-        }
-        return returnVar;
-    }
+	public int GetCurrentProject(string roletype)
+	{
+		int returnVar = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				returnVar = playerdata.CurrentProjectId;
+			}
+		}
+		return returnVar;
+	}
 
-    public void SetBudget(string roletype, int budget)
-    {
-        PlayerDataSave dataOld = new PlayerDataSave();
-        PlayerDataSave dataNew = new PlayerDataSave();
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId);
-                dataOld = playerdata;
-            }
-        }
-        Players.Remove(dataOld);
-        Players.Add(dataNew);
-    }
+	public void SetTaken(int connectionId, bool taken)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.ConnectionId == connectionId)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId, playerdata.CurrentProjectId);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
 
-    public int GetBudget(string roletype)
-    {
-        int returnVar = 0;
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                returnVar = playerdata.Budget;
-            }
-        }
-        return returnVar;
-    }
+	public void SetTaken(string roletype, bool taken, int connectionid)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid, playerdata.CurrentProjectId);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
 
-    public void SetRating(string roletype, int rating)
-    {
-        PlayerDataSave dataOld = new PlayerDataSave();
-        PlayerDataSave dataNew = new PlayerDataSave();
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId);
-                dataOld = playerdata;
-            }
-        }
-        Players.Remove(dataOld);
-        Players.Add(dataNew);
-    }
-    public int GetRating(string roletype)
-    {
-        int returnVar = 0;
-        foreach (PlayerDataSave playerdata in Players)
-        {
-            if (playerdata.RoleType == roletype)
-            {
-                returnVar = playerdata.Rating;
-            }
-        }
-        return returnVar;
-    }
+	public bool GetTaken(string roletype)
+	{
+		bool returnVar = false;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				returnVar = playerdata.Taken;
+			}
+		}
+		return returnVar;
+	}
 
-    public void UpdateData(string roletype, string datatype, int amount)
-    {
-        switch (datatype)
-        {
-            case "Budget":
-                SetBudget(roletype, amount);
-                break;
-            case "Rating":
-                SetRating(roletype, amount);
-                break;
+	public void SetBudget(string roletype, int budget)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId, playerdata.CurrentProjectId);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
+
+	public int GetBudget(string roletype)
+	{
+		int returnVar = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				returnVar = playerdata.Budget;
+			}
+		}
+		return returnVar;
+	}
+
+	public void SetRating(string roletype, int rating)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId, playerdata.CurrentProjectId);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
+	public int GetRating(string roletype)
+	{
+		int returnVar = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				returnVar = playerdata.Rating;
+			}
+		}
+		return returnVar;
+	}
+
+	public void UpdateData(string roletype, string datatype, int amount)
+	{
+		switch (datatype)
+		{
+			case "Budget":
+				SetBudget(roletype, amount);
+				break;
+			case "Rating":
+				SetRating(roletype, amount);
+				break;
 		}
 	}
+
 }
-
-

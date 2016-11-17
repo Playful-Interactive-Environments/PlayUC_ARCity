@@ -63,16 +63,16 @@ public class NetworkingManager : NetworkManager
             StopHost();
             NetworkServer.ClearLocalObjects();
             NetworkServer.ClearSpawners();
-            NetworkServer.Reset();
-            UIManager.Instance.ResetMenus();
         }
         if (isClient)
         {
             StopClient();
-            NetworkServer.Reset();
-            UIManager.Instance.ResetMenus();
         }
+        NetworkServer.Reset();
+        UIManager.Instance.ResetMenus();
+
     }
+
     public void SetIPAddress()
     {
         ConnectionIP = IPInput.text;
@@ -145,7 +145,7 @@ public class NetworkingManager : NetworkManager
             isClient = true;
             Debug.Log("OnClientConnect " + conn);
         }
-        UIManager.Instance.RoleUI();
+            UIManager.Instance.RoleUI();
     }
 
     public override void OnStartClient(NetworkClient client)
@@ -167,9 +167,8 @@ public class NetworkingManager : NetworkManager
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
-        UIManager.Instance.ResetMenus();
         base.OnClientDisconnect(conn);
-        Debug.Log("OnClientDisconnect " + conn.logNetworkMessages);
+        Debug.Log("OnClientDisconnect " + conn.connectionId);
         ReconnectClient();
     }
 
@@ -199,9 +198,21 @@ public class NetworkingManager : NetworkManager
 
     IEnumerator Reconnect()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.2f);
         StartClient();
-
+        yield return new WaitForSeconds(.2f);
+        switch (LocalManager.Instance.RoleType)
+        {
+            case "Environment":
+                UIManager.Instance.ChooseEnvironment();
+                break;
+            case "Finance":
+                UIManager.Instance.ChooseFinance();
+                break;
+            case "Social":
+                UIManager.Instance.ChooseSocial();
+                break;
+        }
     }
     #endregion
 }

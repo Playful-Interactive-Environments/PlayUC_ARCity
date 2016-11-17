@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class QuestManager : MonoBehaviour {
 
 	public static QuestManager Instance = null;
-	public CSVManager Quests;
+	public CSVManager CSVQuests;
 	public CSVManagerProjects CSVProjects;
 	public UIManager UI;
 	private int questnum;
@@ -17,20 +17,22 @@ public class QuestManager : MonoBehaviour {
 	public int CurrentQuests;
 	public float SpawnRate;
 	public List<int> QuestIDs = new List<int>();
+	public List<GameObject> QuestList = new List<GameObject>(); 
 	public string[] Meanings = {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
-
-
+	private int randomId;
+	private float _questTime;
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-		Quests = CSVManager.Instance;
+		CSVQuests = CSVManager.Instance;
 		UI = UIManager.Instance;
 		CSVProjects = CSVManagerProjects.Instance;
-		InvokeRepeating("GenerateQuests", 5f, SpawnRate);
 		Invoke("PopulateIds", .1f);
+		randomId = GetRandomQuest();
+
 	}
 
 	void PopulateIds()
@@ -54,7 +56,36 @@ public class QuestManager : MonoBehaviour {
 
 	void Update ()
 	{
+		_questTime += Time.deltaTime;
+		GenerateQuests();
+	}
 
+	void OnDestroy()
+	{
+		RemoveActiveQuests();
+	}
+
+	public void RemoveActiveQuests()
+	{
+		foreach (GameObject quest in QuestList)
+		{
+			Destroy(quest);
+		}
+		QuestList.Clear();
+	}
+
+	public void RemoveQuest(int id)
+	{
+	    GameObject questdestroy = null;
+		foreach (GameObject obj in QuestList)
+		{
+			if (obj.GetComponent<Quest>().ID == id)
+			{
+			    questdestroy = obj;
+			}
+		}
+	    QuestList.Remove(questdestroy);
+		Destroy(questdestroy);
 	}
 
 	public string TranslateMeaning(int number)
@@ -84,33 +115,41 @@ public class QuestManager : MonoBehaviour {
 				meaning = Meanings[6];
 				break;
 		}
-
 		return meaning;
 	}
+
 	public void GenerateQuests()
 	{
-		if (CurrentQuests < MaxQuests)
+		if (CurrentQuests < MaxQuests && _questTime > SpawnRate)
 		{
-			Vector3 pos = HexGrid.Instance.GetRandomPos();
-			GameObject obj = Instantiate(QuestPrefab, pos, Quaternion.identity) as GameObject;
+			HexCell cell = HexGrid.Instance.GetRandomCell();
+
+			GameObject obj = Instantiate(QuestPrefab, cell.transform.position, Quaternion.identity) as GameObject;
 			obj.transform.parent = CellManager.Instance.ImageTarget.transform;
 			obj.transform.name = "Quest";
+			QuestList.Add(obj);
 			Quest _quest = obj.GetComponent<Quest>();
+			_quest.ID = randomId;
 
-			_quest.ID = GetRandomQuest();
-			_quest.Title = Quests.Find_ID(_quest.ID).title;
-			_quest.Content = Quests.Find_ID(_quest.ID).content;
+			_quest.Title = CSVQuests.Find_ID(randomId).title;
+			_quest.Content = CSVQuests.Find_ID(randomId).content;
 
-			_quest.Choice1 = Quests.Find_ID(_quest.ID).choice_1;
-			_quest.Choice2 = Quests.Find_ID(_quest.ID).choice_2;
+			_quest.Choice1 = CSVQuests.Find_ID(randomId).choice_1;
+			_quest.Choice2 = CSVQuests.Find_ID(randomId).choice_2;
 
-			_quest.Result1 = Quests.Find_ID(_quest.ID).result_1;
-			_quest.Result2 = Quests.Find_ID(_quest.ID).result_2;
+			_quest.Result1 = CSVQuests.Find_ID(randomId).result_1;
+			_quest.Result2 = CSVQuests.Find_ID(randomId).result_2;
 
-			_quest.Effect1 = Quests.Find_ID(_quest.ID).effect_1;
-			_quest.Effect2 = Quests.Find_ID(_quest.ID).effect_2;
+			_quest.Effect1 = CSVQuests.Find_ID(randomId).effect_1;
+			_quest.Effect2 = CSVQuests.Find_ID(randomId).effect_2;
+
+			_quest.SetCell(cell);
+
+			randomId = GetRandomQuest();
 
 			CurrentQuests++;
+			_questTime = 0;
+
 		}
 	}
 
