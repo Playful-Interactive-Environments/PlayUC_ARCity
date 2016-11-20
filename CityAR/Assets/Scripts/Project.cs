@@ -64,8 +64,8 @@ public class Project : NetworkBehaviour
 	public void InitiateProject()
 	{
 		int financeeffect = Finance * GlobalManager.Instance.MonthDuration;
-		int socialeffect = Finance * GlobalManager.Instance.MonthDuration;
-		int environmenteffect = Finance * GlobalManager.Instance.MonthDuration;
+		int socialeffect = Social * GlobalManager.Instance.MonthDuration;
+		int environmenteffect = Environment * GlobalManager.Instance.MonthDuration;
 
 		CellManager.Instance.UpdateFinance(Cell.CellId, financeeffect);
 		CellManager.Instance.UpdateSocial(Cell.CellId, socialeffect);
@@ -74,7 +74,6 @@ public class Project : NetworkBehaviour
 		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
 		iTween.FadeTo(ProjectLogo, iTween.Hash("alpha", 0, "time", .5f));
 		EffectiveTime--;
-		//HexGrid.Instance.Invoke("Refresh", .1f);
 	}
 
 	public void SetCell(Vector3 pos)
