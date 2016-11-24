@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class ProjectManager : NetworkBehaviour
 {
@@ -10,12 +11,13 @@ public class ProjectManager : NetworkBehaviour
 	public GameObject ProjectPrefab;
 	public List<Project> Projects;
 	public QuestManager Quests;
-	public VoteManager VoteManager;
 	public int SelectedProjectId;
 	public Project SelectedProject;
 	public int CurrentAvailableProject;
 	public SyncListInt ProjectIDs = new SyncListInt();
-
+	//ProjectTemplate
+	public GameObject ProjectTemplate;
+	public GridLayoutGroup GridGroup;
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
@@ -28,7 +30,13 @@ public class ProjectManager : NetworkBehaviour
 	{
 		Invoke("PopulateIds", .1f);
 		Quests = QuestManager.Instance;
-		VoteManager = VoteManager.Instance;
+
+	}
+
+
+	void Update()
+	{
+
 	}
 
 	void PopulateIds()
@@ -40,17 +48,13 @@ public class ProjectManager : NetworkBehaviour
 				ProjectIDs.Add(i);
 			}
 		}
-		CurrentAvailableProject = GenerateRandomProject();
+//TODO: handle if client restarted
+		ResetUI();
+		SelectedProjectId = GlobalManager.Instance.GetCurrentProject(LocalManager.Instance.RoleType);
 	}
 
-	void Update ()
-	{
-		if (VoteManager.Instance!=null)
-		{
-			VoteManager = VoteManager.Instance;
-		}
-	}
 
+	//called only on server
 	public void BuildProject(Vector3 pos, string owner, int id)
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity) as GameObject;
@@ -73,27 +77,6 @@ public class ProjectManager : NetworkBehaviour
 		NetworkServer.Spawn(gobj);
 	}
 
-	public Project FindProject(int projectnum)
-	{
-		foreach (Project p in Projects)
-		{
-			if (p.ProjectId == projectnum)
-			{
-				return p;
-			}
-		}
-		return null;
-	}
-
-	public void ResetUI()
-	{
-		if (SelectedProjectId == CurrentAvailableProject)
-		{
-			CurrentAvailableProject = GenerateRandomProject();
-			UIManager.Instance.SetProjectButton(true);
-		}
-	}
-
 	public void ProjectApproved(int num)
 	{
 		FindProject(num).InitiateProject();
@@ -108,6 +91,12 @@ public class ProjectManager : NetworkBehaviour
 		ResetUI();
 	}
 
+	public void ResetUI()
+	{
+		CurrentAvailableProject = GenerateRandomProject();
+		UIManager.Instance.SetProjectButton(true);
+	}
+
 	public int GenerateRandomProject()
 	{
 		if (ProjectIDs.Count == 0)
@@ -118,15 +107,42 @@ public class ProjectManager : NetworkBehaviour
 		return returnId;
 	}
 
-	public void AddNewProject()
+	public void AddProject()
 	{
-		CurrentAvailableProject = GenerateRandomProject();
+		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
+		ProjectTemplate = GameObject.Find("ProjectTemplate");
+		GameObject gameobj = Instantiate(ProjectTemplate, transform.position, Quaternion.identity) as GameObject;
+		gameobj.transform.parent = GridGroup.transform;
+		gameobj.transform.localScale = new Vector3(2, 2, 2);
 	}
-	
 	public void GetProject()
 	{
 		SelectedProjectId = CurrentAvailableProject;
-		GlobalManager.Instance.SetCurrentProject(LocalManager.Instance.RoleType, SelectedProjectId);
+		GlobalManager.Instance.SetCurrentProject(LocalManager.Instance.RoleType, CurrentAvailableProject);
+		AddProject();
+	}
+	public Project FindProject(int projectnum)
+	{
+		if (isClient && !isServer)
+		{
+			UpdateLocalProjectList();
+		}
 
+		foreach (Project p in Projects)
+		{
+			if (p.ProjectId == projectnum)
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+	void UpdateLocalProjectList()
+	{
+		Projects.Clear();
+		if (isClient && !isServer)
+		{
+			Projects.Add(FindObjectOfType<Project>());
+		}
 	}
 }

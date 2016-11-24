@@ -18,7 +18,7 @@ public class QuestManager : MonoBehaviour {
 	public float SpawnRate;
 	public List<int> QuestIDs = new List<int>();
 	public List<GameObject> QuestList = new List<GameObject>(); 
-	public string[] Meanings = {"Catastrophal", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
+	public string[] Meanings = {"Disaster", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
 	private int randomId;
 	private float _questTime;
 	void Awake () {
@@ -42,6 +42,7 @@ public class QuestManager : MonoBehaviour {
 			QuestIDs.Add(i);
 		}
 	}
+	
 	public string GetProjectDescription(int projectnum)
 	{
 		string description = "";
@@ -76,15 +77,15 @@ public class QuestManager : MonoBehaviour {
 
 	public void RemoveQuest(int id)
 	{
-	    GameObject questdestroy = null;
+		GameObject questdestroy = null;
 		foreach (GameObject obj in QuestList)
 		{
 			if (obj.GetComponent<Quest>().ID == id)
 			{
-			    questdestroy = obj;
+				questdestroy = obj;
 			}
 		}
-	    QuestList.Remove(questdestroy);
+		QuestList.Remove(questdestroy);
 		Destroy(questdestroy);
 	}
 

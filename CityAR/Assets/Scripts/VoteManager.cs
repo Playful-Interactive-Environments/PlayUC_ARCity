@@ -111,7 +111,7 @@ public class VoteManager : NetworkBehaviour
 	public void AddNotification(string type, string owner, int projectnum)
 	{
 		//create new notification button
-		GridGroup = GameObject.Find("GridLayout").GetComponent<GridLayoutGroup>();
+		GridGroup = GameObject.Find("NotificationLayout").GetComponent<GridLayoutGroup>();
 		Button button = Instantiate(ButtonTemplate, transform.position, Quaternion.identity) as Button;
 		button.transform.parent = GridGroup.transform;
 		button.transform.localScale = new Vector3(1, 1, 1);

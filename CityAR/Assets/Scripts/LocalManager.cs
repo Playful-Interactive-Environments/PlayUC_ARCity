@@ -8,7 +8,8 @@ public class LocalManager : MonoBehaviour
 	public static LocalManager Instance = null;
 	public string RoleType;
 
-	void Awake () {
+	void Awake ()
+	{
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
@@ -28,8 +29,8 @@ public class LocalManager : MonoBehaviour
 	{
 		if (GlobalManager.Instance != null)
 		{
-			UIManager.Instance.RatingText.text = "Rating: " + GlobalManager.Instance.GetRating(RoleType);
-			UIManager.Instance.BudgetText.text = "Budget: " + GlobalManager.Instance.GetBudget(RoleType);
+			UIManager.Instance.RatingText.text = "" + GlobalManager.Instance.GetRating(RoleType);
+			UIManager.Instance.BudgetText.text = "" + GlobalManager.Instance.GetBudget(RoleType);
 		}
 	}
 }

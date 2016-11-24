@@ -1,0 +1,45 @@
+﻿using UnityEngine;
+using System.Collections;
+using System;
+using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+
+public class ServerBroadcast : MonoBehaviour {
+
+    UdpClient serverOriginator;
+    string serverIP;
+    int broadcastPort = 7778;
+    IPAddress groupIP = IPAddress.Parse("224.0.0.224");
+    IPEndPoint remoteEP;
+
+    public void StartServerBroadcast()
+    {
+        //Get Server IP
+        serverIP = Network.player.ipAddress;
+
+        //Create UDP Client for broadcasting the server
+        serverOriginator = new UdpClient();
+
+        serverOriginator.JoinMulticastGroup(groupIP);
+
+        remoteEP = new IPEndPoint(groupIP, broadcastPort);
+
+        //Broadcast IP
+        InvokeRepeating("BroadcastServerIP", 0, 1f);
+    }
+    void BroadcastServerIP()
+    {
+        //Debug.Log(Time.realtimeSinceStartup + ": Broadcasting IP:" + serverIP);
+        byte[] buffer = ASCIIEncoding.ASCII.GetBytes(serverIP);
+        serverOriginator.Send(buffer, buffer.Length, remoteEP);
+    }
+    public void StopBroadcasting()
+    {
+        Debug.Log("Stop Broadcast");
+        CancelInvoke("BroadcastServerIP");
+        //serverOriginator.DropMulticastGroup(groupIP);
+        serverOriginator.Close();
+    }
+}

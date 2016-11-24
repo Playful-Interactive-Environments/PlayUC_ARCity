@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CameraControl : AManager<CameraControl>
 {
@@ -10,6 +11,7 @@ public class CameraControl : AManager<CameraControl>
     private GameObject _carriedObject;
     string objectTag;
     public HexCell LastTouchedCell;
+
 
     void Start()
     {
@@ -45,6 +47,10 @@ public class CameraControl : AManager<CameraControl>
                    mouseHit.transform.gameObject.GetComponent<Project>().ShowProjectCanvas();
                 }
             }
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+
         }
 #endif
 

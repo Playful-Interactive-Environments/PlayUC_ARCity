@@ -11,7 +11,13 @@ using UnityEngine.SceneManagement;
 public class UIManager : AManager<UIManager>
 {
 	public ProjectManager Projects;
+	//Switch UI ELEMENTS
+	public enum UiState
+	{
+		Network, Role, Game, Projects, Placement, Notifications, Event, ProjectInfo, Vote, Quest, Result
+	}
 
+	public UiState CurrentState;
 	//CANVAS
 	public Canvas GameCanvas;
 	public Canvas NetworkCanvas;
@@ -19,10 +25,11 @@ public class UIManager : AManager<UIManager>
 	public Canvas QuestCanvas;
 	public Canvas ResultCanvas;
 	public Canvas EventCanvas;
+	public Canvas ProposeCanvas;
 	public Canvas ProjectCanvas;
 	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
-	public Canvas BuildCanvas;
+	public Canvas PlacementCanvas;
 	public Canvas ProjectInfoCanvas;
 	public Text DebugText;
 	//CHOOSE ROLE
@@ -30,7 +37,6 @@ public class UIManager : AManager<UIManager>
 	public Button Finance;
 	public Button Social;
 	//GAME CANVAS
-	public Button HeatmapButton;
 	public Button Switch;
 	public Button NotificationButton;
 	public Text RatingText;
@@ -67,7 +73,79 @@ public class UIManager : AManager<UIManager>
 		UpdateRoleButtons();
 		Projects = ProjectManager.Instance;
 
+
 	}
+
+	public void Change(UiState state)
+	{
+		NetworkCanvas.gameObject.SetActive(true);
+		NetworkCanvas.enabled = false;
+		GameCanvas.gameObject.SetActive(true);
+		GameCanvas.enabled = false;
+		RoleCanvas.gameObject.SetActive(true);
+		RoleCanvas.enabled = false;
+		QuestCanvas.gameObject.SetActive(true);
+		QuestCanvas.enabled = false;
+		ResultCanvas.gameObject.SetActive(true);
+		ResultCanvas.enabled = false;
+		ProposeCanvas.gameObject.SetActive(true);
+		ProposeCanvas.enabled = false;
+		VoteCanvas.gameObject.SetActive(true);
+		VoteCanvas.enabled = false;
+		PlacementCanvas.gameObject.SetActive(true);
+		PlacementCanvas.enabled = false;
+		NotificationCanvas.gameObject.SetActive(true);
+		NotificationCanvas.enabled = false;
+		EventCanvas.gameObject.SetActive(true);
+		EventCanvas.enabled = false;
+		ProjectCanvas.gameObject.SetActive(true);
+		ProjectCanvas.enabled = false;
+		ProjectInfoCanvas.gameObject.SetActive(true);
+		ProjectInfoCanvas.enabled = false;
+		Switch.gameObject.SetActive(true);
+		Switch.enabled = false;
+		NotificationButton.gameObject.SetActive(true);
+		NotificationButton.enabled = false;
+
+		CurrentState = state;
+		switch (CurrentState)
+		{
+
+			case UiState.Network:
+				NetworkCanvas.enabled = true;
+				break;
+			case UiState.Role:
+				RoleCanvas.enabled = true;
+				break;
+			case UiState.Game:
+				GameCanvas.enabled = true;
+				break;
+			case UiState.Projects:
+		        ProjectCanvas.enabled = true;
+				break;
+			case UiState.Placement:
+		        PlacementCanvas.enabled = true;
+				break;
+			case UiState.ProjectInfo:
+		        ProjectInfoCanvas.enabled = true;
+				break;
+			case UiState.Vote:
+		        VoteCanvas.enabled = true;
+				break;
+			case UiState.Notifications:
+		        NotificationCanvas.enabled = true;
+				break;
+			case UiState.Event:
+		        EventCanvas.enabled = true;
+				break;
+			case UiState.Quest:
+		        QuestCanvas.enabled = true;
+				break;
+			case UiState.Result:
+		        ResultCanvas.enabled = true;
+				break;
+		}
+}
 	#region Game UI
 
 	public void MenuUI()
@@ -108,7 +186,7 @@ public class UIManager : AManager<UIManager>
 	{
 		VoteCanvas.gameObject.SetActive(false);
 		NotificationCanvas.enabled = false;
-		ProjectCanvas.gameObject.SetActive(false);
+		ProposeCanvas.gameObject.SetActive(false);
 		RoleCanvas.gameObject.SetActive(false);
 		QuestCanvas.gameObject.SetActive(false);
 		ResultCanvas.gameObject.SetActive(false);
@@ -132,27 +210,7 @@ public class UIManager : AManager<UIManager>
 		NotificationButton.gameObject.SetActive(true);
 		GameCanvas.gameObject.SetActive(true);
 	}
-	public void ToggleSocialMap()
-	{
-		EventManager.TriggerEvent("SocialMap");
-		//Invoke("RefreshGrid", .01f);
-	}
-	public void ToggleEnvironmentMap()
-	{
-		EventManager.TriggerEvent("EnvironmentMap");
-		//Invoke("RefreshGrid", .01f);
-	}
 
-	public void ToggleFinanceMap()
-	{
-		EventManager.TriggerEvent("FinanceMap");
-		//Invoke("RefreshGrid", .01f);
-	}
-
-	public void RefreshGrid()
-	{
-		//HexGrid.Instance.Refresh();
-	}
 	public void RestartApp()
 	{
 		NetworkingManager.Instance.StopHosting();
@@ -222,15 +280,19 @@ public class UIManager : AManager<UIManager>
 	{
 		if (GameCanvas.gameObject.activeInHierarchy)
 		{
-			ProjectCanvas.gameObject.SetActive(true);
-			GameCanvas.gameObject.SetActive(false);
-			NotificationButton.gameObject.SetActive(false);
+			ProposeCanvas.gameObject.SetActive(true);
+			ProjectCanvas.enabled = true;
+
+			//GameCanvas.gameObject.SetActive(false);
+			//NotificationButton.gameObject.SetActive(false);
 		}
 		else
 		{
-			ProjectCanvas.gameObject.SetActive(false);
-			GameCanvas.gameObject.SetActive(true);
-			NotificationButton.gameObject.SetActive(true);
+			ProposeCanvas.gameObject.SetActive(false);
+			ProjectCanvas.enabled = false;
+
+			//GameCanvas.gameObject.SetActive(true);
+			//NotificationButton.gameObject.SetActive(true);
 		}
 	}
 
@@ -242,32 +304,33 @@ public class UIManager : AManager<UIManager>
 			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.Quests.GetCost(ProjectManager.Instance.SelectedProjectId));
 			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.Quests.GetRating(ProjectManager.Instance.SelectedProjectId));
 			ProjectDescription(ProjectManager.Instance.SelectedProjectId);
-			BuildCanvas.gameObject.SetActive(false);
+			PlacementCanvas.gameObject.SetActive(false);
+			GameCanvas.gameObject.SetActive(true);
 			SetProjectButton(false);
-			EnableVoteUI();
+			//EnableVoteUI();
 		}
 	}
 
 	public void ShowPlacementCanvas()
 	{
-		ProjectCanvas.gameObject.SetActive(false);
+		ProposeCanvas.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(false);
 		GameCanvas.gameObject.SetActive(false);
 		NotificationButton.gameObject.SetActive(false);
-		BuildCanvas.gameObject.SetActive(true);
+		PlacementCanvas.gameObject.SetActive(true);
 	}
 
 	public void HidePlacementCanvas()
 	{
 		GameCanvas.gameObject.SetActive(true);
 		NotificationButton.gameObject.SetActive(true);
-		BuildCanvas.gameObject.SetActive(false);
+		PlacementCanvas.gameObject.SetActive(false);
 	}
 
 	public void EnableVoteUI()
 	{
 		VoteStatus.text = "Please Vote.";
-		ProjectCanvas.gameObject.SetActive(false);
+		ProposeCanvas.gameObject.SetActive(false);
 		GameCanvas.gameObject.SetActive(false);
 		NotificationButton.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(true);
@@ -288,7 +351,7 @@ public class UIManager : AManager<UIManager>
 	
 	public void EndVote()
 	{
-		ProjectCanvas.gameObject.SetActive(false);
+		ProposeCanvas.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(false);
 		GameCanvas.gameObject.SetActive(true);
 		NotificationButton.gameObject.SetActive(true);
@@ -342,32 +405,24 @@ public class UIManager : AManager<UIManager>
 	public void ChooseEnvironment()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
-		HeatmapButton.onClick.RemoveAllListeners();
-		HeatmapButton.onClick.AddListener(() => ToggleEnvironmentMap());
 		LocalManager.Instance.RoleType = "Environment";
-		ToggleEnvironmentMap();
-
+		EventManager.TriggerEvent("EnvironmentMap");
 		Invoke("GameUI", .1f);
 	}
 
 	public void ChooseFinance()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Finance");
-		HeatmapButton.onClick.RemoveAllListeners();
-		HeatmapButton.onClick.AddListener(() => ToggleFinanceMap());
 		LocalManager.Instance.RoleType = "Finance";
-		ToggleFinanceMap();
-
+		EventManager.TriggerEvent("FinanceMap");
 		Invoke("GameUI", .1f);
 	}
 
 	public void ChooseSocial()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Social");
-		HeatmapButton.onClick.RemoveAllListeners();
-		HeatmapButton.onClick.AddListener(() => ToggleSocialMap());
 		LocalManager.Instance.RoleType = "Social";
-		ToggleSocialMap();
+		EventManager.TriggerEvent("SocialMap");
 		Invoke("GameUI", .1f);
 	}
 	
@@ -416,13 +471,14 @@ public class UIManager : AManager<UIManager>
 		RoleCanvas.gameObject.SetActive(false);
 		QuestCanvas.gameObject.SetActive(false);
 		ResultCanvas.gameObject.SetActive(false);
-		ProjectCanvas.gameObject.SetActive(false);
+		ProposeCanvas.gameObject.SetActive(false);
 		VoteCanvas.gameObject.SetActive(false);
-		BuildCanvas.gameObject.SetActive(false);
+		PlacementCanvas.gameObject.SetActive(false);
 		NotificationCanvas.gameObject.SetActive(true);
 		NotificationCanvas.enabled = false;
 		EventCanvas.gameObject.SetActive(true);
 		EventCanvas.enabled = false;
+		ProjectCanvas.enabled = false;
 		ProjectInfoCanvas.gameObject.SetActive(false);
 		Switch.gameObject.SetActive(false);
 		NotificationButton.gameObject.SetActive(false);
@@ -430,8 +486,9 @@ public class UIManager : AManager<UIManager>
 
 	public void DebugButton()
 	{
-		//Vote_Choice1();
+		//Debug.Log("CLICK");
 		Vote_Choice1();
+
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);
 	}

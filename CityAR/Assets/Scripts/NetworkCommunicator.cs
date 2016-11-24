@@ -14,6 +14,7 @@ public class NetworkCommunicator : NetworkBehaviour
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
     }
+
     void Start () {
         if(isServer)
             ConnectionId = connectionToClient.connectionId;

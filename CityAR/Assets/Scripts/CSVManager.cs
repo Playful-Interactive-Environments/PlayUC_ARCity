@@ -31,10 +31,7 @@ public class CSVManager: AManager<CSVManager>
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Debug.Log(Find_ID(1).content + "");
-        }
+
     }
 
     #region CSV Commands

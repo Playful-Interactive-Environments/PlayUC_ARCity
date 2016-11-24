@@ -121,15 +121,15 @@ public class CellLogic : MonoBehaviour {
                 //5 - terrible social state, civil unreast; 1 - great social state, happyness
             case HeatmapState.SocialMap:
                 if (SocialRate < _chunkValue)
-                    state = 1;
+                    state = 5;
                 if (SocialRate >= _chunkValue && SocialRate < _chunkValue * 2)
-                    state = 2;
+                    state = 4;
                 if (SocialRate >= _chunkValue * 2 && SocialRate < _chunkValue * 3)
                     state = 3;
                 if (SocialRate >= _chunkValue * 3 && SocialRate < _chunkValue * 4)
-                    state = 4;
+                    state = 2;
                 if (SocialRate >= _chunkValue * 4)
-                    state = 5;
+                    state = 1;
                 _hexCell.color = _hexGrid.colors[state];
                 //_hexCell.Elevation = state - 1;
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
@@ -137,15 +137,15 @@ public class CellLogic : MonoBehaviour {
                 //5- high polution; 1 - low polution
             case HeatmapState.EnvironmentMap:
                 if (EnvironmentRate < _chunkValue)
-                    state = 1;
+                    state = 5;
                 if (EnvironmentRate >= _chunkValue && EnvironmentRate < _chunkValue * 2)
-                    state = 2;
+                    state = 4;
                 if (EnvironmentRate >= _chunkValue * 2 && EnvironmentRate < _chunkValue * 3)
                     state = 3;
                 if (EnvironmentRate >= _chunkValue * 3 && EnvironmentRate < _chunkValue * 4)
-                    state = 4;
+                    state = 2;
                 if (EnvironmentRate >= _chunkValue * 4)
-                    state = 5;
+                    state = 1;
                 //_hexCell.Elevation = state - 1;
                 _hexCell.color = _hexGrid.colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;

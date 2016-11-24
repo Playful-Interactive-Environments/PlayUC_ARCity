@@ -10,8 +10,7 @@ public class Project : NetworkBehaviour
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
 	public GameObject ProjectLogo;
-	public string ProjectOwner;
-	public int EffectiveTime = 12;
+	//Vars set by project manager on server
 	public string Title;
 	public string Description;
 	public int Rating;
@@ -19,61 +18,88 @@ public class Project : NetworkBehaviour
 	public int Environment;
 	public int Finance;
 	public int Cost;
+	[SyncVar]
+	public string ProjectOwner;
+	[SyncVar]
+	private int financeeffect;
+	[SyncVar]
+	private int socialeffect;
+	[SyncVar]
+	private int environmenteffect;
 	//voting
 	[SyncVar]
 	public int ProjectId;
+	[SyncVar]
+	public int RepresentationId;
 	public bool Approved;
 	public int Choice1;
 	public int Choice2;
 	public bool LocalVote;
 
-	
+
 	void Start () {
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .1f));
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		if (isServer)
+			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
 		Invoke("CreateRepresentation", .1f);
+		if (LocalManager.Instance.RoleType == ProjectOwner)
+		{
+			LocalVote = true;
+		}
+		Choice1 += 1;
 	}
 
 	void CreateRepresentation()
 	{
-		GameObject representation = Instantiate(BuildingSets[Random.Range(0, BuildingSets.Length-1)], transform.position, Quaternion.identity) as GameObject;
+		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(1, 1, 1);
 		representation.transform.localEulerAngles += new Vector3(0,180,0);
-		transform.position += CellLogic.GetPositionOffset();
+		if (isServer)
+			transform.position += CellLogic.GetPositionOffset();
 
 	}
 
 	void Update () {
-		if (isServer && !Approved && Choice1 + Choice2 == 3)
+		if (isServer && !Approved && Choice1 + Choice2 >= 2)
 		{
 			if (Choice1 > Choice2)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ProjectId);
+				Approved = true;
+				//InitiateProject();
 			}
-			else
+			else if (Choice2 > Choice1)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ProjectId);
+				//RemoveProject();
+				Approved = true;
+
 			}
-			Approved = true;
+			else return;
 		}
 	}
 
 	public void InitiateProject()
 	{
-		int financeeffect = Finance * GlobalManager.Instance.MonthDuration;
-		int socialeffect = Social * GlobalManager.Instance.MonthDuration;
-		int environmenteffect = Environment * GlobalManager.Instance.MonthDuration;
+		if (isServer)
+		{
+			financeeffect = Finance * GlobalManager.Instance.MonthDuration;
+			socialeffect = Social * GlobalManager.Instance.MonthDuration;
+			environmenteffect = Environment * GlobalManager.Instance.MonthDuration;
 
-		CellManager.Instance.UpdateFinance(Cell.CellId, financeeffect);
-		CellManager.Instance.UpdateSocial(Cell.CellId, socialeffect);
-		CellManager.Instance.UpdateEnvironment(Cell.CellId, environmenteffect);
+			CellManager.Instance.UpdateFinance(Cell.CellId, financeeffect);
+			CellManager.Instance.UpdateSocial(Cell.CellId, socialeffect);
+			CellManager.Instance.UpdateEnvironment(Cell.CellId, environmenteffect);
+		    Debug.Log(financeeffect + " " + " " + socialeffect + " " + environmenteffect);
+		}
+
 		EffectText.text = "F: " + financeeffect + "\nS: " + socialeffect + "\nE: " + environmenteffect;
 		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
-		iTween.FadeTo(ProjectLogo, iTween.Hash("alpha", 0, "time", .5f));
-		EffectiveTime--;
+		ProjectLogo.SetActive(false);
 	}
 
 	public void SetCell(Vector3 pos)
