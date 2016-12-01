@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Globalization;
 using UnityEngine.Networking;
@@ -26,15 +27,23 @@ public class NetworkCommunicator : NetworkBehaviour
             CellManager.Instance.NetworkCommunicator = this;
     }
 
-    public void BuildProject(Vector3 pos, string owner, int id)
+    public void ActivateProject(string action, Vector3 pos, string owner, int id)
     {
         if (isServer)
         {
-            ProjectManager.Instance.BuildProject(pos, owner, id);
+            switch (action)
+            {
+                case "CreateProject":
+                    ProjectManager.Instance.InstantiateProject(owner, id);
+                    break;
+                case "PlaceProject":
+                    ProjectManager.Instance.PlaceProject(pos, owner, id);
+                    break;
+            }
         }
         if (isClient && !isServer)
         {
-            CmdBuildProject(pos, owner, id);
+            CmdActivateProject(action, pos, owner, id);
         }
     }
 
@@ -50,11 +59,29 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    [Command]
-    void CmdSavePlayerData(string roletype, string datatype, int budget)
+    public void UpdateCellValue(string valuetype, int cellid, int amount)
     {
-        UpdateData(roletype, datatype, budget);
+        if (isServer)
+        {
+            switch (valuetype)
+            {
+                case "Finance":
+                    CellManager.Instance.UpdateFinance(cellid, amount);
+                    break;
+                case "Social":
+                    CellManager.Instance.UpdateSocial(cellid, amount);
+                    break;
+                case "Environment":
+                    CellManager.Instance.UpdateEnvironment(cellid, amount); 
+                    break;
+            }
+        }
+        if (isClient && !isServer)
+        {
+            CmdUpdateCellValue(valuetype, cellid, amount);
+        }
     }
+
 
     public void TakeRole(string role)
     {
@@ -97,7 +124,7 @@ public class NetworkCommunicator : NetworkBehaviour
                         ProjectManager.Instance.ProjectApproved(projectnum);
                     }
 
-                    VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
                     RpcVote(vote, owner, projectnum);
                     break;
                 case "Result_Choice2":
@@ -105,7 +132,7 @@ public class NetworkCommunicator : NetworkBehaviour
                     {
                         ProjectManager.Instance.ProjectRejected(projectnum);
                     }
-                    VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
                     RpcVote(vote, owner, projectnum);
                     break;
                 default:
@@ -120,9 +147,21 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdBuildProject(Vector3 pos,string owner, int id)
+    void CmdUpdateCellValue(string valuetype, int cellid, int amount)
     {
-        BuildProject(pos, owner, id);
+        UpdateCellValue(valuetype, cellid, amount);
+    }
+
+    [Command]
+    void CmdSavePlayerData(string roletype, string datatype, int budget)
+    {
+        UpdateData(roletype, datatype, budget);
+    }
+
+    [Command]
+    void CmdActivateProject(string action, Vector3 pos,string owner, int id)
+    {
+        ActivateProject(action, pos, owner, id);
     }
 
     [Command]
@@ -149,14 +188,14 @@ public class NetworkCommunicator : NetworkBehaviour
                     {
                         ProjectManager.Instance.ProjectApproved(projectnum);
                     }
-                    VoteManager.Instance.AddNotification("Choice1", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
                     break;
                 case "Result_Choice2":
                     if (LocalManager.Instance.RoleType == owner)
                     {
                         ProjectManager.Instance.ProjectRejected(projectnum);
                     }
-                    VoteManager.Instance.AddNotification("Choice2", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");

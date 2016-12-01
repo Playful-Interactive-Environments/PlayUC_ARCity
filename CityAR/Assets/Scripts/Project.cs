@@ -1,31 +1,31 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class Project : NetworkBehaviour
 {
-	public TextMesh EffectText;
 	public HexCell Cell;
 	public CellLogic CellLogic;
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
-	public GameObject ProjectLogo;
+	private GameObject _projectButton;
+	public GameObject[] PlayerLogos;
+	[SyncVar]
+	public bool RepresentationCreated;
 	//Vars set by project manager on server
 	public string Title;
 	public string Description;
 	public int Rating;
+	public int Budget;
+	[SyncVar]
 	public int Social;
+	[SyncVar]
 	public int Environment;
+	[SyncVar]
 	public int Finance;
-	public int Cost;
 	[SyncVar]
 	public string ProjectOwner;
-	[SyncVar]
-	private int financeeffect;
-	[SyncVar]
-	private int socialeffect;
-	[SyncVar]
-	private int environmenteffect;
 	//voting
 	[SyncVar]
 	public int ProjectId;
@@ -36,70 +36,137 @@ public class Project : NetworkBehaviour
 	public int Choice2;
 	public bool LocalVote;
 
+	//contextual text
+	public GameObject TextHolder;
+	public TextMesh TitleText;
+	public TextMesh ContentText;
+	public TextMesh FinanceText;
+	public TextMesh SocialText;
+	public TextMesh EnvironmentText;
+
+	//cardtext
+	public GameObject ProjectTemplate;
+	public GridLayoutGroup GridGroup;
+
+
 
 	void Start () {
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
-		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 0, "time", .1f));
-		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		RepresentationParent.SetActive(false);
+        TextHolder.SetActive(false);
+
+        GetComponent<BoxCollider>().enabled = false;
 		if (isServer)
 			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
-		Invoke("CreateRepresentation", .1f);
 		if (LocalManager.Instance.RoleType == ProjectOwner)
 		{
 			LocalVote = true;
+			CreateProjectButton();
 		}
 		Choice1 += 1;
-	}
+		EventManager.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventManager.StartListening("ProjectSelected", ProjectSelected);
+        EventManager.StartListening("PlacementMap", ProjectSelected);
 
-	void CreateRepresentation()
+    }
+
+    void ProjectSelected()
 	{
-		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;
-		representation.transform.parent = RepresentationParent.transform;
-		representation.transform.localScale = new Vector3(1, 1, 1);
-		representation.transform.localEulerAngles += new Vector3(0,180,0);
-		if (isServer)
-			transform.position += CellLogic.GetPositionOffset();
-
+		TextHolder.SetActive(false);
 	}
 
-	void Update () {
+	void NetworkDisconnect()
+	{
+		Destroy(_projectButton);
+	}
+
+	void Update()
+	{
 		if (isServer && !Approved && Choice1 + Choice2 >= 2)
 		{
 			if (Choice1 > Choice2)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ProjectId);
 				Approved = true;
-				//InitiateProject();
 			}
 			else if (Choice2 > Choice1)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ProjectId);
-				//RemoveProject();
 				Approved = true;
 
 			}
 			else return;
 		}
+		if (RepresentationCreated && !RepresentationParent.activeInHierarchy)
+		{
+			CreateRepresentation();
+			GetComponent<BoxCollider>().enabled = true;
+		}
+	}
+
+	public void CreateProjectButton()
+	{
+		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
+		ProjectTemplate = GameObject.Find("ProjectTemplate");
+		_projectButton = Instantiate(ProjectTemplate, transform.position, Quaternion.identity) as GameObject;
+		_projectButton.transform.parent = GridGroup.transform;
+		_projectButton.transform.localScale = new Vector3(2, 2, 2);
+		_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
+		_projectButton.GetComponent<ProjectText>().SetText(ProjectId);
+		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+
+	}
+
+	public void CreateRepresentation()
+	{
+		//create 3d representation
+		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;
+		representation.transform.parent = RepresentationParent.transform;
+		representation.transform.localScale = new Vector3(1, 1, 1);
+		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
+		RepresentationParent.SetActive(true);
+	    TitleText.text = Title;
+	    ContentText.text = Description;
+	    EnvironmentText.text = "" + Environment;
+	    SocialText.text = "" + Social;
+	    FinanceText.text = "" + Finance;
+
+        //enable player logo
+        switch (ProjectOwner)
+		{
+			case "Finance":
+				PlayerLogos[0].GetComponent<Renderer>().enabled = true;
+				break;
+			case "Social":
+				PlayerLogos[1].GetComponent<Renderer>().enabled = true;
+				break;
+			case "Environment":
+				PlayerLogos[2].GetComponent<Renderer>().enabled = true;
+				break;
+		}
+		//remove button
+		Destroy(_projectButton);
+		if (isServer)
+			transform.position += CellLogic.GetPositionOffset();
+	}
+
+
+	void SelectProject()
+	{
+		ProjectManager.Instance.SelectedProjectId = ProjectId;
+		UIManager.Instance.ShowPlacementCanvas();
 	}
 
 	public void InitiateProject()
 	{
 		if (isServer)
 		{
-			financeeffect = Finance * GlobalManager.Instance.MonthDuration;
-			socialeffect = Social * GlobalManager.Instance.MonthDuration;
-			environmenteffect = Environment * GlobalManager.Instance.MonthDuration;
-
-			CellManager.Instance.UpdateFinance(Cell.CellId, financeeffect);
-			CellManager.Instance.UpdateSocial(Cell.CellId, socialeffect);
-			CellManager.Instance.UpdateEnvironment(Cell.CellId, environmenteffect);
-		    Debug.Log(financeeffect + " " + " " + socialeffect + " " + environmenteffect);
+			CellManager.Instance.UpdateFinance(Cell.CellId, Finance);
+			CellManager.Instance.UpdateSocial(Cell.CellId, Social);
+			CellManager.Instance.UpdateEnvironment(Cell.CellId, Environment);
 		}
-
-		EffectText.text = "F: " + financeeffect + "\nS: " + socialeffect + "\nE: " + environmenteffect;
-		iTween.FadeTo(EffectText.gameObject, iTween.Hash("alpha", 1, "time", .5f));
-		ProjectLogo.SetActive(false);
+		Debug.Log(Finance + " " + " " + Social + " " + Environment);
 	}
 
 	public void SetCell(Vector3 pos)
@@ -111,28 +178,30 @@ public class Project : NetworkBehaviour
 
 	public void ShowProjectCanvas()
 	{
+		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		EventManager.TriggerEvent("ProjectSelected");
 		if (LocalVote)
 		{
-			ShowProjectInfo();
+			Invoke("ShowProjectInfo", .1f);
 		}
 		if (!LocalVote)
 		{
-			ShowVoteCanvas();
+			Invoke("ShowVoteCanvas", .1f);
 		}
 	}
 
 	public void ShowVoteCanvas()
 	{
-		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+		TextHolder.SetActive(true);
 		ProjectManager.Instance.SelectedProjectId = ProjectId;
-		UIManager.Instance.ProjectDescription(ProjectId);
 		UIManager.Instance.EnableVoteUI();
 	}
 
 	public void ShowProjectInfo()
 	{
-		UIManager.Instance.ProjectInfo.text = QuestManager.Instance.GetProjectDescription(ProjectId);
-		UIManager.Instance.ShowProjectInfo();
+		TextHolder.SetActive(true);
+		ProjectManager.Instance.SelectedProjectId = ProjectId;
+		//UIManager.Instance.ShowProjectInfo();
 	}
 
 	public void RemoveProject()
@@ -140,4 +209,5 @@ public class Project : NetworkBehaviour
 		CellLogic.RemoveOccupied();
 		Destroy(gameObject);
 	}
+
 }

@@ -28,19 +28,21 @@ public class GlobalManager : NetworkBehaviour
 		public int Rating;
 		public int Budget;
 		public int ConnectionId;
-		public int CurrentProjectId;
-		public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid, int currentprojectid)
+
+		public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid)
 		{
 			RoleType = roletype;
 			Taken = taken;
 			Rating = rating;
 			Budget = budget;
 			ConnectionId = connectionid;
-			CurrentProjectId = currentprojectid;
 		}
 	}
 	public class PlayerData: SyncListStruct<PlayerDataSave> { }
 	public PlayerData Players = new PlayerData();
+
+
+
 	private int defaultConnId = -1;
 
 	void Awake () {
@@ -53,9 +55,9 @@ public class GlobalManager : NetworkBehaviour
 	{
 		if (isServer)
 		{
-			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId, -1));
-			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId, -1));
-			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId, -1));
+			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId));
+			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId));
+			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId));
 		}
 	}
 
@@ -78,35 +80,6 @@ public class GlobalManager : NetworkBehaviour
 		UIManager.Instance.TimeText.text = "Year " + CurrentYear + ": " + _months[CurrentMonth];
 	}
 
-	public void SetCurrentProject(string roletype, int currentprojectid)
-	{
-		PlayerDataSave dataOld = new PlayerDataSave();
-		PlayerDataSave dataNew = new PlayerDataSave();
-		foreach (PlayerDataSave playerdata in Players)
-		{
-			if (playerdata.RoleType == roletype)
-			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget, playerdata.ConnectionId, currentprojectid);
-				dataOld = playerdata;
-			}
-		}
-		Players.Remove(dataOld);
-		Players.Add(dataNew);
-	}
-
-	public int GetCurrentProject(string roletype)
-	{
-		int returnVar = 0;
-		foreach (PlayerDataSave playerdata in Players)
-		{
-			if (playerdata.RoleType == roletype)
-			{
-				returnVar = playerdata.CurrentProjectId;
-			}
-		}
-		return returnVar;
-	}
-
 	public void SetTaken(int connectionId, bool taken)
 	{
 		PlayerDataSave dataOld = new PlayerDataSave();
@@ -115,7 +88,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.ConnectionId == connectionId)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId, playerdata.CurrentProjectId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId);
 				dataOld = playerdata;
 			}
 		}
@@ -131,7 +104,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid, playerdata.CurrentProjectId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid);
 				dataOld = playerdata;
 			}
 		}
@@ -160,7 +133,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId, playerdata.CurrentProjectId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId);
 				dataOld = playerdata;
 			}
 		}
@@ -189,7 +162,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId, playerdata.CurrentProjectId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId);
 				dataOld = playerdata;
 			}
 		}

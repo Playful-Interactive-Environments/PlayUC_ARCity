@@ -20,6 +20,11 @@ public class Quest : MonoBehaviour
 	public GameObject[] RepresentationSets;
 	public GameObject RepresentationParent;
 
+	//result logic
+	string savestring;
+	int parsedValue;
+	private string[] splitString;
+
 	void Start () {
 		Invoke("CreateRepresentation", .1f);
 	}
@@ -30,8 +35,7 @@ public class Quest : MonoBehaviour
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(3, 3, 3);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
-		transform.position += CellLogic.GetPositionOffset();
-
+		transform.position += CellLogic.GetPositionOffset();    
 	}
 
 	void Update () {
@@ -44,46 +48,64 @@ public class Quest : MonoBehaviour
 		CellLogic.AddOccupied();
 	}
 
-	public void ChooseEffect1()
+	public void Choose(int effect)
 	{
-		if (GetString(Effect1) == "Rating")
+		if (effect == 1)
 		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", GetInt(Effect1));
+			splitString = Effect1.Split('/');
+			UIManager.Instance.UpdateResult(Result1);
 		}
-		if (GetString(Effect1) == "Budget")
+
+		if (effect == 2)
 		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", GetInt(Effect1));
+			splitString = Effect2.Split('/');
+			UIManager.Instance.UpdateResult(Result2);
+		}
+
+		for (int i = 0; i < splitString.Length; i++)
+		{
+			//even members are the names. save them and get corresponding values
+			if (i % 2 == 0)
+			{
+				savestring = splitString[i];
+			}
+			//odd members are values. parse the value and act depending on the already saved name
+			if (i % 2 != 0)
+			{
+				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
+				if (savestring == "Rating")
+				{
+					CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", parsedValue);
+					UIManager.Instance.UpdateResult("Rating", splitString[i]);
+				}
+				if (savestring == "Budget")
+				{
+					CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", parsedValue);
+					UIManager.Instance.UpdateResult("Budget", splitString[i]);
+				}
+				if (savestring == "Project")
+				{
+					ProjectManager.Instance.CreateRandomProject();
+					UIManager.Instance.UpdateResult("Project", "new");
+				}
+				if (savestring == "Environment")
+				{
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					UIManager.Instance.UpdateResult("Environment", splitString[i]);
+				}
+				if (savestring == "Finance")
+				{
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					UIManager.Instance.UpdateResult("Finance", splitString[i]);
+				}
+				if (savestring == "Social")
+				{
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					UIManager.Instance.UpdateResult("Social", splitString[i]);
+				}
+			}
 		}
 		RemoveQuest();
-	}
-
-	public void ChooseEffect2()
-	{
-
-		if (GetString(Effect2) == "Rating")
-		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", GetInt(Effect2));
-		}
-		if (GetString(Effect2) == "Budget")
-		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", GetInt(Effect2));
-		}
-		RemoveQuest();
-	}
-
-	public string GetString(string tosplit)
-	{
-		string[] splitString = tosplit.Split(' ');
-		string type = splitString[0];
-		return type;
-	}
-
-	public int GetInt(string tosplit)
-	{
-		string[] splitString = tosplit.Split(' ');
-		int parsedInt;
-		int.TryParse(splitString[1], NumberStyles.AllowLeadingSign, null, out parsedInt);
-		return parsedInt;
 	}
 
 	public void RemoveQuest()

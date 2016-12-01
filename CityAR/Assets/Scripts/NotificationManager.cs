@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class VoteManager : NetworkBehaviour
+public class NotificationManager : NetworkBehaviour
 {
 	public class Vote
 	{
@@ -17,7 +17,7 @@ public class VoteManager : NetworkBehaviour
 	}
 	[SerializeField]
 	public Dictionary<int, Vote> Votes = new Dictionary<int, Vote>();
-	public static VoteManager Instance = null;
+	public static NotificationManager Instance = null;
 	//NOTIFICATION CANVAS
 	public GridLayoutGroup GridGroup;
 	public Button ButtonTemplate;
@@ -34,79 +34,6 @@ public class VoteManager : NetworkBehaviour
 		ButtonTemplate = GameObject.Find("NotificationTemplate").GetComponent<Button>();
 
 	}
-	
-	public void StartNewVote(int projectnum, string owner)
-	{
-		if (isServer)
-		{
-			if (!Votes.ContainsKey(projectnum))
-			{
-				Vote v = new Vote();
-				Votes.Add(projectnum, v);
-				v.ProjectNumber = projectnum;
-				v.ProjectOwner = owner;
-			}
-			else
-			{
-				Debug.Log("Project already in Votes.");
-			}
-		}
-	}
-
-	public void AddVote(int projectnum, int choice)
-	{
-		Vote v;
-		if (Votes.TryGetValue(projectnum, out v))
-		{
-			//add one vote
-			v.Votes += 1;
-			//voted for choice1
-			if (choice == 0)
-			{
-				Debug.Log(v.ProjectNumber + " " + v.Votes);
-				v.Choice1 += 1;
-			}
-			//voted for choice2
-			else if (choice == 1)
-			{
-				v.Choice2 += 1;
-			}
-		}
-		else
-		{
-			Debug.Log("Project not found " + projectnum);
-		}
-	}
-
-	void Update ()
-	{
-		if (Votes != null && Votes.Keys.Count > 0 && isServer)
-		{
-			foreach (int key in Votes.Keys)
-			{
-				if (Votes[key].Votes >= 3)
-				{
-					if (Votes[key].Choice1 > Votes[key].Choice2 && !Votes[key].VoteFinished)
-					{
-						Votes[key].VoteFinished = true;
-						Votes[key].Votes = 0;
-						Votes[key].Choice2 = 0;
-						Votes[key].Choice1 = 0;
-						CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", Votes[key].ProjectOwner, Votes[key].ProjectNumber);
-					}
-
-					else if (Votes[key].Choice1 < Votes[key].Choice2)
-					{
-						Votes[key].VoteFinished = true;
-						Votes[key].Votes = 0;
-						Votes[key].Choice2 = 0;
-						Votes[key].Choice1 = 0;
-						CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", Votes[key].ProjectOwner, Votes[key].ProjectNumber);
-					}
-				}
-			}
-		}
-	}
 
 	public void AddNotification(string type, string owner, int projectnum)
 	{
@@ -119,11 +46,9 @@ public class VoteManager : NetworkBehaviour
 		NotificationButtons.Add(button);
 		//create notification
 		string title = QuestManager.Instance.GetTitle(projectnum);
-		string content = QuestManager.Instance.GetProjectDescription(projectnum);
 		Notification notification = button.GetComponent<Notification>();
 		notification.NotificationType = type;
 		notification.NotificationTitle = title;
-		notification.NotificationContent = content;
 		notification.NotificationID = projectnum;
 		notification.NotificationOwner = owner;
 		notification.UpdateButtonTitle();

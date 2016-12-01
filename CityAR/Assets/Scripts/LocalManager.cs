@@ -2,11 +2,12 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class LocalManager : MonoBehaviour
 {
 	public static LocalManager Instance = null;
-	public string RoleType;
+	public string RoleType; 
 
 	void Awake ()
 	{
@@ -16,7 +17,7 @@ public class LocalManager : MonoBehaviour
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
 		Application.targetFrameRate = 30;
-
+		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		InvokeRepeating("Refresh", 0f, 1f);
 	}
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Vuforia;
@@ -25,7 +26,6 @@ public class UIManager : AManager<UIManager>
 	public Canvas QuestCanvas;
 	public Canvas ResultCanvas;
 	public Canvas EventCanvas;
-	public Canvas ProposeCanvas;
 	public Canvas ProjectCanvas;
 	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
@@ -48,31 +48,34 @@ public class UIManager : AManager<UIManager>
 	public Text Choice1;
 	public Text Choice2;
 	public Text Result;
+	public GameObject[] ResultIcons;
+	public Text[] ResultText;
+	public Vector3[] iconPositions;
+	private int currentIcon;
+	public Vector3[] textPositions;
+	private int currentText;
+	Vector3 hiddenPos = new Vector3(-100, 1000,0);
 	public Quest CurrentQuest;
 	//PROJECT & VOTING CANVAS
-	public Button ProposeButton;
 	public Button ProjectButton;
-	public Text Project_Content;
-	public Text VoteStatus;
-	public Button Vote_Choice1_Button;
-	public Button Vote_Choice2_Button;
-	public Text Proposed_Description;
+	public GameObject VoteDescription;
 	public Text EventText;
 	public int CurrentProjectButton;
 	//PROJECT INFO CANVAS
-	public Text ProjectInfo;
+	public GameObject ProjectInfo;
 
 	void Start ()
 	{
-		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		ResetMenus();
 	}
 
 	void Update ()
 	{
 		UpdateRoleButtons();
-		Projects = ProjectManager.Instance;
-
+		if (ProjectManager.Instance != null)
+		{
+			Projects = ProjectManager.Instance;
+		}
 
 	}
 
@@ -88,8 +91,6 @@ public class UIManager : AManager<UIManager>
 		QuestCanvas.enabled = false;
 		ResultCanvas.gameObject.SetActive(true);
 		ResultCanvas.enabled = false;
-		ProposeCanvas.gameObject.SetActive(true);
-		ProposeCanvas.enabled = false;
 		VoteCanvas.gameObject.SetActive(true);
 		VoteCanvas.enabled = false;
 		PlacementCanvas.gameObject.SetActive(true);
@@ -104,45 +105,58 @@ public class UIManager : AManager<UIManager>
 		ProjectInfoCanvas.enabled = false;
 		Switch.gameObject.SetActive(true);
 		Switch.enabled = false;
-		NotificationButton.gameObject.SetActive(true);
+		NotificationButton.gameObject.SetActive(false);
 		NotificationButton.enabled = false;
-
+		ProjectButton.gameObject.SetActive(false);
+		ProjectButton.enabled = false;
 		CurrentState = state;
 		switch (CurrentState)
 		{
 
 			case UiState.Network:
 				NetworkCanvas.enabled = true;
+				Switch.enabled = true;
 				break;
 			case UiState.Role:
 				RoleCanvas.enabled = true;
 				break;
 			case UiState.Game:
 				GameCanvas.enabled = true;
+				ProjectButton.enabled = true;
+				ProjectButton.gameObject.SetActive(true);
+				NotificationButton.enabled = true;
+				NotificationButton.gameObject.SetActive(true);
+				Switch.enabled = true;
 				break;
 			case UiState.Projects:
-		        ProjectCanvas.enabled = true;
+				ProjectCanvas.enabled = true;
+				ProjectButton.enabled = true;
+				ProjectButton.gameObject.SetActive(true);
 				break;
 			case UiState.Placement:
-		        PlacementCanvas.enabled = true;
+				PlacementCanvas.enabled = true;
 				break;
 			case UiState.ProjectInfo:
-		        ProjectInfoCanvas.enabled = true;
+				ProjectInfo.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
+				ProjectInfoCanvas.enabled = true;
 				break;
 			case UiState.Vote:
-		        VoteCanvas.enabled = true;
+				//VoteDescription.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
+				VoteCanvas.enabled = true;
 				break;
 			case UiState.Notifications:
-		        NotificationCanvas.enabled = true;
+				NotificationCanvas.enabled = true;
+				NotificationButton.enabled = true;
+				NotificationButton.gameObject.SetActive(true);
 				break;
 			case UiState.Event:
-		        EventCanvas.enabled = true;
+				EventCanvas.enabled = true;
 				break;
 			case UiState.Quest:
-		        QuestCanvas.enabled = true;
+				QuestCanvas.enabled = true;
 				break;
 			case UiState.Result:
-		        ResultCanvas.enabled = true;
+				ResultCanvas.enabled = true;
 				break;
 		}
 }
@@ -150,65 +164,28 @@ public class UIManager : AManager<UIManager>
 
 	public void MenuUI()
 	{
-		if (NetworkCanvas.gameObject.activeInHierarchy == false)
-		{
-			NetworkCanvas.gameObject.SetActive(true);
-			GameCanvas.gameObject.SetActive(false);
-			NotificationButton.gameObject.SetActive(false);
-
-		}
+		if (NetworkCanvas.enabled == false)
+			Change(UiState.Network);
 		else
-		{
-			NetworkCanvas.gameObject.SetActive(false);
-			GameCanvas.gameObject.SetActive(true);
-			NotificationButton.gameObject.SetActive(true);
-
-		}
+			GameUI();
 	}
 
 	public void NotificationUI()
 	{
 		if (NotificationCanvas.enabled == false)
-		{
-			SetNotificationState(false);
-			GameCanvas.gameObject.SetActive(false);
-			NotificationCanvas.enabled = true;
-		}
+			Change(UiState.Notifications);
 		else
-		{
-			//NotificationCanvas.gameObject.SetActive(false);
-			GameCanvas.gameObject.SetActive(true);
-			NotificationCanvas.enabled = false;
-		}
+			GameUI();
 	}
 
 	public void GameUI()
 	{
-		VoteCanvas.gameObject.SetActive(false);
-		NotificationCanvas.enabled = false;
-		ProposeCanvas.gameObject.SetActive(false);
-		RoleCanvas.gameObject.SetActive(false);
-		QuestCanvas.gameObject.SetActive(false);
-		ResultCanvas.gameObject.SetActive(false);
-		GameCanvas.gameObject.SetActive(true);
-		Switch.gameObject.SetActive(true);
-		NotificationButton.gameObject.SetActive(true);
-
+		Change(UiState.Game);
 	}
+
 	public void ShowProjectInfo()
 	{
-		GameCanvas.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
-		ProjectInfoCanvas.gameObject.SetActive(true);
-
-	}
-
-	public void CloseProjectInfo()
-	{
-		ProjectInfoCanvas.gameObject.SetActive(false);
-
-		NotificationButton.gameObject.SetActive(true);
-		GameCanvas.gameObject.SetActive(true);
+		Change(UiState.ProjectInfo);
 	}
 
 	public void RestartApp()
@@ -221,168 +198,126 @@ public class UIManager : AManager<UIManager>
 	#region Quest UI
 	public void QuestUI(Quest quest)
 	{
+		Change(UiState.Quest);
 		CurrentQuest = quest;
-		GameCanvas.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
-		QuestCanvas.gameObject.SetActive(true);
 		Title.text = CurrentQuest.Title;
 		Content.text = CurrentQuest.Content;
-		Choice1.text = CurrentQuest.Choice1;
-		Choice2.text = CurrentQuest.Choice2;
+		Choice1.text = "1. " + CurrentQuest.Choice1;
+		Choice2.text = "2. " + CurrentQuest.Choice2;
 	}
 
 	public void Choose_1()
 	{
-		CurrentQuest.ChooseEffect1();
-		MakeChoice();
-		Result.text = CurrentQuest.Result1 + "\n" + CurrentQuest.Effect1;
+		ResetIconPos();
+		CurrentQuest.Choose(1);
+		Change(UiState.Result);
 	}
 	public void Choose_2()
 	{
-		CurrentQuest.ChooseEffect2();
-		MakeChoice();
-		Result.text = CurrentQuest.Result2 + "\n" + CurrentQuest.Effect2;
+		ResetIconPos();
+		CurrentQuest.Choose(2);
+		Change(UiState.Result);
+	}
+
+	void ResetIconPos()
+	{
+		currentIcon = 0;
+		currentText = 0;
+		foreach (GameObject obj in ResultIcons)
+		{
+			obj.GetComponent<RectTransform>().localPosition = hiddenPos;
+		}
+		foreach (Text obj in ResultText)
+		{
+			obj.GetComponent<RectTransform>().localPosition = hiddenPos;
+		}
 
 	}
 
-	public void MakeChoice()
+	public void UpdateResult(string value)
 	{
-
-		QuestCanvas.gameObject.SetActive(false);
-		ResultCanvas.gameObject.SetActive(true);
+		ResultText[6].GetComponent<RectTransform>().localPosition = textPositions[6];
+		ResultText[6].text = "" + value;
 	}
-	public void ExitQuestUI()
+	public void UpdateResult(string type, string value)
 	{
-		QuestCanvas.gameObject.SetActive(false);
-		ResultCanvas.gameObject.SetActive(false);
-		GameCanvas.gameObject.SetActive(true);
-		NotificationButton.gameObject.SetActive(true);
-
-
+		int num = 0;
+		switch (type)
+		{
+			case "Rating":
+				num = 0;
+				break;
+			case "Budget":
+				num = 1;
+				break;
+			case "Project":
+				num = 2;
+				break;
+			case "Environment":
+				num = 3;
+				break;
+			case "Social":
+				num = 4;
+				break;
+			case "Finance":
+				num = 5;
+				break;
+		}
+		ResultIcons[num].GetComponent<RectTransform>().localPosition = iconPositions[currentIcon];
+		ResultText[num].GetComponent<RectTransform>().localPosition = textPositions[currentText];
+		ResultText[num].text = "" + value;
+		//get next position for icons and text
+		currentIcon += 1;
+		currentText += 1;
 	}
 	#endregion
 
 	#region Project & Vote UI
 
-	public void ShowProject()
-	{
-		ProjectManager.Instance.GetProject();
-		ProjectContent(Projects.SelectedProjectId);
-		ProjectUI();
-	}
-
-	public void SetProjectButton(bool state)
-	{
-		ProjectButton.interactable = state;
-	}
-
 	public void ProjectUI()
 	{
-		if (GameCanvas.gameObject.activeInHierarchy)
-		{
-			ProposeCanvas.gameObject.SetActive(true);
-			ProjectCanvas.enabled = true;
-
-			//GameCanvas.gameObject.SetActive(false);
-			//NotificationButton.gameObject.SetActive(false);
-		}
+		if (GameCanvas.enabled)
+			Change(UiState.Projects);
 		else
-		{
-			ProposeCanvas.gameObject.SetActive(false);
-			ProjectCanvas.enabled = false;
-
-			//GameCanvas.gameObject.SetActive(true);
-			//NotificationButton.gameObject.SetActive(true);
-		}
+			Change(UiState.Game);
 	}
 
 	public void PlaceProject()
 	{
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
-			CellManager.Instance.NetworkCommunicator.BuildProject(CameraControl.Instance.LastTouchedCell.CellPos, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.Quests.GetCost(ProjectManager.Instance.SelectedProjectId));
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.Quests.GetRating(ProjectManager.Instance.SelectedProjectId));
-			ProjectDescription(ProjectManager.Instance.SelectedProjectId);
-			PlacementCanvas.gameObject.SetActive(false);
-			GameCanvas.gameObject.SetActive(true);
-			SetProjectButton(false);
-			//EnableVoteUI();
+			CellManager.Instance.NetworkCommunicator.ActivateProject("PlaceProject", CameraControl.Instance.LastTouchedCell.CellPos, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.Quests.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.Quests.GetRatingInt(ProjectManager.Instance.SelectedProjectId));
+			GameUI();
 		}
 	}
 
 	public void ShowPlacementCanvas()
 	{
-		ProposeCanvas.gameObject.SetActive(false);
-		VoteCanvas.gameObject.SetActive(false);
-		GameCanvas.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
-		PlacementCanvas.gameObject.SetActive(true);
-	}
-
-	public void HidePlacementCanvas()
-	{
-		GameCanvas.gameObject.SetActive(true);
-		NotificationButton.gameObject.SetActive(true);
-		PlacementCanvas.gameObject.SetActive(false);
+		Change(UiState.Placement);
 	}
 
 	public void EnableVoteUI()
 	{
-		VoteStatus.text = "Please Vote.";
-		ProposeCanvas.gameObject.SetActive(false);
-		GameCanvas.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
-		VoteCanvas.gameObject.SetActive(true);
+		Change(UiState.Vote);
 	}
 	public void Vote_Choice1()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedProjectId);
 		ProjectManager.Instance.SelectedProject.LocalVote = true;
-		EndVote();
+		GameUI();
 	}
 	public void Vote_Choice2()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedProjectId);
 		ProjectManager.Instance.SelectedProject.LocalVote = true;
-
-		EndVote();
-	}
-	
-	public void EndVote()
-	{
-		ProposeCanvas.gameObject.SetActive(false);
-		VoteCanvas.gameObject.SetActive(false);
-		GameCanvas.gameObject.SetActive(true);
-		NotificationButton.gameObject.SetActive(true);
-
-		Vote_Choice1_Button.interactable = true;
-		Vote_Choice2_Button.interactable = true;
-		Project_Content.gameObject.SetActive(true);
-		Proposed_Description.gameObject.SetActive(true);
-	}
-	public void ProjectContent(int projectnum)
-	{
-		Project_Content.text = QuestManager.Instance.GetProjectDescription(projectnum);
-	}
-
-	public void ProjectDescription(int projectnum)
-	{
-		Proposed_Description.text = QuestManager.Instance.GetProjectDescription(projectnum);
+		GameUI();
 	}
 
 	public void DisplayEventCanvas()
 	{
-		NotificationButton.gameObject.SetActive(false);
-		NotificationCanvas.enabled = false;
-		EventCanvas.enabled = true;
-	}
-
-	public void CloseEventCanvas()
-	{
-		NotificationButton.gameObject.SetActive(true);
-		NotificationCanvas.enabled = true;
-		EventCanvas.enabled = false;
+		Change(UiState.Event);
 	}
 
 	public void SetNotificationState(bool state)
@@ -459,36 +394,20 @@ public class UIManager : AManager<UIManager>
 
 	public void RoleUI()
 	{
-		NetworkCanvas.gameObject.SetActive(false);
-		RoleCanvas.gameObject.SetActive(true);
+		Change(UiState.Role);
 	}
 	#endregion
 
 	public void ResetMenus()
 	{
-		NetworkCanvas.gameObject.SetActive(true);
-		GameCanvas.gameObject.SetActive(false);
-		RoleCanvas.gameObject.SetActive(false);
-		QuestCanvas.gameObject.SetActive(false);
-		ResultCanvas.gameObject.SetActive(false);
-		ProposeCanvas.gameObject.SetActive(false);
-		VoteCanvas.gameObject.SetActive(false);
-		PlacementCanvas.gameObject.SetActive(false);
-		NotificationCanvas.gameObject.SetActive(true);
-		NotificationCanvas.enabled = false;
-		EventCanvas.gameObject.SetActive(true);
-		EventCanvas.enabled = false;
-		ProjectCanvas.enabled = false;
-		ProjectInfoCanvas.gameObject.SetActive(false);
-		Switch.gameObject.SetActive(false);
-		NotificationButton.gameObject.SetActive(false);
+		Change(UiState.Network);
 	}
 
 	public void DebugButton()
 	{
 		//Debug.Log("CLICK");
-		Vote_Choice1();
-
+		//Vote_Choice1();
+		ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);
 	}

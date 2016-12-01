@@ -15,8 +15,13 @@ public class CellInterface : MonoBehaviour {
 		CellText.transform.localScale /= 297;
 		CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
 		CellText.text = GetComponent<HexCell>().CellId +"";
+        EventManager.StartListening("ProjectSelected", ProjectSelected);
 	}
-	
+
+    void ProjectSelected()
+    {
+        ResetCell();
+    }
 	void Update () {
 
 		switch (CurrentState)
@@ -25,7 +30,7 @@ public class CellInterface : MonoBehaviour {
 				CellText.gameObject.SetActive(false);
 				break;
 			case InterfaceState.Menu:
-				CellText.text = "  Environment " + GetComponent<CellLogic>().EnvironmentRate + "\n  Social " + GetComponent<CellLogic>().SocialRate + "\n  Finance " + GetComponent<CellLogic>().FinanceRate;
+				CellText.text = "" + GetComponent<CellLogic>().FinanceRate + "\n" + GetComponent<CellLogic>().SocialRate + "\n" + GetComponent<CellLogic>().EnvironmentRate;
 				CellText.gameObject.SetActive(true);
 				break;
 		}

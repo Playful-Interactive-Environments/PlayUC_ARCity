@@ -191,7 +191,6 @@ public class NetworkingManager : NetworkManager
             }
             Debug.Log("OnClientConnect " + conn);
         }
-
     }
     
     public override void OnStartClient(NetworkClient client)
@@ -199,7 +198,6 @@ public class NetworkingManager : NetworkManager
        base.OnStartClient(client);
         Debug.Log("OnStartClient");
         UIManager.Instance.RoleUI();
-
     }
 
     public override void OnStopClient()
@@ -208,7 +206,7 @@ public class NetworkingManager : NetworkManager
         ClientScene.DestroyAllClientObjects();
         ClientScene.ClearSpawners();
         isClient = false;
-
+        EventManager.TriggerEvent("NetworkDisconnect");
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)

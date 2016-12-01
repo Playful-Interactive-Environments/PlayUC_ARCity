@@ -9,15 +9,15 @@ public class ProjectManager : NetworkBehaviour
 
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
-	public List<Project> Projects;
 	public QuestManager Quests;
 	public int SelectedProjectId;
 	public Project SelectedProject;
-	public int CurrentAvailableProject;
-	public SyncListInt ProjectIDs = new SyncListInt();
-	//ProjectTemplate
-	public GameObject ProjectTemplate;
-	public GridLayoutGroup GridGroup;
+	public List<Project> Projects;
+	public SyncListInt ProjectPool = new SyncListInt();
+	public SyncListInt EnvironmentProjects = new SyncListInt();
+	public SyncListInt SocialProjects = new SyncListInt();
+	public SyncListInt FinanceProjects = new SyncListInt();
+
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
@@ -25,18 +25,15 @@ public class ProjectManager : NetworkBehaviour
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
 	}
-
+	
 	void Start()
 	{
 		Invoke("PopulateIds", .1f);
-		Quests = QuestManager.Instance;
-
 	}
 
-
-	void Update()
+	public void CreateRandomProject()
 	{
-
+		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", new Vector3(0,0,0), LocalManager.Instance.RoleType, GenerateRandomProject());
 	}
 
 	void PopulateIds()
@@ -45,87 +42,60 @@ public class ProjectManager : NetworkBehaviour
 		{
 			for (int i = 1; i <= Quests.CSVProjects.rowList.Count; i++)
 			{
-				ProjectIDs.Add(i);
+				ProjectPool.Add(i);
 			}
 		}
-//TODO: handle if client restarted
-		ResetUI();
-		SelectedProjectId = GlobalManager.Instance.GetCurrentProject(LocalManager.Instance.RoleType);
 	}
 
-
 	//called only on server
-	public void BuildProject(Vector3 pos, string owner, int id)
+	public void InstantiateProject(string owner, int id)
 	{
-		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity) as GameObject;
-
+		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		Project project = gobj.GetComponent<Project>();
-		Projects.Add(project);
 		project.ProjectOwner = owner;
 		project.ProjectId = id;
 		project.Title = Quests.GetTitle(id);
 		project.Description = Quests.GetContent(id);
-		project.Rating = Quests.GetRating(id);
-		project.Social = Quests.GetSocial(id);
-		project.Finance = Quests.GetFinance(id);
-		project.Environment = Quests.GetEnvironment(id);
-		project.Cost = Quests.GetCost(id);
+		project.Rating = Quests.GetRatingInt(id);
+		project.Social = Quests.GetSocialInt(id);
+		project.Finance = Quests.GetFinanceInt(id);
+		project.Environment = Quests.GetEnvironmentInt(id);
+		project.Budget = Quests.GetBudgetInt(id);
+		NetworkServer.Spawn(gobj);
+		SaveProject(owner, id, project);
+	}
+
+	public void PlaceProject(Vector3 pos, string owner, int id)
+	{
+		Project project = FindProject(id);
 		project.SetCell(pos);
 		project.transform.position = pos;
-
-		SelectedProject = project;
-		NetworkServer.Spawn(gobj);
-	}
-
-	public void ProjectApproved(int num)
-	{
-		FindProject(num).InitiateProject();
-		ResetUI();
-	}
-
-	public void ProjectRejected(int num)
-	{
-		Project p = FindProject(num);
-		Projects.Remove(p);
-		Destroy(p.gameObject);
-		ResetUI();
-	}
-
-	public void ResetUI()
-	{
-		CurrentAvailableProject = GenerateRandomProject();
-		UIManager.Instance.SetProjectButton(true);
+		project.RepresentationCreated = true;
+		RemoveProject(owner, id);
 	}
 
 	public int GenerateRandomProject()
 	{
-		if (ProjectIDs.Count == 0)
+		if (ProjectPool.Count == 0)
 			PopulateIds();
-		int randomProject = Random.Range(0, ProjectIDs.Count);
-		int returnId = ProjectIDs[randomProject];
-		ProjectIDs.RemoveAt(randomProject);
+		int randomProject = Random.Range(0, ProjectPool.Count);
+		int returnId = ProjectPool[randomProject];
+		ProjectPool.RemoveAt(randomProject);
 		return returnId;
 	}
 
-	public void AddProject()
-	{
-		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
-		ProjectTemplate = GameObject.Find("ProjectTemplate");
-		GameObject gameobj = Instantiate(ProjectTemplate, transform.position, Quaternion.identity) as GameObject;
-		gameobj.transform.parent = GridGroup.transform;
-		gameobj.transform.localScale = new Vector3(2, 2, 2);
-	}
-	public void GetProject()
-	{
-		SelectedProjectId = CurrentAvailableProject;
-		GlobalManager.Instance.SetCurrentProject(LocalManager.Instance.RoleType, CurrentAvailableProject);
-		AddProject();
-	}
 	public Project FindProject(int projectnum)
 	{
 		if (isClient && !isServer)
 		{
-			UpdateLocalProjectList();
+			Projects.Clear();
+			if (isClient && !isServer)
+			{
+				foreach (Project p in FindObjectsOfType<Project>())
+				{
+					Projects.Add(p);
+				}
+			}
 		}
 
 		foreach (Project p in Projects)
@@ -137,12 +107,51 @@ public class ProjectManager : NetworkBehaviour
 		}
 		return null;
 	}
-	void UpdateLocalProjectList()
+
+
+	public void ProjectApproved(int num)
 	{
-		Projects.Clear();
-		if (isClient && !isServer)
+		FindProject(num).InitiateProject();
+	}
+
+	public void ProjectRejected(int num)
+	{
+		Project p = FindProject(num);
+		Projects.Remove(p);
+		Destroy(p.gameObject);
+	}
+
+	public void SaveProject(string type, int id, Project project)
+	{
+		Projects.Add(project);
+		switch (type)
 		{
-			Projects.Add(FindObjectOfType<Project>());
+			case "Environment":
+				EnvironmentProjects.Add(id);
+				break;
+			case "Social":
+				SocialProjects.Add(id);
+				break;
+			case "Finance":
+				FinanceProjects.Add(id);
+				break;
 		}
 	}
+
+	public void RemoveProject(string type, int id)
+	{
+		switch (type)
+		{
+			case "Environment":
+				EnvironmentProjects.Remove(id);
+				break;
+			case "Social":
+				SocialProjects.Remove(id);
+				break;
+			case "Finance":
+				FinanceProjects.Remove(id);
+				break;
+		}
+	}
+
 }

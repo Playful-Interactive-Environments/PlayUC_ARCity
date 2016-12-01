@@ -6,7 +6,6 @@ public class Notification : MonoBehaviour
 {
 	public string NotificationType;
 	public string NotificationTitle;
-	public string NotificationContent;
 	public int NotificationID;
 	public string NotificationOwner;
 	void Start ()
@@ -21,13 +20,12 @@ public class Notification : MonoBehaviour
 
 	public void AccessNotification()
 	{
-		VoteManager.Instance.CurrentNotification = this.gameObject;
+		NotificationManager.Instance.CurrentNotification = this.gameObject;
 
 		switch (NotificationType)
 		{
 			case "Vote":
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
-				UIManager.Instance.ProjectDescription(NotificationID);
 				UIManager.Instance.NotificationUI();
 				UIManager.Instance.EnableVoteUI();
 				break;
@@ -35,13 +33,13 @@ public class Notification : MonoBehaviour
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " passed!";
 				UIManager.Instance.DisplayEventCanvas();
-				VoteManager.Instance.RemoveNotification(NotificationID);
+				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Choice2":
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " failed!";
 				UIManager.Instance.DisplayEventCanvas();
-				VoteManager.Instance.RemoveNotification(NotificationID);
+				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Waiting":
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
@@ -60,16 +58,16 @@ public class Notification : MonoBehaviour
 		switch (NotificationType)
 		{
 			case "Vote":
-				GetComponentInChildren<Text>().text = NotificationType + " : " + NotificationOwner + " Proposes: " + NotificationTitle;
+				GetComponentInChildren<Text>().text = NotificationType + ":\n" + NotificationOwner + " Proposes: " + NotificationTitle;
 				break;
 			case "Choice1":
-				GetComponentInChildren<Text>().text = "Event : " +  NotificationTitle + " is Approved.";
+				GetComponentInChildren<Text>().text = "Event:\n" +  NotificationTitle + " is Approved.";
 				break;
 			case "Choice2":
-				GetComponentInChildren<Text>().text = "Event : " + NotificationTitle + " is Denied.";
+				GetComponentInChildren<Text>().text = "Event:\n" + NotificationTitle + " is Denied.";
 				break;
 			case "Waiting":
-				GetComponentInChildren<Text>().text = "Initiated " + NotificationTitle;
+				GetComponentInChildren<Text>().text = "Initiated \n" + NotificationTitle;
 				break;
 			default:
 				break;

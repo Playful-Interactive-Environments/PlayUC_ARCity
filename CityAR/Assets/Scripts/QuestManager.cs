@@ -43,18 +43,6 @@ public class QuestManager : MonoBehaviour {
 		}
 	}
 	
-	public string GetProjectDescription(int projectnum)
-	{
-		string description = "";
-		return description = GetTitle(projectnum)
-							 + "\n" + GetContent(projectnum)
-							 + "\nRating: " + GetRating(projectnum)
-							 + "\nCost: " + GetCost(projectnum)
-							 +"\nSocial: " + TranslateMeaning(GetSocial(projectnum))
-							 + "\nEnvironment: " + TranslateMeaning(GetEnvironment(projectnum))
-							 + "\nFinance: " + TranslateMeaning(GetFinance(projectnum));
-	}
-
 	void Update ()
 	{
 		_questTime += Time.deltaTime;
@@ -174,37 +162,46 @@ public class QuestManager : MonoBehaviour {
 		return CSVProjects.Find_ID(num).content;
 	}
 
-	public int GetSocial(int num)
+	public int GetSocialInt(int num)
 	{
-		string social = CSVProjects.Find_ID(num).social;
-		//Debug.Log(ConvertString(social));
-		return ConvertString(social);
+		return ConvertString(CSVProjects.Find_ID(num).social);
 	}
-	public int GetFinance(int num)
+	public string GetSocialString(int num)
 	{
-		string finance = CSVProjects.Find_ID(num).finance;
-		//Debug.Log(ConvertString(finance));
-		return ConvertString(finance);
+		return CSVProjects.Find_ID(num).social;
 	}
-	public int GetRating(int num)
+	public int GetFinanceInt(int num)
 	{
-		string rating = CSVProjects.Find_ID(num).rating;
-		//Debug.Log(ConvertString(radius));
-		return ConvertString(rating);
+		return ConvertString(CSVProjects.Find_ID(num).finance);
 	}
-	public int GetEnvironment(int num)
+	public string GetFinanceString(int num)
 	{
-		string environment = CSVProjects.Find_ID(num).environment;
-		//Debug.Log(ConvertString(environment));
-		return ConvertString(environment);
+		return CSVProjects.Find_ID(num).finance;
 	}
-	public int GetCost(int num)
+	public int GetRatingInt(int num)
 	{
-		string cost = CSVProjects.Find_ID(num).cost;
-		//Debug.Log(ConvertString(environment));
-		return ConvertString(cost);
+		return ConvertString(CSVProjects.Find_ID(num).rating);
 	}
-
+	public string GetRatingString(int num)
+	{
+		return CSVProjects.Find_ID(num).rating;
+	}
+	public int GetEnvironmentInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).environment);
+	}
+	public string GetEnvironmentString(int num)
+	{
+		return CSVProjects.Find_ID(num).environment;
+	}
+	public int GetBudgetInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).cost);
+	}
+	public string GetBudgetString(int num)
+	{
+		return CSVProjects.Find_ID(num).cost;
+	}
 	private int ConvertString(string input)
 	{
 		int parsedInt = 0;
