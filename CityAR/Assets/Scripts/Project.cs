@@ -151,7 +151,6 @@ public class Project : NetworkBehaviour
 			transform.position += CellLogic.GetPositionOffset();
 	}
 
-
 	void SelectProject()
 	{
 		ProjectManager.Instance.SelectedProjectId = ProjectId;
@@ -201,7 +200,6 @@ public class Project : NetworkBehaviour
 	{
 		TextHolder.SetActive(true);
 		ProjectManager.Instance.SelectedProjectId = ProjectId;
-		//UIManager.Instance.ShowProjectInfo();
 	}
 
 	public void RemoveProject()
@@ -209,5 +207,4 @@ public class Project : NetworkBehaviour
 		CellLogic.RemoveOccupied();
 		Destroy(gameObject);
 	}
-
 }

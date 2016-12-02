@@ -15,7 +15,7 @@ public class UIManager : AManager<UIManager>
 	//Switch UI ELEMENTS
 	public enum UiState
 	{
-		Network, Role, Game, Projects, Placement, Notifications, Event, ProjectInfo, Vote, Quest, Result
+		Network, Role, Game, Projects, DesignProject, Placement, Notifications, Event, Vote, Quest, Result
 	}
 
 	public UiState CurrentState;
@@ -27,10 +27,10 @@ public class UIManager : AManager<UIManager>
 	public Canvas ResultCanvas;
 	public Canvas EventCanvas;
 	public Canvas ProjectCanvas;
+    public Canvas ProjectDesignCanvas;
 	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
 	public Canvas PlacementCanvas;
-	public Canvas ProjectInfoCanvas;
 	public Text DebugText;
 	//CHOOSE ROLE
 	public Button Environment;
@@ -76,7 +76,6 @@ public class UIManager : AManager<UIManager>
 		{
 			Projects = ProjectManager.Instance;
 		}
-
 	}
 
 	public void Change(UiState state)
@@ -101,9 +100,9 @@ public class UIManager : AManager<UIManager>
 		EventCanvas.enabled = false;
 		ProjectCanvas.gameObject.SetActive(true);
 		ProjectCanvas.enabled = false;
-		ProjectInfoCanvas.gameObject.SetActive(true);
-		ProjectInfoCanvas.enabled = false;
-		Switch.gameObject.SetActive(true);
+        ProjectDesignCanvas.gameObject.SetActive(true);
+        ProjectDesignCanvas.enabled = false;
+        Switch.gameObject.SetActive(true);
 		Switch.enabled = false;
 		NotificationButton.gameObject.SetActive(false);
 		NotificationButton.enabled = false;
@@ -112,7 +111,6 @@ public class UIManager : AManager<UIManager>
 		CurrentState = state;
 		switch (CurrentState)
 		{
-
 			case UiState.Network:
 				NetworkCanvas.enabled = true;
 				Switch.enabled = true;
@@ -133,15 +131,14 @@ public class UIManager : AManager<UIManager>
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
 				break;
-			case UiState.Placement:
+            case UiState.DesignProject:
+                ProjectDesignCanvas.enabled = true;
+                break;
+            case UiState.Placement:
 				PlacementCanvas.enabled = true;
 				break;
-			case UiState.ProjectInfo:
-				ProjectInfo.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
-				ProjectInfoCanvas.enabled = true;
-				break;
 			case UiState.Vote:
-				//VoteDescription.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
+				VoteDescription.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
 				VoteCanvas.enabled = true;
 				break;
 			case UiState.Notifications:
@@ -181,11 +178,6 @@ public class UIManager : AManager<UIManager>
 	public void GameUI()
 	{
 		Change(UiState.Game);
-	}
-
-	public void ShowProjectInfo()
-	{
-		Change(UiState.ProjectInfo);
 	}
 
 	public void RestartApp()
@@ -302,12 +294,19 @@ public class UIManager : AManager<UIManager>
 	{
 		Change(UiState.Vote);
 	}
+
+    public void ShowProjectDesignCanvas()
+    {
+        Change(UiState.DesignProject);
+    }
+
 	public void Vote_Choice1()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedProjectId);
 		ProjectManager.Instance.SelectedProject.LocalVote = true;
 		GameUI();
 	}
+
 	public void Vote_Choice2()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedProjectId);
