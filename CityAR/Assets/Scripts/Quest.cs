@@ -45,7 +45,9 @@ public class Quest : MonoBehaviour
 	{
 		Cell = cell;
 		CellLogic = Cell.GetComponent<CellLogic>();
-		CellLogic.AddOccupied();
+		//CellLogic.AddOccupied();
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", Cell.CellPos);
+
 	}
 
 	public void Choose(int effect)
@@ -54,12 +56,16 @@ public class Quest : MonoBehaviour
 		{
 			splitString = Effect1.Split('/');
 			UIManager.Instance.UpdateResult(Result1);
+			GlobalManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
+
 		}
 
 		if (effect == 2)
 		{
 			splitString = Effect2.Split('/');
 			UIManager.Instance.UpdateResult(Result2);
+			GlobalManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
+
 		}
 
 		for (int i = 0; i < splitString.Length; i++)
@@ -112,6 +118,8 @@ public class Quest : MonoBehaviour
 	{
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		CellLogic.RemoveOccupied();
+		//CellLogic.RemoveOccupied();
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", Cell.CellPos);
+
 	}
 }

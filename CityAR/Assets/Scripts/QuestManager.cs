@@ -8,10 +8,8 @@ public class QuestManager : MonoBehaviour {
 
 	public static QuestManager Instance = null;
 	public CSVManager CSVQuests;
-	public CSVManagerProjects CSVProjects;
 	public UIManager UI;
 	private int questnum;
-
 	public GameObject QuestPrefab;
 	public int MaxQuests = 5;
 	public int CurrentQuests;
@@ -29,7 +27,6 @@ public class QuestManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 		CSVQuests = CSVManager.Instance;
 		UI = UIManager.Instance;
-		CSVProjects = CSVManagerProjects.Instance;
 		Invoke("PopulateIds", .1f);
 		randomId = GetRandomQuest();
 
@@ -153,60 +150,5 @@ public class QuestManager : MonoBehaviour {
 		return returnId;
 	}
 
-	public string GetTitle(int num)
-	{
-		return CSVProjects.Find_ID(num).title;
-	}
-	public string GetContent(int num)
-	{
-		return CSVProjects.Find_ID(num).content;
-	}
 
-	public int GetSocialInt(int num)
-	{
-		return ConvertString(CSVProjects.Find_ID(num).social);
-	}
-	public string GetSocialString(int num)
-	{
-		return CSVProjects.Find_ID(num).social;
-	}
-	public int GetFinanceInt(int num)
-	{
-		return ConvertString(CSVProjects.Find_ID(num).finance);
-	}
-	public string GetFinanceString(int num)
-	{
-		return CSVProjects.Find_ID(num).finance;
-	}
-	public int GetRatingInt(int num)
-	{
-		return ConvertString(CSVProjects.Find_ID(num).rating);
-	}
-	public string GetRatingString(int num)
-	{
-		return CSVProjects.Find_ID(num).rating;
-	}
-	public int GetEnvironmentInt(int num)
-	{
-		return ConvertString(CSVProjects.Find_ID(num).environment);
-	}
-	public string GetEnvironmentString(int num)
-	{
-		return CSVProjects.Find_ID(num).environment;
-	}
-	public int GetBudgetInt(int num)
-	{
-		return ConvertString(CSVProjects.Find_ID(num).cost);
-	}
-	public string GetBudgetString(int num)
-	{
-		return CSVProjects.Find_ID(num).cost;
-	}
-	private int ConvertString(string input)
-	{
-		int parsedInt = 0;
-		int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
-		return parsedInt;
-
-	}
 }

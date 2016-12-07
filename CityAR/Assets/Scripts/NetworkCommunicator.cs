@@ -2,8 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Globalization;
+using System.Threading;
 using UnityEngine.Networking;
 
+[NetworkSettings(channel = 0, sendInterval = .1f)]
 public class NetworkCommunicator : NetworkBehaviour
 {
 
@@ -19,12 +21,59 @@ public class NetworkCommunicator : NetworkBehaviour
     void Start () {
         if(isServer)
             ConnectionId = connectionToClient.connectionId;
+        InvokeRepeating("Stats",.1f,1f);
 
     }
 
+    void Stats()
+    {
+        Debug.Log(NetworkClient.GetTotalConnectionStats());
+    }
     void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
+
+    }
+
+    public void CellOccupiedStatus(string action, Vector3 pos)
+    {
+        if (isServer)
+        {
+            switch (action)
+            {
+                case "add":
+                    HexGrid.Instance.GetCell(pos).GetComponent<CellLogic>().AddOccupied();
+                    break;
+                case "remove":
+                    HexGrid.Instance.GetCell(pos).GetComponent<CellLogic>().RemoveOccupied();
+
+                    break;
+            }
+
+        }
+        if (isClient && !isServer)
+        {
+            CmdAddOccupied(action, pos);
+        }
+    }
+
+    [Command]
+    void CmdAddOccupied(string action, Vector3 pos)
+    {
+        CellOccupiedStatus(action, pos);
+    }
+    public void CreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
+    {
+        if (isServer)
+        {
+            ProjectManager.Instance.CSVProjects.AddNew(id, title, content, rating, social, environment, finance, budget);
+            RpcCreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
+
+        }
+        if (isClient && !isServer)
+        {
+            CmdCreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
+        }
     }
 
     public void ActivateProject(string action, Vector3 pos, string owner, int id)
@@ -81,7 +130,6 @@ public class NetworkCommunicator : NetworkBehaviour
             CmdUpdateCellValue(valuetype, cellid, amount);
         }
     }
-
 
     public void TakeRole(string role)
     {
@@ -174,6 +222,18 @@ public class NetworkCommunicator : NetworkBehaviour
     public void CmdVote(string vote, string owner, int num)
     {
         Vote(vote, owner, num);
+    }
+
+    [Command]
+    void CmdCreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
+    {
+        CreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
+    }
+
+    [ClientRpc]
+    void RpcCreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
+    {
+        ProjectManager.Instance.CSVProjects.AddNew(id, title, content, rating, social, environment, finance, budget);
     }
 
     [ClientRpc]

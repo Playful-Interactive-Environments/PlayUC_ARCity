@@ -4,19 +4,9 @@ using UnityEngine.Networking;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class NotificationManager : NetworkBehaviour
+public class NotificationManager : MonoBehaviour
 {
-	public class Vote
-	{
-		public int ProjectNumber;
-		public int Choice1;
-		public int Choice2;
-		public int Votes;
-		public string ProjectOwner;
-		public bool VoteFinished;
-	}
-	[SerializeField]
-	public Dictionary<int, Vote> Votes = new Dictionary<int, Vote>();
+
 	public static NotificationManager Instance = null;
 	//NOTIFICATION CANVAS
 	public GridLayoutGroup GridGroup;
@@ -45,7 +35,7 @@ public class NotificationManager : NetworkBehaviour
 		button.gameObject.SetActive(true);
 		NotificationButtons.Add(button);
 		//create notification
-		string title = QuestManager.Instance.GetTitle(projectnum);
+		string title = ProjectManager.Instance.GetTitle(projectnum);
 		Notification notification = button.GetComponent<Notification>();
 		notification.NotificationType = type;
 		notification.NotificationTitle = title;

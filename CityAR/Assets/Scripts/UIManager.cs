@@ -8,7 +8,6 @@ using Vuforia;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-[System.Runtime.InteropServices.Guid("2B3BA483-C160-4892-9EF2-05AB923737C1")]
 public class UIManager : AManager<UIManager>
 {
 	public ProjectManager Projects;
@@ -27,7 +26,7 @@ public class UIManager : AManager<UIManager>
 	public Canvas ResultCanvas;
 	public Canvas EventCanvas;
 	public Canvas ProjectCanvas;
-    public Canvas ProjectDesignCanvas;
+	public Canvas ProjectDesignCanvas;
 	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
 	public Canvas PlacementCanvas;
@@ -100,9 +99,9 @@ public class UIManager : AManager<UIManager>
 		EventCanvas.enabled = false;
 		ProjectCanvas.gameObject.SetActive(true);
 		ProjectCanvas.enabled = false;
-        ProjectDesignCanvas.gameObject.SetActive(true);
-        ProjectDesignCanvas.enabled = false;
-        Switch.gameObject.SetActive(true);
+		ProjectDesignCanvas.gameObject.SetActive(true);
+		ProjectDesignCanvas.enabled = false;
+		Switch.gameObject.SetActive(true);
 		Switch.enabled = false;
 		NotificationButton.gameObject.SetActive(false);
 		NotificationButton.enabled = false;
@@ -131,10 +130,10 @@ public class UIManager : AManager<UIManager>
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
 				break;
-            case UiState.DesignProject:
-                ProjectDesignCanvas.enabled = true;
-                break;
-            case UiState.Placement:
+			case UiState.DesignProject:
+				ProjectDesignCanvas.enabled = true;
+				break;
+			case UiState.Placement:
 				PlacementCanvas.enabled = true;
 				break;
 			case UiState.Vote:
@@ -223,7 +222,6 @@ public class UIManager : AManager<UIManager>
 		{
 			obj.GetComponent<RectTransform>().localPosition = hiddenPos;
 		}
-
 	}
 
 	public void UpdateResult(string value)
@@ -231,6 +229,7 @@ public class UIManager : AManager<UIManager>
 		ResultText[6].GetComponent<RectTransform>().localPosition = textPositions[6];
 		ResultText[6].text = "" + value;
 	}
+
 	public void UpdateResult(string type, string value)
 	{
 		int num = 0;
@@ -279,8 +278,8 @@ public class UIManager : AManager<UIManager>
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
 			CellManager.Instance.NetworkCommunicator.ActivateProject("PlaceProject", CameraControl.Instance.LastTouchedCell.CellPos, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.Quests.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.Quests.GetRatingInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetRatingInt(ProjectManager.Instance.SelectedProjectId));
 			GameUI();
 		}
 	}
@@ -295,10 +294,10 @@ public class UIManager : AManager<UIManager>
 		Change(UiState.Vote);
 	}
 
-    public void ShowProjectDesignCanvas()
-    {
-        Change(UiState.DesignProject);
-    }
+	public void ShowProjectDesignCanvas()
+	{
+		Change(UiState.DesignProject);
+	}
 
 	public void Vote_Choice1()
 	{

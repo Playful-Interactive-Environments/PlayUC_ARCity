@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-
+[NetworkSettings(channel = 2, sendInterval = 1f)]
 public class GlobalManager : NetworkBehaviour
 {
 	public static GlobalManager Instance = null;
@@ -20,7 +22,10 @@ public class GlobalManager : NetworkBehaviour
 	public float CellMaxValue = 50; //5 heatmap steps!
 	public int StartingBudget;
 	public int StartingRating;
-	//Storing Player Data
+	private int defaultConnId = -1;
+	public float TimeStamp;
+
+	#region Saving Player Data
 	public struct PlayerDataSave
 	{
 		public string RoleType;
@@ -38,12 +43,35 @@ public class GlobalManager : NetworkBehaviour
 			ConnectionId = connectionid;
 		}
 	}
+
+	public class EventSave
+	{
+		public string TimeStamp;
+		public string Event;
+	}
+
 	public class PlayerData: SyncListStruct<PlayerDataSave> { }
 	public PlayerData Players = new PlayerData();
+	public EventSave GlobalSave;
+	private string savestatepath;
 
+	public void RecordData()
+	{
+		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+		File.AppendAllText(savestatepath, JsonUtility.ToJson(GlobalSave, true));
+		foreach (PlayerDataSave player in Players)
+		{
+			File.AppendAllText(savestatepath, JsonUtility.ToJson(player, true));
+		}
+	}
 
-
-	private int defaultConnId = -1;
+	public void LogEvent(string content)
+	{
+		GlobalSave.TimeStamp = Utilities.DisplayTime(TimeStamp);
+		GlobalSave.Event = content;
+		RecordData();
+	}
+	#endregion
 
 	void Awake () {
 		if (Instance == null)
@@ -51,6 +79,7 @@ public class GlobalManager : NetworkBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 	}
+
 	void Start()
 	{
 		if (isServer)
@@ -58,13 +87,21 @@ public class GlobalManager : NetworkBehaviour
 			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId));
 			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId));
 			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId));
+			GlobalSave = new EventSave();
 		}
+		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+		File.WriteAllText(savestatepath, "New Game");
 	}
 
 	void Update ()
 	{
+		if (Input.GetKeyDown(KeyCode.A))
+		{
+			RecordData();
+		}
 		if (isServer)
 		{
+			TimeStamp += Time.time;
 			_currentTime += Time.deltaTime;
 			if (Mathf.RoundToInt(_currentTime) == MonthDuration)
 			{
@@ -169,6 +206,7 @@ public class GlobalManager : NetworkBehaviour
 		Players.Remove(dataOld);
 		Players.Add(dataNew);
 	}
+
 	public int GetRating(string roletype)
 	{
 		int returnVar = 0;
@@ -194,5 +232,4 @@ public class GlobalManager : NetworkBehaviour
 				break;
 		}
 	}
-
 }

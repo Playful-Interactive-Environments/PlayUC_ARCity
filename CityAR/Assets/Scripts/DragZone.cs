@@ -13,12 +13,14 @@ public class DragZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+    }
 
+    void Update()
+    {
     }
 
     public void OnDrop(PointerEventData eventData)

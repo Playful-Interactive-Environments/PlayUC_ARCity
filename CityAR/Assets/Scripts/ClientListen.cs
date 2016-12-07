@@ -17,7 +17,8 @@ public class ClientListen : MonoBehaviour {
 
     public void StartClientListen()
     {
-
+        if (listenStarted)
+            return;
         remoteEP = new IPEndPoint(IPAddress.Any, receivePort);
 
         client = new UdpClient(remoteEP);

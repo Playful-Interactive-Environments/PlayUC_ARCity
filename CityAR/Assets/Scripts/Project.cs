@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+[NetworkSettings(channel = 2, sendInterval = 1f)]
 public class Project : NetworkBehaviour
 {
 	public HexCell Cell;
@@ -35,6 +36,7 @@ public class Project : NetworkBehaviour
 	public int Choice1;
 	public int Choice2;
 	public bool LocalVote;
+	private Vector3 CellPos;
 
 	//contextual text
 	public GameObject TextHolder;
@@ -48,17 +50,20 @@ public class Project : NetworkBehaviour
 	public GameObject ProjectTemplate;
 	public GridLayoutGroup GridGroup;
 
-
-
 	void Start () {
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		RepresentationParent.SetActive(false);
-        TextHolder.SetActive(false);
+		TextHolder.SetActive(false);
 
-        GetComponent<BoxCollider>().enabled = false;
+		GetComponent<BoxCollider>().enabled = false;
 		if (isServer)
+		{
 			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
+			GlobalManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
+
+		}
+
 		if (LocalManager.Instance.RoleType == ProjectOwner)
 		{
 			LocalVote = true;
@@ -67,18 +72,8 @@ public class Project : NetworkBehaviour
 		Choice1 += 1;
 		EventManager.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventManager.StartListening("ProjectSelected", ProjectSelected);
-        EventManager.StartListening("PlacementMap", ProjectSelected);
+		EventManager.StartListening("PlacementMap", ProjectSelected);
 
-    }
-
-    void ProjectSelected()
-	{
-		TextHolder.SetActive(false);
-	}
-
-	void NetworkDisconnect()
-	{
-		Destroy(_projectButton);
 	}
 
 	void Update()
@@ -104,6 +99,15 @@ public class Project : NetworkBehaviour
 			GetComponent<BoxCollider>().enabled = true;
 		}
 	}
+	void ProjectSelected()
+	{
+		TextHolder.SetActive(false);
+	}
+
+	void NetworkDisconnect()
+	{
+		Destroy(_projectButton);
+	}
 
 	public void CreateProjectButton()
 	{
@@ -126,14 +130,14 @@ public class Project : NetworkBehaviour
 		representation.transform.localScale = new Vector3(1, 1, 1);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
 		RepresentationParent.SetActive(true);
-	    TitleText.text = Title;
-	    ContentText.text = Description;
-	    EnvironmentText.text = "" + Environment;
-	    SocialText.text = "" + Social;
-	    FinanceText.text = "" + Finance;
+		TitleText.text = Title;
+		ContentText.text = Description;
+		EnvironmentText.text = "" + Environment;
+		SocialText.text = "" + Social;
+		FinanceText.text = "" + Finance;
 
-        //enable player logo
-        switch (ProjectOwner)
+		//enable player logo
+		switch (ProjectOwner)
 		{
 			case "Finance":
 				PlayerLogos[0].GetComponent<Renderer>().enabled = true;
@@ -170,9 +174,12 @@ public class Project : NetworkBehaviour
 
 	public void SetCell(Vector3 pos)
 	{
+		CellPos = pos;
 		Cell = HexGrid.Instance.GetCell(pos);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", CellPos);
+
 		CellLogic = Cell.GetComponent<CellLogic>();
-		CellLogic.AddOccupied();
+		//CellLogic.AddOccupied();
 	}
 
 	public void ShowProjectCanvas()
@@ -204,7 +211,8 @@ public class Project : NetworkBehaviour
 
 	public void RemoveProject()
 	{
-		CellLogic.RemoveOccupied();
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellPos);
+		//CellLogic.RemoveOccupied();
 		Destroy(gameObject);
 	}
 }

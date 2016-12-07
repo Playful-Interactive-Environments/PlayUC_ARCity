@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+[NetworkSettings(channel = 2, sendInterval = 1f)]
 
 public class CellManager : NetworkBehaviour
 {
@@ -72,7 +73,7 @@ public class CellManager : NetworkBehaviour
 	void Start ()
 	{
 		Invoke("GenerateValues", .1f);
-		InvokeRepeating("UpdateGridVariables", .5f, 0.5f);
+		InvokeRepeating("UpdateGridVariables", .5f, .5f);
 		ImageTarget = GameObject.Find("ImageTarget");
 	}
 	

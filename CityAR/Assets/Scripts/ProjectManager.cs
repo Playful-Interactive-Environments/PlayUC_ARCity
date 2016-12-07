@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-
+[NetworkSettings(channel = 2, sendInterval = 1f)]
 public class ProjectManager : NetworkBehaviour
 {
 
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
+	public CSVManagerProjects CSVProjects;
 	public QuestManager Quests;
 	public int SelectedProjectId;
 	public Project SelectedProject;
@@ -24,8 +26,9 @@ public class ProjectManager : NetworkBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
+		CSVProjects = CSVManagerProjects.Instance;
 	}
-	
+
 	void Start()
 	{
 		Invoke("PopulateIds", .1f);
@@ -36,11 +39,16 @@ public class ProjectManager : NetworkBehaviour
 		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", new Vector3(0,0,0), LocalManager.Instance.RoleType, GenerateRandomProject());
 	}
 
+	public void CreateProject(int id)
+	{
+		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", new Vector3(0, 0, 0), LocalManager.Instance.RoleType, id);
+	}
+
 	void PopulateIds()
 	{
 		if (isServer)
 		{
-			for (int i = 1; i <= Quests.CSVProjects.rowList.Count; i++)
+			for (int i = 1; i <= CSVProjects.rowList.Count; i++)
 			{
 				ProjectPool.Add(i);
 			}
@@ -50,17 +58,18 @@ public class ProjectManager : NetworkBehaviour
 	//called only on server
 	public void InstantiateProject(string owner, int id)
 	{
+		
 		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		Project project = gobj.GetComponent<Project>();
 		project.ProjectOwner = owner;
 		project.ProjectId = id;
-		project.Title = Quests.GetTitle(id);
-		project.Description = Quests.GetContent(id);
-		project.Rating = Quests.GetRatingInt(id);
-		project.Social = Quests.GetSocialInt(id);
-		project.Finance = Quests.GetFinanceInt(id);
-		project.Environment = Quests.GetEnvironmentInt(id);
-		project.Budget = Quests.GetBudgetInt(id);
+		project.Title = GetTitle(id);
+		project.Description = GetContent(id);
+		project.Rating = GetRatingInt(id);
+		project.Social = GetSocialInt(id);
+		project.Finance = GetFinanceInt(id);
+		project.Environment = GetEnvironmentInt(id);
+		project.Budget = GetBudgetInt(id);
 		NetworkServer.Spawn(gobj);
 		SaveProject(owner, id, project);
 	}
@@ -108,7 +117,6 @@ public class ProjectManager : NetworkBehaviour
 		return null;
 	}
 
-
 	public void ProjectApproved(int num)
 	{
 		FindProject(num).InitiateProject();
@@ -153,5 +161,62 @@ public class ProjectManager : NetworkBehaviour
 				break;
 		}
 	}
+	#region CSV Handlers
+	public string GetTitle(int num)
+	{
+		return CSVProjects.Find_ID(num).title;
+	}
+	public string GetContent(int num)
+	{
+		return CSVProjects.Find_ID(num).content;
+	}
 
+	public int GetSocialInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).social);
+	}
+	public string GetSocialString(int num)
+	{
+		return CSVProjects.Find_ID(num).social;
+	}
+	public int GetFinanceInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).finance);
+	}
+	public string GetFinanceString(int num)
+	{
+		return CSVProjects.Find_ID(num).finance;
+	}
+	public int GetRatingInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).rating);
+	}
+	public string GetRatingString(int num)
+	{
+		return CSVProjects.Find_ID(num).rating;
+	}
+	public int GetEnvironmentInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).environment);
+	}
+	public string GetEnvironmentString(int num)
+	{
+		return CSVProjects.Find_ID(num).environment;
+	}
+	public int GetBudgetInt(int num)
+	{
+		return ConvertString(CSVProjects.Find_ID(num).cost);
+	}
+	public string GetBudgetString(int num)
+	{
+		return CSVProjects.Find_ID(num).cost;
+	}
+	private int ConvertString(string input)
+	{
+		int parsedInt = 0;
+		int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
+		return parsedInt;
+
+	}
+	#endregion
 }

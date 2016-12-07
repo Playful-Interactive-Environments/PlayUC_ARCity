@@ -34,6 +34,19 @@ public class CSVManagerProjects : AManager<CSVManagerProjects>
         return rowList;
     }
 
+    public void AddNew(int id, string title, string content, int rating, int social, int environment, int finance, int cost)
+    {
+        Row row = new Row();
+        row.id = "" + id;
+        row.title = title;
+        row.content = content;
+        row.rating = "" + rating;
+        row.social = "" + social;
+        row.environment = "" + environment;
+        row.finance = "" + finance;
+        row.cost = "" + cost;
+        rowList.Add(row);
+    }
     public bool IsLoaded()
     {
         return isLoaded;

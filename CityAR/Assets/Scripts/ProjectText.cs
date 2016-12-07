@@ -21,13 +21,13 @@ public class ProjectText : MonoBehaviour {
 	{
 		Debug.Log("CreateButton" + id);
 
-		TitleText.text = QuestManager.Instance.GetTitle(id);
-		DescriptionText.text = QuestManager.Instance.GetContent(id);
-		FinanceText.text = "" + QuestManager.Instance.GetFinanceString(id);
-		SocialText.text = "" + QuestManager.Instance.GetSocialString(id);
-		EnvironmentText.text = "" + QuestManager.Instance.GetEnvironmentString(id);
-		RatingText.text = "" + QuestManager.Instance.GetRatingString(id);
-		BudgetText.text = "" + QuestManager.Instance.GetBudgetString(id);
+		TitleText.text = ProjectManager.Instance.GetTitle(id);
+		DescriptionText.text = ProjectManager.Instance.GetContent(id);
+		FinanceText.text = "" + ProjectManager.Instance.GetFinanceString(id);
+		SocialText.text = "" + ProjectManager.Instance.GetSocialString(id);
+		EnvironmentText.text = "" + ProjectManager.Instance.GetEnvironmentString(id);
+		RatingText.text = "" + ProjectManager.Instance.GetRatingString(id);
+		BudgetText.text = "" + ProjectManager.Instance.GetBudgetString(id);
 
 	}
 }

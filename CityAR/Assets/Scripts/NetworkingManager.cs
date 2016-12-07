@@ -66,7 +66,7 @@ public class NetworkingManager : NetworkManager
         if (listen.listenStarted)
         {
             listen.StopListenning();
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Auto";
+            AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
         }
     }
 
@@ -126,7 +126,7 @@ public class NetworkingManager : NetworkManager
         if (listen.listenStarted)
         {
             listen.StopListenning();
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Auto";
+            AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
         }
     }
 
@@ -146,7 +146,7 @@ public class NetworkingManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-        Debug.Log("OnServerDisconnect " + conn.connectionId);
+        DebugText.text = "Server Disconnected" + conn.lastError;
         GlobalManager.Instance.SetTaken(conn.connectionId, false);
     }
     #endregion
@@ -172,8 +172,13 @@ public class NetworkingManager : NetworkManager
             ConnectionIP = listen.serverIP;
             IPInput.text = listen.serverIP;
             AutoConnectButton.GetComponentInChildren<Text>().text = "Found!";
+            CancelInvoke("TryConnect");
         }
-        AutoConnectButton.GetComponentInChildren<Text>().text = "Searching";
+        else
+        {
+            AutoConnectButton.GetComponentInChildren<Text>().text = "Wait...";
+        }
+
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -187,7 +192,7 @@ public class NetworkingManager : NetworkManager
             if (listen.listenStarted)
             {
                 listen.StopListenning();
-                AutoConnectButton.GetComponentInChildren<Text>().text = "Auto";
+                AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
             }
             Debug.Log("OnClientConnect " + conn);
         }
@@ -212,7 +217,7 @@ public class NetworkingManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        Debug.Log("OnClientDisconnect " + conn.connectionId);
+        DebugText.text = "Client Disconnected" + conn.lastError;
         ReconnectClient();
     }
 
@@ -220,12 +225,6 @@ public class NetworkingManager : NetworkManager
     {
         StopClient();
         //StartCoroutine("Reconnect");
-    }
-
-    public override void OnClientError(NetworkConnection conn, int errorCode)
-    {
-        base.OnClientError(conn, errorCode);
-        Debug.Log(errorCode);
     }
 
     public override void OnServerError(NetworkConnection conn, int errorCode)

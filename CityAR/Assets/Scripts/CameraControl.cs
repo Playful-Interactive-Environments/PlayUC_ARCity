@@ -48,10 +48,7 @@ public class CameraControl : AManager<CameraControl>
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
 
-        }
 #endif
 
 #if UNITY_ANDROID
