@@ -50,7 +50,8 @@ public class Project : NetworkBehaviour
 	public GameObject ProjectTemplate;
 	public GridLayoutGroup GridGroup;
 
-	void Start () {
+	void Start ()
+    {
 		transform.name = "Project";
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		RepresentationParent.SetActive(false);
@@ -61,7 +62,6 @@ public class Project : NetworkBehaviour
 		{
 			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
 			GlobalManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
-
 		}
 
 		if (LocalManager.Instance.RoleType == ProjectOwner)
@@ -73,7 +73,6 @@ public class Project : NetworkBehaviour
 		EventManager.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventManager.StartListening("ProjectSelected", ProjectSelected);
 		EventManager.StartListening("PlacementMap", ProjectSelected);
-
 	}
 
 	void Update()

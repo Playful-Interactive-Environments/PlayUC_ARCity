@@ -84,5 +84,4 @@ public class EventManager : MonoBehaviour
         }
     }
     #endregion
-
 }

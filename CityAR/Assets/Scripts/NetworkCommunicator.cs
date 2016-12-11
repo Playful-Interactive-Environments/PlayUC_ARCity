@@ -21,13 +21,10 @@ public class NetworkCommunicator : NetworkBehaviour
     void Start () {
         if(isServer)
             ConnectionId = connectionToClient.connectionId;
-        InvokeRepeating("Stats",.1f,1f);
-
     }
 
     void Stats()
     {
-        Debug.Log(NetworkClient.GetTotalConnectionStats());
     }
     void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
