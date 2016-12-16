@@ -5,16 +5,6 @@ using System.Collections.Generic;
 
 public class EventManager : MonoBehaviour
 {
-
-
-
-
-
-
-
-
-
-
     #region Event Dispatcher
     private Dictionary<string, UnityEvent> eventDictionary;
 

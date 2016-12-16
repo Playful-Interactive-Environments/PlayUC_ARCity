@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class QuestManager : MonoBehaviour {
 
 	public static QuestManager Instance = null;
-	public CSVManager CSVQuests;
+	public CSVQuests CSVQuests;
 	public UIManager UI;
 	private int questnum;
 	public GameObject QuestPrefab;
@@ -19,13 +19,14 @@ public class QuestManager : MonoBehaviour {
 	public string[] Meanings = {"Disaster", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
 	private int randomId;
 	private float _questTime;
+
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-		CSVQuests = CSVManager.Instance;
+		CSVQuests = CSVQuests.Instance;
 		UI = UIManager.Instance;
 		Invoke("PopulateIds", .1f);
 		randomId = GetRandomQuest();
@@ -149,6 +150,4 @@ public class QuestManager : MonoBehaviour {
 		QuestIDs.RemoveAt(randomQuest);
 		return returnId;
 	}
-
-
 }

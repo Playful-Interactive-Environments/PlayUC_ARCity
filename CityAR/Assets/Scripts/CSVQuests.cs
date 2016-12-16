@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CSVManager: AManager<CSVManager>
+public class CSVQuests: AManager<CSVQuests>
 {
     
     public class Row

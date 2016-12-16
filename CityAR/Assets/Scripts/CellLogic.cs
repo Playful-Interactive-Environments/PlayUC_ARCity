@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
-[NetworkSettings(channel = 2, sendInterval = 1f)]
-public class CellLogic : NetworkBehaviour {
+public class CellLogic : MonoBehaviour {
 
     public enum HeatmapState
     {
@@ -23,10 +22,9 @@ public class CellLogic : NetworkBehaviour {
     public HeatmapState CurrentState = HeatmapState.PlacementState;
     private HeatmapState PreviousState = HeatmapState.PlacementState;
     private int state;
-    [SyncVar]
     public int OccupiedSlots;
     public List<int> Slots = new List<int>();
-    private float offset = 10;
+    private float offset = 15f;
      
     void Start()
     {
@@ -40,17 +38,10 @@ public class CellLogic : NetworkBehaviour {
         EventManager.StartListening("FinanceMap", FinanceMap);
     }
 
-    public void AddOccupied()
-    {
-        OccupiedSlots += 1;
-    }
-    public void RemoveOccupied()
-    {
-        OccupiedSlots -= 1;
-    }
     public Vector3 GetPositionOffset()
     {
         Vector3 vector = new Vector3();
+        OccupiedSlots = GlobalManager.Instance.OccupiedList[_hexCell.CellId];
         if (OccupiedSlots == 1)
             vector = new Vector3(0, 0, 0);
         if (OccupiedSlots == 2)

@@ -62,7 +62,7 @@ public class HexGrid : AManager<HexGrid> {
 		cell.CellId = i;
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
-		cell.transform.name = "" + HexCoordinates.FromOffsetCoordinates(x, z);
+		cell.transform.name = "" + cell.CellId + " " + HexCoordinates.FromOffsetCoordinates(x, z);
 
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 

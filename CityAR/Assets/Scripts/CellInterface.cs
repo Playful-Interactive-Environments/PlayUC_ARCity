@@ -8,37 +8,39 @@ public class CellInterface : MonoBehaviour {
 		Default, Menu, Submenu
 	}
 	public InterfaceState CurrentState = InterfaceState.Default;
-	public TextMesh CellText;
-
-	void Start () {
-
-		CellText.transform.localScale /= 297;
-		CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
-		CellText.text = GetComponent<HexCell>().CellId +"";
-        EventManager.StartListening("ProjectSelected", ProjectSelected);
+	public GameObject CellText;
+	private HexCell cell;
+	void Start ()
+	{
+		CellText = GameObject.Find("CellText");
+		cell = GetComponent<HexCell>();
+		//CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
+		EventManager.StartListening("ProjectSelected", ProjectSelected);
 	}
 
-    void ProjectSelected()
-    {
-        ResetCell();
-    }
+	void ProjectSelected()
+	{
+		ResetCell();
+	}
+
 	void Update () {
 
 		switch (CurrentState)
 		{
 			case InterfaceState.Default:
-				CellText.gameObject.SetActive(false);
 				break;
 			case InterfaceState.Menu:
-				CellText.text = "" + GetComponent<CellLogic>().FinanceRate + "\n" + GetComponent<CellLogic>().SocialRate + "\n" + GetComponent<CellLogic>().EnvironmentRate;
-				CellText.gameObject.SetActive(true);
+				CellText.transform.position = new Vector3(cell.CellPos.x, cell.CellPos.y + 40f, cell.CellPos.z);
+				CellText.GetComponentInChildren<TextMesh>().text = "Area " + cell.CellId + "\n" + GetComponent<CellLogic>().FinanceRate + "\n" + GetComponent<CellLogic>().SocialRate + "\n" + GetComponent<CellLogic>().EnvironmentRate;
 				break;
 		}
 	}
+
 	public void ResetCell()
 	{
 		CurrentState = InterfaceState.Default;
 	}
+
 	public void DisplayCell()
 	{
 		CurrentState = InterfaceState.Menu;

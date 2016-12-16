@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-[NetworkSettings(channel = 2, sendInterval = 1f)]
 public class GlobalManager : NetworkBehaviour
 {
 	public static GlobalManager Instance = null;
@@ -13,9 +12,9 @@ public class GlobalManager : NetworkBehaviour
 	[SyncVar]
 	public float GameDuration; //game end 
 	[SyncVar]
-	private int CurrentMonth;
+	private int CurrentMonth = 1;
 	[SyncVar]
-	public int CurrentYear;
+	private int CurrentYear = 2017;
 	private float _currentTime;
 	private string[] _months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 	public int MonthDuration = 10; //in seconds - time for month change
@@ -24,54 +23,12 @@ public class GlobalManager : NetworkBehaviour
 	public int StartingRating;
 	private int defaultConnId = -1;
 	public float TimeStamp;
-
-	#region Saving Player Data
-	public struct PlayerDataSave
-	{
-		public string RoleType;
-		public bool Taken;
-		public int Rating;
-		public int Budget;
-		public int ConnectionId;
-
-		public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid)
-		{
-			RoleType = roletype;
-			Taken = taken;
-			Rating = rating;
-			Budget = budget;
-			ConnectionId = connectionid;
-		}
-	}
-
-	public class EventSave
-	{
-		public string TimeStamp;
-		public string Event;
-	}
-
-	public class PlayerData: SyncListStruct<PlayerDataSave> { }
+	//rec events & occupied cells
+	public SyncListInt OccupiedList = new SyncListInt();
+	public class PlayerData : SyncListStruct<PlayerDataSave> { }
 	public PlayerData Players = new PlayerData();
 	public EventSave GlobalSave;
 	private string savestatepath;
-
-	public void RecordData()
-	{
-		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
-		File.AppendAllText(savestatepath, JsonUtility.ToJson(GlobalSave, true));
-		foreach (PlayerDataSave player in Players)
-		{
-			File.AppendAllText(savestatepath, JsonUtility.ToJson(player, true));
-		}
-	}
-
-	public void LogEvent(string content)
-	{
-		GlobalSave.TimeStamp = Utilities.DisplayTime(TimeStamp);
-		GlobalSave.Event = content;
-		RecordData();
-	}
-	#endregion
 
 	void Awake () {
 		if (Instance == null)
@@ -84,11 +41,16 @@ public class GlobalManager : NetworkBehaviour
 	{
 		if (isServer)
 		{
-			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId));
-			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId));
-			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId));
+			//init player save
+			Players.Add(new PlayerDataSave("Environment", false, StartingRating, StartingBudget, defaultConnId,0));
+			Players.Add(new PlayerDataSave("Social", false, StartingRating, StartingBudget, defaultConnId,0));
+			Players.Add(new PlayerDataSave("Finance", false, StartingRating, StartingBudget, defaultConnId,0));
+			//init event logging
 			GlobalSave = new EventSave();
+			//init occupied cell save
+			InitOccupiedList();
 		}
+		//create new json file
 		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
 		File.WriteAllText(savestatepath, "New Game");
 	}
@@ -114,7 +76,74 @@ public class GlobalManager : NetworkBehaviour
 				CurrentMonth = 0;
 			}
 		}
-		UIManager.Instance.TimeText.text = "Year " + CurrentYear + ": " + _months[CurrentMonth];
+		UIManager.Instance.TimeText.text = CurrentMonth + "." + CurrentYear;
+	}
+
+	public void AddOccupied(int id)
+	{
+		OccupiedList[id] += 1;
+	}
+
+	public void RemoveOccupied(int id)
+	{
+		OccupiedList[id] -= 1;
+	}
+
+	public void InitOccupiedList()
+	{
+		foreach (HexCell cell in HexGrid.Instance.cells)
+		{
+			OccupiedList.Add(0);
+		}
+	}
+
+	#region Saving Player Data
+	public struct PlayerDataSave
+	{
+		public string RoleType;
+		public bool Taken;
+		public int Rating;
+		public int Budget;
+		public int ConnectionId;
+		public int Quests;
+
+		public PlayerDataSave(string roletype, bool taken, int rating, int budget, int connectionid, int quests)
+		{
+			RoleType = roletype;
+			Taken = taken;
+			Rating = rating;
+			Budget = budget;
+			ConnectionId = connectionid;
+			Quests = quests;
+		}
+	}
+
+	public class EventSave
+	{
+		public string TimeStamp;
+		public string Event;
+	}
+
+
+
+	public void RecordData()
+	{
+		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+		File.AppendAllText(savestatepath, JsonUtility.ToJson(GlobalSave, true));
+		foreach (PlayerDataSave player in Players)
+		{
+			File.AppendAllText(savestatepath, JsonUtility.ToJson(player, true));
+		}
+	}
+
+	public void LogEvent(string content)
+	{
+		if (NetworkingManager.Instance.isServer)
+		{
+			GlobalSave.TimeStamp = Utilities.DisplayTime(TimeStamp);
+			GlobalSave.Event = content;
+			RecordData();
+		}
 	}
 
 	public void SetTaken(int connectionId, bool taken)
@@ -125,7 +154,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.ConnectionId == connectionId)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, defaultConnId, playerdata.Quests);
 				dataOld = playerdata;
 			}
 		}
@@ -141,7 +170,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid);
+				dataNew = new PlayerDataSave(playerdata.RoleType, taken, playerdata.Rating, playerdata.Budget, connectionid, playerdata.Quests);
 				dataOld = playerdata;
 			}
 		}
@@ -170,7 +199,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget + budget, playerdata.ConnectionId, playerdata.Quests);
 				dataOld = playerdata;
 			}
 		}
@@ -199,7 +228,7 @@ public class GlobalManager : NetworkBehaviour
 		{
 			if (playerdata.RoleType == roletype)
 			{
-				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId);
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating + rating, playerdata.Budget, playerdata.ConnectionId, playerdata.Quests);
 				dataOld = playerdata;
 			}
 		}
@@ -219,6 +248,34 @@ public class GlobalManager : NetworkBehaviour
 		}
 		return returnVar;
 	}
+	public void SetQuests(string roletype, int quest)
+	{
+		PlayerDataSave dataOld = new PlayerDataSave();
+		PlayerDataSave dataNew = new PlayerDataSave();
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				dataNew = new PlayerDataSave(playerdata.RoleType, playerdata.Taken, playerdata.Rating, playerdata.Budget, playerdata.ConnectionId, playerdata.Quests + quest);
+				dataOld = playerdata;
+			}
+		}
+		Players.Remove(dataOld);
+		Players.Add(dataNew);
+	}
+
+	public int GetQuests(string roletype)
+	{
+		int returnVar = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			if (playerdata.RoleType == roletype)
+			{
+				returnVar = playerdata.Quests;
+			}
+		}
+		return returnVar;
+	}
 
 	public void UpdateData(string roletype, string datatype, int amount)
 	{
@@ -230,6 +287,30 @@ public class GlobalManager : NetworkBehaviour
 			case "Rating":
 				SetRating(roletype, amount);
 				break;
+			case "Quest":
+				SetQuests(roletype, amount);
+				break;
 		}
 	}
+
+	public int GetAllBudget()
+	{
+		int returnval = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			returnval += playerdata.Budget;
+		}
+		return returnval;
+	}
+
+	public int GetAllQuests()
+	{
+		int returnval = 0;
+		foreach (PlayerDataSave playerdata in Players)
+		{
+			returnval += playerdata.Quests;
+		}
+		return returnval;
+	}
+	#endregion
 }

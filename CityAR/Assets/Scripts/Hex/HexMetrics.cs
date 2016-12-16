@@ -2,7 +2,7 @@
 
 public static class HexMetrics {
 
-	public const float outerRadius = .0336f;
+	public const float outerRadius = .114f;
 
 	public const float innerRadius = outerRadius * 0.866025404f;
 
@@ -76,3 +76,9 @@ public static class HexMetrics {
 		return HexEdgeType.Cliff;
 	}
 }
+
+/*
+	public const float outerRadius = .0336f;
+
+	public const float innerRadius = outerRadius * 0.866025404f;
+*/

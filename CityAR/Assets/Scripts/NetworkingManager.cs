@@ -217,7 +217,7 @@ public class NetworkingManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        DebugText.text = "Client Disconnected" + conn.lastError;
+        DebugText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
         ReconnectClient();
     }
 

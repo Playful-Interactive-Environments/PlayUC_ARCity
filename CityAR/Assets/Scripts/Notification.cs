@@ -27,13 +27,13 @@ public class Notification : MonoBehaviour
 			case "Choice1":
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " passed!";
-				UIManager.Instance.DisplayEventCanvas();
+				UIManager.Instance.DisplayNotificationResult();
 				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Choice2":
 				ProjectManager.Instance.SelectedProjectId = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " failed!";
-				UIManager.Instance.DisplayEventCanvas();
+				UIManager.Instance.DisplayNotificationResult();
 				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
 		}

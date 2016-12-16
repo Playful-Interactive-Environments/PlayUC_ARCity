@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
-[NetworkSettings(channel = 2, sendInterval = 1f)]
+[NetworkSettings(channel = 2, sendInterval = .5f)]
 
 public class CellManager : NetworkBehaviour
 {
@@ -19,9 +19,12 @@ public class CellManager : NetworkBehaviour
 	int totalStartingSocial;
 	int totalStartingEnvironment;
 	int totalStartingFinance;
-	public int TotalEndSocial;
-	public int TotalEndEnvironment;
-	public int TotalEndFinance;
+	[SyncVar]
+	public int CurrentSocialGlobal;
+	[SyncVar]
+	public int CurrentEnvironmentGlobal;
+	[SyncVar]
+	public int CurrentFinanceGlobal;
 
 	void Awake()
 	{
@@ -60,21 +63,28 @@ public class CellManager : NetworkBehaviour
 		}
 	}
 
-	void CalculateEndState()
+	void CurrentGridVariables()
 	{
+		CurrentEnvironmentGlobal = 0;
+		CurrentSocialGlobal = 0;
+		CurrentFinanceGlobal = 0;
 		for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
 		{
-			TotalEndEnvironment += HexGrid.Instance.cells[i].GetComponent<CellLogic>().EnvironmentRate;
-			TotalEndSocial += HexGrid.Instance.cells[i].GetComponent<CellLogic>().SocialRate;
-			TotalEndFinance += HexGrid.Instance.cells[i].GetComponent<CellLogic>().FinanceRate;
+			CurrentEnvironmentGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().EnvironmentRate;
+			CurrentSocialGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().SocialRate;
+			CurrentFinanceGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().FinanceRate;
 		}
 	}
 
 	void Start ()
 	{
 		Invoke("GenerateValues", .1f);
-		InvokeRepeating("UpdateGridVariables", .5f, .5f);
+		InvokeRepeating("UpdateGridVariables", 1f, .5f);
 		ImageTarget = GameObject.Find("ImageTarget");
+		if (isServer)
+		{
+			InvokeRepeating("CurrentGridVariables", 1f, .5f);
+		}
 	}
 	
 	void Update ()

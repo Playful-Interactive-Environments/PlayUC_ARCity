@@ -45,8 +45,7 @@ public class Quest : MonoBehaviour
 	{
 		Cell = cell;
 		CellLogic = Cell.GetComponent<CellLogic>();
-		//CellLogic.AddOccupied();
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", Cell.CellPos);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", Cell.CellId);
 
 	}
 
@@ -118,8 +117,7 @@ public class Quest : MonoBehaviour
 	{
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		//CellLogic.RemoveOccupied();
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", Cell.CellPos);
-
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", Cell.CellId);
+		CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Quest", 1);
 	}
 }

@@ -4,8 +4,7 @@ using System.Collections;
 using System.Globalization;
 using System.Threading;
 using UnityEngine.Networking;
-
-[NetworkSettings(channel = 0, sendInterval = .1f)]
+[NetworkSettings(channel = 1, sendInterval = 0.2f)]
 public class NetworkCommunicator : NetworkBehaviour
 {
 
@@ -18,47 +17,65 @@ public class NetworkCommunicator : NetworkBehaviour
             CellManager.Instance.NetworkCommunicator = this;
     }
 
-    void Start () {
-        if(isServer)
+    void Start ()
+    {
+        if (isClient)
+            //connectionToServer.logNetworkMessages = true;
+
+        if (isServer)
             ConnectionId = connectionToClient.connectionId;
     }
 
-    void Stats()
-    {
-    }
     void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
 
     }
 
-    public void CellOccupiedStatus(string action, Vector3 pos)
+    public void HandleEvent(string action, int id)
+    {
+        if (isServer)
+        {
+            switch (action)
+            {
+                case "StartEvent":
+                    GlobalEvents.Instance.CreateEvent(id);
+                    break;
+
+            }
+        }
+        if (isClient && !isServer)
+        {
+            CmdHandleEvent(action, id);
+        }
+    }
+
+    [Command]
+    void CmdHandleEvent(string action, int id)
+    {
+        HandleEvent(action, id);
+    }
+
+    public void CellOccupiedStatus(string action, int id)
     {
         if (isServer)
         {
             switch (action)
             {
                 case "add":
-                    HexGrid.Instance.GetCell(pos).GetComponent<CellLogic>().AddOccupied();
+                    GlobalManager.Instance.AddOccupied(id);
                     break;
                 case "remove":
-                    HexGrid.Instance.GetCell(pos).GetComponent<CellLogic>().RemoveOccupied();
-
+                    GlobalManager.Instance.RemoveOccupied(id);
                     break;
             }
-
         }
         if (isClient && !isServer)
         {
-            CmdAddOccupied(action, pos);
+            CmdAddOccupied(action, id);
         }
     }
 
-    [Command]
-    void CmdAddOccupied(string action, Vector3 pos)
-    {
-        CellOccupiedStatus(action, pos);
-    }
     public void CreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
     {
         if (isServer)
@@ -164,19 +181,12 @@ public class NetworkCommunicator : NetworkBehaviour
                     ProjectManager.Instance.FindProject(projectnum).Choice2 += 1;
                     break;
                 case "Result_Choice1":
-                    if (LocalManager.Instance.RoleType == owner)
-                    {
-                        ProjectManager.Instance.ProjectApproved(projectnum);
-                    }
-
+                    ProjectManager.Instance.ProjectApproved(projectnum);
                     NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
                     RpcVote(vote, owner, projectnum);
                     break;
                 case "Result_Choice2":
-                    if (LocalManager.Instance.RoleType == owner)
-                    {
-                        ProjectManager.Instance.ProjectRejected(projectnum);
-                    }
+                    ProjectManager.Instance.ProjectRejected(projectnum);
                     NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
                     RpcVote(vote, owner, projectnum);
                     break;
@@ -189,6 +199,12 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             CmdVote(vote, owner, projectnum);
         }
+    }
+
+    [Command]
+    void CmdAddOccupied(string action, int id)
+    {
+        CellOccupiedStatus(action, id);
     }
 
     [Command]
@@ -241,17 +257,14 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (vote)
             {
                 case "Result_Choice1":
-                    if (LocalManager.Instance.RoleType == owner)
-                    {
-                        ProjectManager.Instance.ProjectApproved(projectnum);
-                    }
+                    ProjectManager.Instance.ProjectApproved(projectnum);
+                    Debug.Log("Choice1");
+
                     NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
                     break;
                 case "Result_Choice2":
-                    if (LocalManager.Instance.RoleType == owner)
-                    {
-                        ProjectManager.Instance.ProjectRejected(projectnum);
-                    }
+                    Debug.Log("Choice2");
+                    ProjectManager.Instance.ProjectRejected(projectnum);
                     NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
                     break;
                 default:

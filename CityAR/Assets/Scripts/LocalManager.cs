@@ -18,7 +18,6 @@ public class LocalManager : MonoBehaviour
 		DontDestroyOnLoad(gameObject);
 		Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
-		InvokeRepeating("Refresh", 0f, 1f);
 	}
 
 	void Update()
@@ -26,12 +25,5 @@ public class LocalManager : MonoBehaviour
 
 	}
 	
-	void Refresh()
-	{
-		if (GlobalManager.Instance != null)
-		{
-			UIManager.Instance.RatingText.text = "" + GlobalManager.Instance.GetRating(RoleType);
-			UIManager.Instance.BudgetText.text = "" + GlobalManager.Instance.GetBudget(RoleType);
-		}
-	}
+
 }

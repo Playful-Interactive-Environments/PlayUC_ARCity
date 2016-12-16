@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CSVManagerProjects : AManager<CSVManagerProjects>
+public class CSVProjects : AManager<CSVProjects>
 {
     
     public class Row

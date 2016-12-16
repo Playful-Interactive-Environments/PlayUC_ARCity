@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -14,7 +15,9 @@ public class UIManager : AManager<UIManager>
 	//Switch UI ELEMENTS
 	public enum UiState
 	{
-		Network, Role, Game, Projects, DesignProject, Placement, Notifications, Event, Vote, Quest, Result
+		Network, Role, Game, Projects, DesignProject, Placement, Notifications,
+		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay,
+		EventChoice, EventResult
 	}
 
 	public UiState CurrentState;
@@ -24,23 +27,34 @@ public class UIManager : AManager<UIManager>
 	public Canvas RoleCanvas;
 	public Canvas QuestCanvas;
 	public Canvas ResultCanvas;
-	public Canvas EventCanvas;
+	public Canvas NotificationResult;
 	public Canvas ProjectCanvas;
 	public Canvas ProjectDesignCanvas;
 	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
 	public Canvas PlacementCanvas;
+	public Canvas GlobalStateCanvas;
+	public Canvas EventDisplay;
 	public Text DebugText;
 	//CHOOSE ROLE
 	public Button Environment;
 	public Button Finance;
 	public Button Social;
 	//GAME CANVAS
-	public Button Switch;
+	public GameObject PlayerVariables;
+	public Button MenuButton;
 	public Button NotificationButton;
 	public Text RatingText;
 	public Text BudgetText;
 	public Text TimeText;
+	public Text GlobalFinanceText;
+	public Text GlobalEnvironmentText;
+	public Text GlobalSocialText;
+	public GameObject FinanceImage;
+	public GameObject EnvironmentImage;
+	public GameObject SocialImage;
+	public GameObject RatingImage;
+	public GameObject BudgetImage;
 	//QUEST & RESULT CANVAS
 	public Text Title;
 	public Text Content;
@@ -60,13 +74,98 @@ public class UIManager : AManager<UIManager>
 	public GameObject VoteDescription;
 	public Text EventText;
 	public int CurrentProjectButton;
-	//PROJECT INFO CANVAS
-	public GameObject ProjectInfo;
+	//GLOBAL STATE CANVAS
+	public Button GlobalStateButton;
+	public Text RoleDescriptionText;
+	private int[] savevalues = new int[5]; //array that stores values from previous update
+	//EVENT DISPLAY CANVAS
+	public Text EventTitle;
+	public Text EventContent;
+	public Button Event_Choice1;
+	public Button Event_Choice2;
+	public GameObject EventVars;
+	//current event progress text in GameUI
+	public Text Event_CurrentProgress;
+	public Text Event_TimeLeft;
+	public bool EventProgressEnabled;
+
+
 
 	void Start ()
 	{
 		ResetMenus();
+		InvokeRepeating("RefreshPlayerVars", .2f, .5f);
+		EventManager.StartListening("HelpMayor", HelpMayor);
+		EventManager.StartListening("Crisis", Crisis);
+		EventManager.StartListening("DesignProject", DesignProject);
+
 	}
+
+	#region Event UI
+
+
+	public void SetEventText(string title, string content, string button1, string button2)
+	{
+		EventVars.gameObject.SetActive(false);
+
+		EventTitle.text = title;
+		EventContent.text = content;
+		Event_Choice1.GetComponentInChildren<Text>().text = button1;
+		Event_Choice2.GetComponentInChildren<Text>().text = button2;
+
+		Event_Choice1.gameObject.SetActive(button1 != "");
+		Event_Choice2.gameObject.SetActive(button2 != "");
+
+		Change(UiState.EventDisplay);
+	}
+	//Help Mayor Event & Button
+	void HelpMayor()
+	{
+		Event_Choice1.onClick.AddListener(() => AcceptEvent());
+		EventVars.gameObject.SetActive(true);
+	}
+
+	void AcceptEvent()
+	{
+		EventProgressEnabled = true;
+		GlobalEvents.Instance.CurrentEventScript.HelpMayorEvent = true;
+		GameUI();
+	}
+	//Crisis Event & Button
+	void Crisis()
+	{
+		Debug.Log("Crisis");
+		Event_Choice1.onClick.AddListener(() => Crisis_Choice1());
+		Event_Choice2.onClick.AddListener(() => Crisis_Choice2());
+
+	}
+	void Crisis_Choice1()
+	{
+		GameUI();
+	}
+
+	void Crisis_Choice2()
+	{
+		GameUI();
+	}
+
+	public void ShowEvent()
+	{   
+		if(EventDisplay.enabled == false)
+			Change(UiState.EventDisplay);
+	}
+	//Design project Event & Button
+	void DesignProject()
+	{
+		Event_Choice1.onClick.AddListener(() => AcceptDesignProject());
+	}
+
+	void AcceptDesignProject()
+	{
+		Change(UiState.DesignProject);
+
+	}
+	#endregion
 
 	void Update ()
 	{
@@ -74,6 +173,35 @@ public class UIManager : AManager<UIManager>
 		if (ProjectManager.Instance != null)
 		{
 			Projects = ProjectManager.Instance;
+		}
+	}
+
+	void RefreshPlayerVars()
+	{
+		if (GlobalManager.Instance != null)
+		{
+			if (savevalues[0] != GlobalManager.Instance.GetBudget(LocalManager.Instance.RoleType))
+				StartCoroutine(AnimateIcon(BudgetImage, .7f, .5f));
+			if (savevalues[1] != GlobalManager.Instance.GetRating(LocalManager.Instance.RoleType))
+				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
+			if (savevalues[2] != CellManager.Instance.CurrentFinanceGlobal)
+				StartCoroutine(AnimateIcon(FinanceImage, .7f, .5f));
+			if (savevalues[3] != CellManager.Instance.CurrentSocialGlobal)
+				StartCoroutine(AnimateIcon(SocialImage, .7f, .5f));
+			if (savevalues[4] != CellManager.Instance.CurrentEnvironmentGlobal)
+				StartCoroutine(AnimateIcon(EnvironmentImage, .7f, .5f));
+
+			BudgetText.text = "" + savevalues[0];
+			RatingText.text = "" + savevalues[1];
+			GlobalFinanceText.text = "" + savevalues[2];
+			GlobalSocialText.text = "" + savevalues[3];
+			GlobalEnvironmentText.text = "" + savevalues[4];
+
+			savevalues[0] = GlobalManager.Instance.GetBudget(LocalManager.Instance.RoleType);
+			savevalues[1] = GlobalManager.Instance.GetRating(LocalManager.Instance.RoleType);
+			savevalues[2] = CellManager.Instance.CurrentFinanceGlobal;
+			savevalues[3] = CellManager.Instance.CurrentSocialGlobal;
+			savevalues[4] = CellManager.Instance.CurrentEnvironmentGlobal;
 		}
 	}
 
@@ -95,35 +223,50 @@ public class UIManager : AManager<UIManager>
 		PlacementCanvas.enabled = false;
 		NotificationCanvas.gameObject.SetActive(true);
 		NotificationCanvas.enabled = false;
-		EventCanvas.gameObject.SetActive(true);
-		EventCanvas.enabled = false;
+		NotificationResult.gameObject.SetActive(true);
+		NotificationResult.enabled = false;
 		ProjectCanvas.gameObject.SetActive(true);
 		ProjectCanvas.enabled = false;
 		ProjectDesignCanvas.gameObject.SetActive(true);
 		ProjectDesignCanvas.enabled = false;
-		Switch.gameObject.SetActive(true);
-		Switch.enabled = false;
+		MenuButton.gameObject.SetActive(true);
+		MenuButton.enabled = false;
 		NotificationButton.gameObject.SetActive(false);
 		NotificationButton.enabled = false;
 		ProjectButton.gameObject.SetActive(false);
 		ProjectButton.enabled = false;
+		GlobalStateCanvas.gameObject.SetActive(true);
+		GlobalStateCanvas.enabled = false;
+		GlobalStateButton.gameObject.SetActive(false);
+		GlobalStateButton.enabled = false;
 		CurrentState = state;
+		PlayerVariables.SetActive(true);
+		EventDisplay.gameObject.SetActive(true);
+		EventDisplay.enabled = false;
 		switch (CurrentState)
 		{
 			case UiState.Network:
 				NetworkCanvas.enabled = true;
-				Switch.enabled = true;
+				MenuButton.enabled = true;
+				PlayerVariables.SetActive(false);
 				break;
 			case UiState.Role:
 				RoleCanvas.enabled = true;
+				PlayerVariables.SetActive(false);
 				break;
 			case UiState.Game:
+				if(EventProgressEnabled)
+					Event_CurrentProgress.gameObject.SetActive(true);
+				if(!EventProgressEnabled)
+					Event_CurrentProgress.gameObject.SetActive(false);
 				GameCanvas.enabled = true;
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
 				NotificationButton.enabled = true;
 				NotificationButton.gameObject.SetActive(true);
-				Switch.enabled = true;
+				MenuButton.enabled = true;
+				GlobalStateButton.gameObject.SetActive(true);
+				GlobalStateButton.enabled = true;
 				break;
 			case UiState.Projects:
 				ProjectCanvas.enabled = true;
@@ -145,8 +288,8 @@ public class UIManager : AManager<UIManager>
 				NotificationButton.enabled = true;
 				NotificationButton.gameObject.SetActive(true);
 				break;
-			case UiState.Event:
-				EventCanvas.enabled = true;
+			case UiState.NotificationResult:
+				NotificationResult.enabled = true;
 				break;
 			case UiState.Quest:
 				QuestCanvas.enabled = true;
@@ -154,9 +297,29 @@ public class UIManager : AManager<UIManager>
 			case UiState.Result:
 				ResultCanvas.enabled = true;
 				break;
+			case UiState.GlobalState:
+				GlobalStateCanvas.enabled = true;
+				GlobalStateButton.gameObject.SetActive(true);
+				GlobalStateButton.enabled = true;
+				MenuButton.enabled = true;
+				break;
+			case UiState.EventDisplay:
+				EventDisplay.enabled = true;
+				break;
 		}
-}
+	}
 	#region Game UI
+	public void GlobalState()
+	{
+		if (GameCanvas.enabled == true)
+		{
+			Change(UiState.GlobalState);
+		}
+		else
+		{
+			GameUI();
+		}
+	}
 
 	public void MenuUI()
 	{
@@ -203,6 +366,7 @@ public class UIManager : AManager<UIManager>
 		CurrentQuest.Choose(1);
 		Change(UiState.Result);
 	}
+
 	public void Choose_2()
 	{
 		ResetIconPos();
@@ -313,9 +477,9 @@ public class UIManager : AManager<UIManager>
 		GameUI();
 	}
 
-	public void DisplayEventCanvas()
+	public void DisplayNotificationResult()
 	{
-		Change(UiState.Event);
+		Change(UiState.NotificationResult);
 	}
 
 	public void SetNotificationState(bool state)
@@ -340,6 +504,7 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
 		LocalManager.Instance.RoleType = "Environment";
 		EventManager.TriggerEvent("EnvironmentMap");
+		RoleDescriptionText.text = "You are responsible of environment, green and open space, transportation and mobility";
 		Invoke("GameUI", .1f);
 	}
 
@@ -348,6 +513,7 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Finance");
 		LocalManager.Instance.RoleType = "Finance";
 		EventManager.TriggerEvent("FinanceMap");
+		RoleDescriptionText.text = "You are responsible of economy, real estate and industrial development.";
 		Invoke("GameUI", .1f);
 	}
 
@@ -356,6 +522,8 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Social");
 		LocalManager.Instance.RoleType = "Social";
 		EventManager.TriggerEvent("SocialMap");
+		RoleDescriptionText.text = "You are responsible of social infrastructure and urban development.";
+
 		Invoke("GameUI", .1f);
 	}
 	
@@ -405,8 +573,16 @@ public class UIManager : AManager<UIManager>
 	{
 		//Debug.Log("CLICK");
 		//Vote_Choice1();
+		GlobalEvents.Instance.TriggerRandomEvent();
 		ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);
+	}
+
+	IEnumerator AnimateIcon(GameObject icon, float scaleTo, float originalScale)
+	{
+		iTween.ScaleTo(icon, iTween.Hash("x", scaleTo, "y", scaleTo, "time", .2f));
+		yield return new WaitForSeconds(.2f);
+		iTween.ScaleTo(icon, iTween.Hash("x", originalScale, "y", originalScale, "time", .2f));
 	}
 }

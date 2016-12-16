@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-[NetworkSettings(channel = 2, sendInterval = 1f)]
 public class ProjectManager : NetworkBehaviour
 {
 
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
-	public CSVManagerProjects CSVProjects;
+	public CSVProjects CSVProjects;
 	public QuestManager Quests;
 	public int SelectedProjectId;
 	public Project SelectedProject;
@@ -26,7 +25,7 @@ public class ProjectManager : NetworkBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-		CSVProjects = CSVManagerProjects.Instance;
+		CSVProjects = CSVProjects.Instance;
 	}
 
 	void Start()
@@ -58,8 +57,7 @@ public class ProjectManager : NetworkBehaviour
 	//called only on server
 	public void InstantiateProject(string owner, int id)
 	{
-		
-		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 		Project project = gobj.GetComponent<Project>();
 		project.ProjectOwner = owner;
 		project.ProjectId = id;
@@ -119,14 +117,15 @@ public class ProjectManager : NetworkBehaviour
 
 	public void ProjectApproved(int num)
 	{
-		FindProject(num).InitiateProject();
+		FindProject(num).ShowApproved();
 	}
 
 	public void ProjectRejected(int num)
 	{
-		Project p = FindProject(num);
-		Projects.Remove(p);
-		Destroy(p.gameObject);
+		Debug.Log("ProjectManager");
+		FindProject(num).ShowRejected();
+		if (isServer)
+			Projects.Remove(FindProject(num));
 	}
 
 	public void SaveProject(string type, int id, Project project)
