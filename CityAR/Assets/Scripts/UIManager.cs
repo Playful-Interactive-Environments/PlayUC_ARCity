@@ -16,8 +16,7 @@ public class UIManager : AManager<UIManager>
 	public enum UiState
 	{
 		Network, Role, Game, Projects, DesignProject, Placement, Notifications,
-		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay,
-		EventChoice, EventResult
+		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay, EventResult
 	}
 
 	public UiState CurrentState;
@@ -35,6 +34,7 @@ public class UIManager : AManager<UIManager>
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
 	public Canvas EventDisplay;
+    public Canvas EventResult;
 	public Text DebugText;
 	//CHOOSE ROLE
 	public Button Environment;
@@ -84,8 +84,10 @@ public class UIManager : AManager<UIManager>
 	public Button Event_Choice1;
 	public Button Event_Choice2;
 	public GameObject EventVars;
-	//current event progress text in GameUI
-	public Text Event_CurrentProgress;
+    //EVENT RESULT CANVAS
+    public Text EventResultText;
+    //current event progress text in GameUI
+    public Text Event_CurrentProgress;
 	public Text Event_TimeLeft;
 	public bool EventProgressEnabled;
 
@@ -102,11 +104,14 @@ public class UIManager : AManager<UIManager>
 	}
 
 	#region Event UI
-
+    public void ShowEventResult()
+    {
+        Change(UiState.EventResult);
+    }
 
 	public void SetEventText(string title, string content, string button1, string button2)
 	{
-		EventVars.gameObject.SetActive(false);
+		EventVars.SetActive(false);
 
 		EventTitle.text = title;
 		EventContent.text = content;
@@ -122,7 +127,7 @@ public class UIManager : AManager<UIManager>
 	void HelpMayor()
 	{
 		Event_Choice1.onClick.AddListener(() => AcceptEvent());
-		EventVars.gameObject.SetActive(true);
+		EventVars.SetActive(true);
 	}
 
 	void AcceptEvent()
@@ -243,6 +248,8 @@ public class UIManager : AManager<UIManager>
 		PlayerVariables.SetActive(true);
 		EventDisplay.gameObject.SetActive(true);
 		EventDisplay.enabled = false;
+        EventResult.gameObject.SetActive(true);
+        EventResult.enabled = false;
 		switch (CurrentState)
 		{
 			case UiState.Network:
@@ -306,6 +313,9 @@ public class UIManager : AManager<UIManager>
 			case UiState.EventDisplay:
 				EventDisplay.enabled = true;
 				break;
+            case UiState.EventResult:
+                EventResult.enabled = true;
+                break;
 		}
 	}
 	#region Game UI
@@ -431,6 +441,7 @@ public class UIManager : AManager<UIManager>
 
 	public void ProjectUI()
 	{
+        ProjectButton.image.color = Color.white;
 		if (GameCanvas.enabled)
 			Change(UiState.Projects);
 		else

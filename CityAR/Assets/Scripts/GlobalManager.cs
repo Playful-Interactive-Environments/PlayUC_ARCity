@@ -12,11 +12,11 @@ public class GlobalManager : NetworkBehaviour
 	[SyncVar]
 	public float GameDuration; //game end 
 	[SyncVar]
-	private int CurrentMonth = 1;
+	private int CurrentMonth = 0;
 	[SyncVar]
 	private int CurrentYear = 2017;
 	private float _currentTime;
-	private string[] _months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+	private string[] _months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 	public int MonthDuration = 10; //in seconds - time for month change
 	public float CellMaxValue = 50; //5 heatmap steps!
 	public int StartingBudget;
@@ -70,33 +70,15 @@ public class GlobalManager : NetworkBehaviour
 				CurrentMonth++;
 				_currentTime = 0;
 			}
-			if (CurrentMonth == 12)
+			if (CurrentMonth == 11)
 			{
 				CurrentYear++;
 				CurrentMonth = 0;
 			}
 		}
-		UIManager.Instance.TimeText.text = CurrentMonth + "." + CurrentYear;
+		UIManager.Instance.TimeText.text = _months[CurrentMonth] + "." + CurrentYear;
 	}
-
-	public void AddOccupied(int id)
-	{
-		OccupiedList[id] += 1;
-	}
-
-	public void RemoveOccupied(int id)
-	{
-		OccupiedList[id] -= 1;
-	}
-
-	public void InitOccupiedList()
-	{
-		foreach (HexCell cell in HexGrid.Instance.cells)
-		{
-			OccupiedList.Add(0);
-		}
-	}
-
+    
 	#region Saving Player Data
 	public struct PlayerDataSave
 	{
@@ -123,8 +105,6 @@ public class GlobalManager : NetworkBehaviour
 		public string TimeStamp;
 		public string Event;
 	}
-
-
 
 	public void RecordData()
 	{
@@ -293,24 +273,43 @@ public class GlobalManager : NetworkBehaviour
 		}
 	}
 
-	public int GetAllBudget()
-	{
-		int returnval = 0;
-		foreach (PlayerDataSave playerdata in Players)
-		{
-			returnval += playerdata.Budget;
-		}
-		return returnval;
-	}
+    #endregion
 
-	public int GetAllQuests()
-	{
-		int returnval = 0;
-		foreach (PlayerDataSave playerdata in Players)
-		{
-			returnval += playerdata.Quests;
-		}
-		return returnval;
-	}
-	#endregion
+    public int GetAllBudget()
+    {
+        int returnval = 0;
+        foreach (PlayerDataSave playerdata in Players)
+        {
+            returnval += playerdata.Budget;
+        }
+        return returnval;
+    }
+
+    public int GetAllQuests()
+    {
+        int returnval = 0;
+        foreach (PlayerDataSave playerdata in Players)
+        {
+            returnval += playerdata.Quests;
+        }
+        return returnval;
+    }
+
+    public void AddOccupied(int id)
+    {
+        OccupiedList[id] += 1;
+    }
+
+    public void RemoveOccupied(int id)
+    {
+        OccupiedList[id] -= 1;
+    }
+
+    public void InitOccupiedList()
+    {
+        foreach (HexCell cell in HexGrid.Instance.cells)
+        {
+            OccupiedList.Add(0);
+        }
+    }
 }

@@ -6,7 +6,9 @@ public class Notification : MonoBehaviour
 {
 	public string NotificationType;
 	public string NotificationTitle;
-	public int NotificationID;
+    public string NotificationContent;
+
+    public int NotificationID;
 	public string NotificationOwner;
 
 	void Start ()
@@ -36,7 +38,12 @@ public class Notification : MonoBehaviour
 				UIManager.Instance.DisplayNotificationResult();
 				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
-		}
+            case "Event":
+                UIManager.Instance.EventText.text = NotificationTitle + ":\n" + NotificationContent;
+                UIManager.Instance.DisplayNotificationResult();
+                NotificationManager.Instance.RemoveNotification(NotificationID);
+                break;
+        }
 	}
 
 	public void UpdateButtonTitle()
@@ -44,11 +51,14 @@ public class Notification : MonoBehaviour
 		switch (NotificationType)
 		{
 			case "Choice1":
-				GetComponentInChildren<Text>().text = "Event:\n" +  NotificationTitle + " is Approved.";
+				GetComponentInChildren<Text>().text = "Project\n" +  NotificationTitle + " is Approved.";
 				break;
 			case "Choice2":
-				GetComponentInChildren<Text>().text = "Event:\n" + NotificationTitle + " is Denied.";
+				GetComponentInChildren<Text>().text = "Project\n" + NotificationTitle + " is Denied.";
 				break;
-		}
+            case "Event":
+                GetComponentInChildren<Text>().text = "Event: " + NotificationTitle;
+                break;
+        }
 	}
 }

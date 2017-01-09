@@ -64,7 +64,6 @@ public class Project : NetworkBehaviour
 			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
 			GlobalManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			Choice1 += 1;
-
 		}
 
 		if (LocalManager.Instance.RoleType == ProjectOwner)
@@ -120,10 +119,11 @@ public class Project : NetworkBehaviour
 		_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
 		_projectButton.GetComponent<ProjectText>().SetText(ProjectId);
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
+        UIManager.Instance.ProjectButton.image.color = Color.red;
 
-	}
+    }
 
-	public void CreateRepresentation()
+    public void CreateRepresentation()
 	{
 		//create 3d representation
 		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;

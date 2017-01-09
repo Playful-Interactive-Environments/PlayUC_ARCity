@@ -17,7 +17,11 @@ public class EventScript : NetworkBehaviour {
 	public string choice1;
 	[SyncVar]
 	public string choice2;
-	[SyncVar]
+    [SyncVar]
+    public string effect1;
+    [SyncVar]
+    public string effect2;
+    [SyncVar]
 	public float TimeLeft;
 	[SyncVar]
 	public int CurrentGoal;
@@ -37,7 +41,7 @@ public class EventScript : NetworkBehaviour {
 	void TriggerEvent()
 	{
 		UIManager.Instance.SetEventText(title, content, choice1, choice2);
-
+        NotificationManager.Instance.AddNotification("Event", title, content);
 		switch (type)
 		{
 			case "Crisis":
@@ -50,7 +54,6 @@ public class EventScript : NetworkBehaviour {
 				_storedValue = CellManager.Instance.CurrentEnvironmentGlobal;
 				EventManager.TriggerEvent("HelpMayor");
 				break;
-
 			case "Finance":
 				_storedValue = CellManager.Instance.CurrentFinanceGlobal;
 				EventManager.TriggerEvent("HelpMayor");
@@ -79,16 +82,18 @@ public class EventScript : NetworkBehaviour {
 			{
 				if (CurrentProgress <= CurrentGoal)
 				{
-					//EventFail!
-				}
-				HelpMayorEvent = false;
+                    UIManager.Instance.EventResultText.text = "Event Failed!\n " + effect1;
+                    RemoveEvent();
+                }
+                HelpMayorEvent = false;
 			}
 			if (CurrentProgress >= CurrentGoal)
 			{
 				HelpMayorEvent = false;
-				//EventSuccessful!
-			}
-			HelpMayorProgress();
+                UIManager.Instance.EventResultText.text = "Event Successful!\n " + effect2;
+                RemoveEvent();
+            }
+            HelpMayorProgress();
 		}
 	}
 	#region EventLogic
@@ -116,5 +121,12 @@ public class EventScript : NetworkBehaviour {
 		UIManager.Instance.Event_CurrentProgress.text = "" + CurrentProgress + "/" + CurrentGoal;
 		UIManager.Instance.Event_TimeLeft.text = "" + Utilities.DisplayTime(TimeLeft);
 	}
+
+    public void RemoveEvent()
+    {
+        UIManager.Instance.ShowEventResult();
+        UIManager.Instance.EventVars.SetActive(false);
+        Destroy(this);
+    }
 	#endregion
 }

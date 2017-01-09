@@ -13,8 +13,8 @@ public class CSVEvents : AManager<CSVEvents> {
         public string content;
         public string choice_1;
         public string choice_2;
-        public string result_1;
-        public string result_2;
+        public string effect_1;
+        public string effect_2;
         public string time;
         public string goal;
     }
@@ -57,8 +57,8 @@ public class CSVEvents : AManager<CSVEvents> {
             row.content = grid[i][3];
             row.choice_1 = grid[i][4];
             row.choice_2 = grid[i][5];
-            row.result_1 = grid[i][6];
-            row.result_2 = grid[i][7];
+            row.effect_1 = grid[i][6];
+            row.effect_2 = grid[i][7];
             row.time = grid[i][8];
             row.goal = grid[i][9];
             rowList.Add(row);
@@ -104,11 +104,11 @@ public class CSVEvents : AManager<CSVEvents> {
     }
     public string GetResult1(int num)
     {
-        return Find_ID(num).result_1;
+        return Find_ID(num).effect_1;
     }
     public string GetResult2(int num)
     {
-        return Find_ID(num).result_2;
+        return Find_ID(num).effect_2;
     }
     public string GetTime(int num)
     {

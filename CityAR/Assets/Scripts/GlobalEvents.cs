@@ -75,6 +75,8 @@ public class GlobalEvents : NetworkBehaviour
         eventscript.content = CSVEvents.GetContent(id);
         eventscript.choice1 = CSVEvents.GetChoice1(id);
         eventscript.choice2 = CSVEvents.GetChoice2(id);
+        eventscript.effect1 = CSVEvents.GetResult1(id);
+        eventscript.effect2 = CSVEvents.GetResult2(id);
         eventscript.TimeLeft = ConvertToFloat(CSVEvents.GetTime(id));
         eventscript.CurrentGoal = ConvertToInt(CSVEvents.GetGoal(id));
         NetworkServer.Spawn(gobj);

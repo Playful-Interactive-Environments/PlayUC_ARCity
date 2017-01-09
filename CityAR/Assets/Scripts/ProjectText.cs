@@ -12,12 +12,11 @@ public class ProjectText : MonoBehaviour {
 	public Text RatingText;
 	public Text BudgetText;
 
-	void Update()
+	void Start()
 	{
+    }
 
-	}
-
-	public void SetText(int id)
+    public void SetText(int id)
 	{
 		Debug.Log("CreateButton" + id);
 

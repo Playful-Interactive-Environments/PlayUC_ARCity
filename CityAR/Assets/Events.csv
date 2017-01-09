@@ -1,11 +1,11 @@
 id,type,title,description,choice1,choice2,effect1,effect2,time,goal
 1,DesignProject,New opportunity,"You have done a good job and the mayor gives you the chance to design a project for the city. Make it count, but be careful - improving one aspect might affect another one negatively!",OK,,,,0,0
-2,Environment,Climate Change,The Paris climate change agreement inspires the mayor to make a push for CO2 reduction. Collectively reduce city pollution by 50 points.,OK,,,,120,50
-3,Budget,Budget Problems,The budget for the next year is in the red. Help acquire investors. Collectively add 5000 to the city budget before the time runs out!,OK,,,,90,5000
-4,Quest,Bureucracy Issues,Many people have been complaining about the bureucracy in you city. Help 10 citizens with their requests before the time runs out!,OK,,,,120,10
-5,Finance,More Jobs,People demand more jobs. Collectively improve the economy by 100 points in less than 3 minutes.,OK,,,,180,50
+2,Environment,Climate Change,The Paris climate change agreement inspires the mayor to make a push for CO2 reduction. Collectively reduce city pollution by 50 points.,OK,,,,15,50
+3,Budget,Budget Problems,The budget for the next year is in the red. Help acquire investors. Collectively add 5000 to the city budget before the time runs out!,OK,,,,15,5000
+4,Quest,Bureucracy Issues,Many people have been complaining about the bureucracy in you city. Help 10 citizens with their requests before the time runs out!,OK,,,,15,10
+5,Finance,More Jobs,People demand more jobs. Collectively improve the economy by 100 points in less than 3 minutes.,OK,,,,15,50
 6,Crisis,Flood,A flood strikes your city. What is the best course of action?,Evacuate citizens.,Bring the army to help.,1,2,0,0
 7,Crisis,Financial Crisis,Global financial markets collapse. How should the city react?,Reduce spending.,Introduce sharing mechanisms,1,2,0,0
 8,Crisis,Refugee Crisis,Refugees cross the borders and need shelter. What do you do first?,Establish borders to stop and check each person.,"Establish camps, where they receive health checks and food.",1,2,0,0
 9,Crisis,Earthquake,An earthquake strikes and destroys many buildings. What does the city do to help people?,Establish aid centers.,Ask government for financial help.,1,2,0,0
-10,Social,More Jobs,"There are too few public spaces, people demand more parks and recreational fascilities. Collectively improve urban development by 50 points.",OK,,,,180,50
+10,Social,More Jobs,"There are too few public spaces, people demand more parks and recreational fascilities. Collectively improve urban development by 50 points.",OK,,,,15,50

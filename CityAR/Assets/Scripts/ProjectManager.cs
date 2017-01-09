@@ -161,6 +161,7 @@ public class ProjectManager : NetworkBehaviour
 		}
 	}
 	#region CSV Handlers
+
 	public string GetTitle(int num)
 	{
 		return CSVProjects.Find_ID(num).title;
@@ -217,5 +218,16 @@ public class ProjectManager : NetworkBehaviour
 		return parsedInt;
 
 	}
-	#endregion
+    string FormatSign(int num)
+    {
+        string text = "";
+        if (num > 0)
+            text = "+" + num;
+        if (num < 0)
+            text = "" + num;
+        if (num == 0)
+            text = "" + num;
+        return text;
+    }
+    #endregion
 }

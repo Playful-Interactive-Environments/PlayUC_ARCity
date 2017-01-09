@@ -28,7 +28,7 @@ public class CameraControl : AManager<CameraControl>
             RaycastHit mouseHit;
             if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
             {
-                _uiManager.DebugText.text = mouseHit.transform.name;
+               // _uiManager.DebugText.text = mouseHit.transform.name;
                 if (mouseHit.transform.name.Equals("HexMesh"))
                 {
                     LastTouchedCell = HexGrid.Instance.GetCell(mouseHit.point);

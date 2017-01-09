@@ -57,6 +57,7 @@ public class NetworkingManager : NetworkManager
 
     public void StartupHost()
     {
+        StopHosting();
         SetPort();
         StartHost();
         GameObject gamemng = Instantiate(GameManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
@@ -154,6 +155,7 @@ public class NetworkingManager : NetworkManager
     #region Client
     public void JoinGame()
     {
+        StopHosting();
         SetPort();
         SetIPAddress();
         StartClient();
@@ -162,29 +164,40 @@ public class NetworkingManager : NetworkManager
     public void AutoConnect()
     {
         listen.StartClientListen();
-        InvokeRepeating("TryConnect", 0f, 1f);
+        StartCoroutine("TryConnect");
     }
 
-    public void TryConnect()
+    IEnumerator TryConnect()
     {
-        if (listen.serverIP != "")
+        for(int i = 0; i <= 3; i++)
         {
-            ConnectionIP = listen.serverIP;
-            IPInput.text = listen.serverIP;
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Found!";
-            CancelInvoke("TryConnect");
+            yield return new WaitForSeconds(1f);
+            if (listen.serverIP != "")
+            {
+                ConnectionIP = listen.serverIP;
+                IPInput.text = listen.serverIP;
+                AutoConnectButton.GetComponentInChildren<Text>().text = "Found!";
+                StopCoroutine("TryConnect");
+            }
+            else
+            {
+                if (i < 3)
+                    AutoConnectButton.GetComponentInChildren<Text>().text = "" + (3 - i);
+                if(i == 3)
+                {
+                    AutoConnectButton.GetComponentInChildren<Text>().text = "No Server";
+                    yield return new WaitForSeconds(2f);
+                    AutoConnectButton.GetComponentInChildren<Text>().text = "Search";
+                }
+            }
         }
-        else
-        {
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Wait...";
-        }
-
     }
 
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
         UIManager.Instance.RoleUI();
+
         if (!isServer)
         {
             DebugText.text = "Connected. IP: " + Network.player.ipAddress;
@@ -197,12 +210,18 @@ public class NetworkingManager : NetworkManager
             Debug.Log("OnClientConnect " + conn);
         }
     }
-    
+
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        base.OnServerAddPlayer(conn, playerControllerId);
+        Debug.Log("OnAddPlayer");
+
+    }
+
     public override void OnStartClient(NetworkClient client)
     {
        base.OnStartClient(client);
         Debug.Log("OnStartClient");
-        UIManager.Instance.RoleUI();
     }
 
     public override void OnStopClient()
@@ -217,7 +236,7 @@ public class NetworkingManager : NetworkManager
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        DebugText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
+        //DebugText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
         ReconnectClient();
     }
 

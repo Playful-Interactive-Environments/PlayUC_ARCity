@@ -41,7 +41,6 @@ public class NetworkCommunicator : NetworkBehaviour
                 case "StartEvent":
                     GlobalEvents.Instance.CreateEvent(id);
                     break;
-
             }
         }
         if (isClient && !isServer)
