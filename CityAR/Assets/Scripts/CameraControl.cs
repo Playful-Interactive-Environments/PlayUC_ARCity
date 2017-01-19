@@ -10,7 +10,8 @@ public class CameraControl : AManager<CameraControl>
     public bool CarryingObject;
     private GameObject _carriedObject;
     string objectTag;
-    public HexCell LastTouchedCell;
+    //public HexCell LastTouchedCell;
+    public GameObject LastTouchedCell;
 
 
     void Start()
@@ -29,10 +30,12 @@ public class CameraControl : AManager<CameraControl>
             if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
             {
                // _uiManager.DebugText.text = mouseHit.transform.name;
-                if (mouseHit.transform.name.Equals("HexMesh"))
+                if (mouseHit.transform.tag.Equals("Cell"))
                 {
-                    LastTouchedCell = HexGrid.Instance.GetCell(mouseHit.point);
-                    HexGrid.Instance.TouchCell(mouseHit.point);
+                    mouseHit.transform.gameObject.GetComponent<CellLogic>().TouchCell();
+                    LastTouchedCell = mouseHit.transform.gameObject;
+                    //LastTouchedCell = HexGrid.Instance.GetCell(mouseHit.point);
+                    //HexGrid.Instance.TouchCell(mouseHit.point);
                 }
                 if (mouseHit.transform.name.Equals("Build"))
                 {
@@ -65,11 +68,12 @@ public class CameraControl : AManager<CameraControl>
                     {
 
                         _uiManager.DebugText.text = hit.transform.name;
-                        if (hit.transform.name.Equals("HexMesh"))
+                        if (hit.transform.tag.Equals("Cell"))
                         {
-                            LastTouchedCell = HexGrid.Instance.GetCell(hit.point);
-                            HexGrid.Instance.TouchCell(hit.point);
-
+                            hit.transform.gameObject.GetComponent<CellLogic>().TouchCell();
+                            LastTouchedCell = hit.transform.gameObject;
+                            //LastTouchedCell = HexGrid.Instance.GetCell(hit.point);
+                            //HexGrid.Instance.TouchCell(hit.point);
                         }
                         if (hit.transform.name.Equals("Build"))
                         {

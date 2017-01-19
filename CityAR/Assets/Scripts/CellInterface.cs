@@ -8,30 +8,62 @@ public class CellInterface : MonoBehaviour {
 		Default, Menu, Submenu
 	}
 	public InterfaceState CurrentState = InterfaceState.Default;
-	public GameObject CellText;
-	private HexCell cell;
+	public TextMesh StatusText;
+	public TextMesh CellName;
+	private CellLogic cell;
+	public GameObject[] Images;
 	void Start ()
 	{
-		CellText = GameObject.Find("CellText");
-		cell = GetComponent<HexCell>();
+		cell = GetComponent<CellLogic>();
 		//CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
-		EventManager.StartListening("ProjectSelected", ProjectSelected);
-	}
+		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
+        CellName.text = "Area " + cell.CellId;
+    }
 
-	void ProjectSelected()
+    void ProjectSelected()
 	{
 		ResetCell();
 	}
 
 	void Update () {
 
+		switch (LevelManager.Instance.RoleType)
+		{
+
+			case "Finance":
+				StatusText.text = "" + cell.FinanceRate;
+                Images[0].SetActive(true);
+                Images[1].SetActive(false);
+                Images[2].SetActive(false);
+                break;
+			case "Social":
+                Images[1].SetActive(true);
+                Images[0].SetActive(false);
+                Images[2].SetActive(false);
+                StatusText.text = "" + cell.SocialRate;
+				break;
+			case "Environment":
+                Images[2].SetActive(true);
+                Images[1].SetActive(false);
+                Images[0].SetActive(false);
+                StatusText.text = "" + cell.EnvironmentRate;
+				break;
+		}
 		switch (CurrentState)
 		{
 			case InterfaceState.Default:
+				StatusText.color = Color.grey;
+				CellName.color = Color.grey;
+				Images[0].GetComponent<SpriteRenderer>().color = Color.grey;
+				Images[1].GetComponent<SpriteRenderer>().color = Color.grey;
+				Images[2].GetComponent<SpriteRenderer>().color = Color.grey;
 				break;
 			case InterfaceState.Menu:
-				CellText.transform.position = new Vector3(cell.CellPos.x, cell.CellPos.y + 40f, cell.CellPos.z);
-				CellText.GetComponentInChildren<TextMesh>().text = "Area " + cell.CellId + "\n" + GetComponent<CellLogic>().FinanceRate + "\n" + GetComponent<CellLogic>().SocialRate + "\n" + GetComponent<CellLogic>().EnvironmentRate;
+				StatusText.color = Color.white;
+				CellName.color = Color.white;
+				Images[0].GetComponent<SpriteRenderer>().color = Color.white;
+				Images[1].GetComponent<SpriteRenderer>().color = Color.white;
+				Images[2].GetComponent<SpriteRenderer>().color = Color.white;
 				break;
 		}
 	}

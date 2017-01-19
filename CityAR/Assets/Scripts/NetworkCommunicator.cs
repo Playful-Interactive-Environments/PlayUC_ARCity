@@ -39,7 +39,7 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (action)
             {
                 case "StartEvent":
-                    GlobalEvents.Instance.CreateEvent(id);
+                    EventManager.Instance.CreateEvent(id);
                     break;
             }
         }
@@ -62,10 +62,10 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (action)
             {
                 case "add":
-                    GlobalManager.Instance.AddOccupied(id);
+                    SaveStateManager.Instance.AddOccupied(id);
                     break;
                 case "remove":
-                    GlobalManager.Instance.RemoveOccupied(id);
+                    SaveStateManager.Instance.RemoveOccupied(id);
                     break;
             }
         }
@@ -89,7 +89,7 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void ActivateProject(string action, Vector3 pos, string owner, int id)
+    public void ActivateProject(string action, int cellid, string owner, int id)
     {
         if (isServer)
         {
@@ -99,13 +99,13 @@ public class NetworkCommunicator : NetworkBehaviour
                     ProjectManager.Instance.InstantiateProject(owner, id);
                     break;
                 case "PlaceProject":
-                    ProjectManager.Instance.PlaceProject(pos, owner, id);
+                    ProjectManager.Instance.PlaceProject(cellid, owner, id);
                     break;
             }
         }
         if (isClient && !isServer)
         {
-            CmdActivateProject(action, pos, owner, id);
+            CmdActivateProject(action, cellid, owner, id);
         }
     }
 
@@ -113,7 +113,7 @@ public class NetworkCommunicator : NetworkBehaviour
     {
         if (isServer)
         {
-            GlobalManager.Instance.UpdateData(roletype, datatype, amount);
+            SaveStateManager.Instance.UpdateData(roletype, datatype, amount);
         }
         if (isClient && !isServer)
         {
@@ -151,13 +151,13 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (role)
             {
                 case "Environment":
-                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
+                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
                 case "Social":
-                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
+                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
                 case "Finance":
-                    GlobalManager.Instance.SetTaken(role, true, ConnectionId);
+                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
             }
         }
@@ -219,9 +219,9 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdActivateProject(string action, Vector3 pos,string owner, int id)
+    void CmdActivateProject(string action, int cellid, string owner, int id)
     {
-        ActivateProject(action, pos, owner, id);
+        ActivateProject(action, cellid, owner, id);
     }
 
     [Command]

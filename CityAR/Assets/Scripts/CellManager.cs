@@ -15,7 +15,6 @@ public class CellManager : NetworkBehaviour
 
 	private int _maxValue;
 	private int cellsleft;
-	int totalAllowedPerCell;
 	int totalStartingSocial;
 	int totalStartingEnvironment;
 	int totalStartingFinance;
@@ -26,6 +25,8 @@ public class CellManager : NetworkBehaviour
 	[SyncVar]
 	public int CurrentFinanceGlobal;
 
+	private CellGrid _cellGrid;
+
 	void Awake()
 	{
 		if (Instance == null)
@@ -33,48 +34,9 @@ public class CellManager : NetworkBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-
+		_cellGrid = CellGrid.Instance;
 	}
 
-	void GenerateValues()
-	{
-		_maxValue = (int)GlobalManager.Instance.CellMaxValue; //gets the max value per cell
-		cellsleft = HexGrid.Instance.cells.Length;
-		totalAllowedPerCell = _maxValue * cellsleft; //all three areas have a total limit of twice the max value per cell
-		int _tempMaxVal = _maxValue;
-		if (isServer)
-		{
-			for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
-			{
-				_tempMaxVal = totalAllowedPerCell / cellsleft; //create new value based on total amount and cells left
-				int socialrate = Random.Range(0, _tempMaxVal); //generate social var
-				int environmentrate = Random.Range(0, _tempMaxVal); // generate environment var
-				int financerate = Random.Range(0, _tempMaxVal); //leftover is finance var
-				SocialRates.Add(socialrate);
-				EnvironmentRates.Add(environmentrate);
-				FinanceRates.Add(financerate);
-				totalAllowedPerCell = totalAllowedPerCell - (socialrate + environmentrate + financerate);
-				cellsleft--;
-				totalStartingEnvironment += environmentrate;
-				totalStartingFinance += financerate;
-				totalStartingSocial += socialrate;
-			}
-			//Debug.Log(totalStartingEnvironment + " " + totalStartingFinance + " " + totalStartingSocial);
-		}
-	}
-
-	void CurrentGridVariables()
-	{
-		CurrentEnvironmentGlobal = 0;
-		CurrentSocialGlobal = 0;
-		CurrentFinanceGlobal = 0;
-		for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
-		{
-			CurrentEnvironmentGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().EnvironmentRate;
-			CurrentSocialGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().SocialRate;
-			CurrentFinanceGlobal += HexGrid.Instance.cells[i].GetComponent<CellLogic>().FinanceRate;
-		}
-	}
 
 	void Start ()
 	{
@@ -90,6 +52,64 @@ public class CellManager : NetworkBehaviour
 	void Update ()
 	{
 	
+	}
+
+	void GenerateValues()
+	{
+		_maxValue = (int)SaveStateManager.Instance.CellMaxValue; 
+		cellsleft = _cellGrid.Count; 
+		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Social");
+		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Environment");
+		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Finance");
+	}
+
+	private float[] randSum(int n, int m, string type)
+	{
+		float sum = 0;
+		float[] randNums = new float[n];
+
+		for (int i = 0; (i < randNums.Length); i++)
+		{
+			randNums[i] = Utilities.RandomFloat(0, m);
+			sum += randNums[i];
+		}
+
+		for (int i = 0; (i < randNums.Length); i++)
+		{
+			randNums[i] = randNums[i] / sum * m;
+			int value = Mathf.RoundToInt(randNums[i]);
+			//Debug.Log(randNums[i] + " " + randNums[i] / sum + " " + sum);
+
+			switch (type)
+			{
+				case "Social":
+					SocialRates.Add(value);
+					CurrentSocialGlobal += value;
+					break;
+				case "Environment":
+					EnvironmentRates.Add(value);
+					CurrentEnvironmentGlobal += value;
+					break;
+				case "Finance":
+					FinanceRates.Add(value);
+					CurrentFinanceGlobal += value;
+					break;
+			}
+		}
+		return randNums;
+	}
+
+	void CurrentGridVariables()
+	{
+		CurrentEnvironmentGlobal = 0;
+		CurrentSocialGlobal = 0;
+		CurrentFinanceGlobal = 0;
+		for (int i = 0; i < _cellGrid.Count; i++)
+		{
+			CurrentEnvironmentGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().EnvironmentRate;
+			CurrentSocialGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().SocialRate;
+			CurrentFinanceGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().FinanceRate;
+		}
 	}
 
 	void UpdateGridVariables()
@@ -123,11 +143,12 @@ public class CellManager : NetworkBehaviour
 	}
 	public void UpdateCellVars(SyncListInt social, SyncListInt environment, SyncListInt finance)
 	{
-		for (int i = 0; i < HexGrid.Instance.cells.Length; i++)
+		for (int i = 0; i < _cellGrid.Count; i++)
 		{
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().SocialRate = social[i];
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().EnvironmentRate = environment[i];
-			HexGrid.Instance.cells[i].GetComponent<CellLogic>().FinanceRate = finance[i];
+			_cellGrid.GetCell(i).GetComponent<CellLogic>().SocialRate = social[i];
+			_cellGrid.GetCell(i).GetComponent<CellLogic>().EnvironmentRate = environment[i];
+			_cellGrid.GetCell(i).GetComponent<CellLogic>().FinanceRate = finance[i];
 		}
 	}
 }
+

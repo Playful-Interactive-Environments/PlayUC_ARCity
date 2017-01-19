@@ -15,7 +15,7 @@ public class Quest : MonoBehaviour
 	public string Result2;
 	public string Effect1;
 	public string Effect2;
-	public HexCell Cell;
+	public GameObject Cell;
 	public CellLogic CellLogic;
 	public GameObject[] RepresentationSets;
 	public GameObject RepresentationParent;
@@ -41,21 +41,21 @@ public class Quest : MonoBehaviour
 	void Update () {
 	
 	}
-	public void SetCell(HexCell cell)
+
+	public void SetCell(GameObject cell)
 	{
 		Cell = cell;
 		CellLogic = Cell.GetComponent<CellLogic>();
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", Cell.CellId);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", CellLogic.CellId);
 
 	}
-
 	public void Choose(int effect)
 	{
 		if (effect == 1)
 		{
 			splitString = Effect1.Split('/');
 			UIManager.Instance.UpdateResult(Result1);
-			GlobalManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
+			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
 
 		}
 
@@ -63,7 +63,7 @@ public class Quest : MonoBehaviour
 		{
 			splitString = Effect2.Split('/');
 			UIManager.Instance.UpdateResult(Result2);
-			GlobalManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
+			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
 
 		}
 
@@ -78,14 +78,14 @@ public class Quest : MonoBehaviour
 			if (i % 2 != 0)
 			{
 				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
-				if (savestring == "Rating")
+				if (savestring == "Influence")
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", parsedValue);
-					UIManager.Instance.UpdateResult("Rating", splitString[i]);
+					CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", parsedValue);
+					UIManager.Instance.UpdateResult("Influence", splitString[i]);
 				}
 				if (savestring == "Budget")
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", parsedValue);
+					CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", parsedValue);
 					UIManager.Instance.UpdateResult("Budget", splitString[i]);
 				}
 				if (savestring == "Project")
@@ -95,17 +95,17 @@ public class Quest : MonoBehaviour
 				}
 				if (savestring == "Environment")
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
 					UIManager.Instance.UpdateResult("Environment", splitString[i]);
 				}
 				if (savestring == "Finance")
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
 					UIManager.Instance.UpdateResult("Finance", splitString[i]);
 				}
 				if (savestring == "Social")
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, Cell.CellId, parsedValue);
+					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
 					UIManager.Instance.UpdateResult("Social", splitString[i]);
 				}
 			}
@@ -117,7 +117,7 @@ public class Quest : MonoBehaviour
 	{
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", Cell.CellId);
-		CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Quest", 1);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellLogic.CellId);
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Quest", 1);
 	}
 }

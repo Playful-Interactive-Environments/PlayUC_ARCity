@@ -16,7 +16,7 @@ public class UIManager : AManager<UIManager>
 	public enum UiState
 	{
 		Network, Role, Game, Projects, DesignProject, Placement, Notifications,
-		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay, EventResult
+		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay, EventResult, Level
 	}
 
 	public UiState CurrentState;
@@ -34,7 +34,8 @@ public class UIManager : AManager<UIManager>
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
 	public Canvas EventDisplay;
-    public Canvas EventResult;
+	public Canvas EventResult;
+	public Canvas LevelCanvas;
 	public Text DebugText;
 	//CHOOSE ROLE
 	public Button Environment;
@@ -44,6 +45,7 @@ public class UIManager : AManager<UIManager>
 	public GameObject PlayerVariables;
 	public Button MenuButton;
 	public Button NotificationButton;
+	public Button LevelButton;
 	public Text RatingText;
 	public Text BudgetText;
 	public Text TimeText;
@@ -84,10 +86,10 @@ public class UIManager : AManager<UIManager>
 	public Button Event_Choice1;
 	public Button Event_Choice2;
 	public GameObject EventVars;
-    //EVENT RESULT CANVAS
-    public Text EventResultText;
-    //current event progress text in GameUI
-    public Text Event_CurrentProgress;
+	//EVENT RESULT CANVAS
+	public Text EventResultText;
+	//current event progress text in GameUI
+	public Text Event_CurrentProgress;
 	public Text Event_TimeLeft;
 	public bool EventProgressEnabled;
 
@@ -97,17 +99,17 @@ public class UIManager : AManager<UIManager>
 	{
 		ResetMenus();
 		InvokeRepeating("RefreshPlayerVars", .2f, .5f);
-		EventManager.StartListening("HelpMayor", HelpMayor);
-		EventManager.StartListening("Crisis", Crisis);
-		EventManager.StartListening("DesignProject", DesignProject);
+		EventDispatcher.StartListening("HelpMayor", HelpMayor);
+		EventDispatcher.StartListening("Crisis", Crisis);
+		EventDispatcher.StartListening("DesignProject", DesignProject);
 
 	}
 
 	#region Event UI
-    public void ShowEventResult()
-    {
-        Change(UiState.EventResult);
-    }
+	public void ShowEventResult()
+	{
+		Change(UiState.EventResult);
+	}
 
 	public void SetEventText(string title, string content, string button1, string button2)
 	{
@@ -133,7 +135,7 @@ public class UIManager : AManager<UIManager>
 	void AcceptEvent()
 	{
 		EventProgressEnabled = true;
-		GlobalEvents.Instance.CurrentEventScript.HelpMayorEvent = true;
+		EventManager.Instance.CurrentEventScript.HelpMayorEvent = true;
 		GameUI();
 	}
 	//Crisis Event & Button
@@ -183,12 +185,12 @@ public class UIManager : AManager<UIManager>
 
 	void RefreshPlayerVars()
 	{
-		if (GlobalManager.Instance != null)
+		if (SaveStateManager.Instance != null)
 		{
-			if (savevalues[0] != GlobalManager.Instance.GetBudget(LocalManager.Instance.RoleType))
+			if (savevalues[0] != SaveStateManager.Instance.GetBudget(LevelManager.Instance.RoleType))
 				StartCoroutine(AnimateIcon(BudgetImage, .7f, .5f));
-			if (savevalues[1] != GlobalManager.Instance.GetRating(LocalManager.Instance.RoleType))
-				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
+			if (savevalues[1] != SaveStateManager.Instance.GetInfluence(LevelManager.Instance.RoleType))
+				StartCoroutine(AnimateIcon(RatingImage, 1.2f, 1f));
 			if (savevalues[2] != CellManager.Instance.CurrentFinanceGlobal)
 				StartCoroutine(AnimateIcon(FinanceImage, .7f, .5f));
 			if (savevalues[3] != CellManager.Instance.CurrentSocialGlobal)
@@ -197,13 +199,12 @@ public class UIManager : AManager<UIManager>
 				StartCoroutine(AnimateIcon(EnvironmentImage, .7f, .5f));
 
 			BudgetText.text = "" + savevalues[0];
-			RatingText.text = "" + savevalues[1];
 			GlobalFinanceText.text = "" + savevalues[2];
 			GlobalSocialText.text = "" + savevalues[3];
 			GlobalEnvironmentText.text = "" + savevalues[4];
 
-			savevalues[0] = GlobalManager.Instance.GetBudget(LocalManager.Instance.RoleType);
-			savevalues[1] = GlobalManager.Instance.GetRating(LocalManager.Instance.RoleType);
+			savevalues[0] = SaveStateManager.Instance.GetBudget(LevelManager.Instance.RoleType);
+			savevalues[1] = SaveStateManager.Instance.GetInfluence(LevelManager.Instance.RoleType);
 			savevalues[2] = CellManager.Instance.CurrentFinanceGlobal;
 			savevalues[3] = CellManager.Instance.CurrentSocialGlobal;
 			savevalues[4] = CellManager.Instance.CurrentEnvironmentGlobal;
@@ -232,6 +233,10 @@ public class UIManager : AManager<UIManager>
 		NotificationResult.enabled = false;
 		ProjectCanvas.gameObject.SetActive(true);
 		ProjectCanvas.enabled = false;
+		LevelCanvas.enabled = false;
+		LevelCanvas.gameObject.SetActive(true);
+		LevelButton.gameObject.SetActive(false);
+		LevelButton.enabled = false;
 		ProjectDesignCanvas.gameObject.SetActive(true);
 		ProjectDesignCanvas.enabled = false;
 		MenuButton.gameObject.SetActive(true);
@@ -248,8 +253,8 @@ public class UIManager : AManager<UIManager>
 		PlayerVariables.SetActive(true);
 		EventDisplay.gameObject.SetActive(true);
 		EventDisplay.enabled = false;
-        EventResult.gameObject.SetActive(true);
-        EventResult.enabled = false;
+		EventResult.gameObject.SetActive(true);
+		EventResult.enabled = false;
 		switch (CurrentState)
 		{
 			case UiState.Network:
@@ -271,9 +276,16 @@ public class UIManager : AManager<UIManager>
 				ProjectButton.gameObject.SetActive(true);
 				NotificationButton.enabled = true;
 				NotificationButton.gameObject.SetActive(true);
+				LevelButton.gameObject.SetActive(true);
+				LevelButton.enabled = true;
 				MenuButton.enabled = true;
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
+				break;
+			case UiState.Level:
+				LevelCanvas.enabled = true;
+				LevelButton.gameObject.SetActive(true);
+				LevelButton.enabled = true;
 				break;
 			case UiState.Projects:
 				ProjectCanvas.enabled = true;
@@ -313,9 +325,9 @@ public class UIManager : AManager<UIManager>
 			case UiState.EventDisplay:
 				EventDisplay.enabled = true;
 				break;
-            case UiState.EventResult:
-                EventResult.enabled = true;
-                break;
+			case UiState.EventResult:
+				EventResult.enabled = true;
+				break;
 		}
 	}
 	#region Game UI
@@ -349,7 +361,16 @@ public class UIManager : AManager<UIManager>
 
 	public void GameUI()
 	{
+
 		Change(UiState.Game);
+	}
+
+	public void LevelUI()
+	{
+		if (LevelCanvas.enabled == false)
+			Change(UiState.Level);
+		else
+			GameUI();
 	}
 
 	public void RestartApp()
@@ -441,7 +462,7 @@ public class UIManager : AManager<UIManager>
 
 	public void ProjectUI()
 	{
-        ProjectButton.image.color = Color.white;
+		ProjectButton.image.color = Color.white;
 		if (GameCanvas.enabled)
 			Change(UiState.Projects);
 		else
@@ -452,9 +473,9 @@ public class UIManager : AManager<UIManager>
 	{
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
-			CellManager.Instance.NetworkCommunicator.ActivateProject("PlaceProject", CameraControl.Instance.LastTouchedCell.CellPos, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
-			CellManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetRatingInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.ActivateProject("PlaceProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedProjectId));
 			GameUI();
 		}
 	}
@@ -513,36 +534,39 @@ public class UIManager : AManager<UIManager>
 	public void ChooseEnvironment()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
-		LocalManager.Instance.RoleType = "Environment";
-		EventManager.TriggerEvent("EnvironmentMap");
+		LevelManager.Instance.RoleType = "Environment";
+		EventDispatcher.TriggerEvent("EnvironmentMap");
 		RoleDescriptionText.text = "You are responsible of environment, green and open space, transportation and mobility";
 		Invoke("GameUI", .1f);
+		LevelManager.Instance.CreateLevelTemplate();
+
 	}
 
 	public void ChooseFinance()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Finance");
-		LocalManager.Instance.RoleType = "Finance";
-		EventManager.TriggerEvent("FinanceMap");
+		LevelManager.Instance.RoleType = "Finance";
+		EventDispatcher.TriggerEvent("FinanceMap");
 		RoleDescriptionText.text = "You are responsible of economy, real estate and industrial development.";
 		Invoke("GameUI", .1f);
+		LevelManager.Instance.CreateLevelTemplate();
 	}
 
 	public void ChooseSocial()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Social");
-		LocalManager.Instance.RoleType = "Social";
-		EventManager.TriggerEvent("SocialMap");
+		LevelManager.Instance.RoleType = "Social";
+		EventDispatcher.TriggerEvent("SocialMap");
 		RoleDescriptionText.text = "You are responsible of social infrastructure and urban development.";
-
+		LevelManager.Instance.CreateLevelTemplate();
 		Invoke("GameUI", .1f);
 	}
 	
 	void UpdateRoleButtons()
 	{
-		if (GlobalManager.Instance != null)
+		if (SaveStateManager.Instance != null)
 		{
-			if (GlobalManager.Instance.GetTaken("Environment"))
+			if (SaveStateManager.Instance.GetTaken("Environment"))
 			{
 				Environment.interactable = false;
 			}
@@ -550,7 +574,7 @@ public class UIManager : AManager<UIManager>
 			{
 				Environment.interactable = true;
 			}
-			if (GlobalManager.Instance.GetTaken("Social"))
+			if (SaveStateManager.Instance.GetTaken("Social"))
 			{
 				Social.interactable = false;
 			}
@@ -558,7 +582,7 @@ public class UIManager : AManager<UIManager>
 			{
 				Social.interactable = true;
 			}
-			if (GlobalManager.Instance.GetTaken("Finance"))
+			if (SaveStateManager.Instance.GetTaken("Finance"))
 			{
 				Finance.interactable = false;
 			}
@@ -580,20 +604,22 @@ public class UIManager : AManager<UIManager>
 		Change(UiState.Network);
 	}
 
-	public void DebugButton()
-	{
-		//Debug.Log("CLICK");
-		//Vote_Choice1();
-		GlobalEvents.Instance.TriggerRandomEvent();
-		ProjectManager.Instance.CreateRandomProject();
-		//ProjectManager.Instance.AddProject();
-		//ProjectManager.Instance.ProjectApproved(2);
-	}
-
 	IEnumerator AnimateIcon(GameObject icon, float scaleTo, float originalScale)
 	{
 		iTween.ScaleTo(icon, iTween.Hash("x", scaleTo, "y", scaleTo, "time", .2f));
 		yield return new WaitForSeconds(.2f);
 		iTween.ScaleTo(icon, iTween.Hash("x", originalScale, "y", originalScale, "time", .2f));
+	}
+
+	public void DebugButton()
+	{
+		//Debug.Log("CLICK");
+		//Vote_Choice1();
+		//EventManager.Instance.TriggerRandomEvent();
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 10);
+
+		ProjectManager.Instance.CreateRandomProject();
+		//ProjectManager.Instance.AddProject();
+		//ProjectManager.Instance.ProjectApproved(2);
 	}
 }

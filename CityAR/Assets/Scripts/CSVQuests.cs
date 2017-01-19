@@ -48,7 +48,7 @@ public class CSVQuests: AManager<CSVQuests>
     {
         rowList.Clear();
         string[][] grid = CsvParser2.Parse(csv.text);
-        for (int i = 1; i < grid.Length; i++)
+        for (int i = 0; i < grid.Length; i++)
         {
             Row row = new Row();
             row.id = grid[i][0];
@@ -79,7 +79,7 @@ public class CSVQuests: AManager<CSVQuests>
 
     public Row Find_ID(int find)
     {
-        return rowList.Find(x => x.id == find.ToString());
+        return rowList[find];
     }
     public List<Row> Find_ID_All(string find)
     {

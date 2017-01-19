@@ -148,7 +148,7 @@ public class NetworkingManager : NetworkManager
     {
         base.OnServerDisconnect(conn);
         DebugText.text = "Server Disconnected" + conn.lastError;
-        GlobalManager.Instance.SetTaken(conn.connectionId, false);
+        SaveStateManager.Instance.SetTaken(conn.connectionId, false);
     }
     #endregion
 
@@ -220,7 +220,7 @@ public class NetworkingManager : NetworkManager
 
     public override void OnStartClient(NetworkClient client)
     {
-       base.OnStartClient(client);
+        base.OnStartClient(client);
         Debug.Log("OnStartClient");
     }
 
@@ -230,7 +230,7 @@ public class NetworkingManager : NetworkManager
         ClientScene.DestroyAllClientObjects();
         ClientScene.ClearSpawners();
         isClient = false;
-        EventManager.TriggerEvent("NetworkDisconnect");
+        EventDispatcher.TriggerEvent("NetworkDisconnect");
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -257,7 +257,7 @@ public class NetworkingManager : NetworkManager
         yield return new WaitForSeconds(.2f);
         StartClient();
         yield return new WaitForSeconds(.2f);
-        switch (LocalManager.Instance.RoleType)
+        switch (LevelManager.Instance.RoleType)
         {
             case "Environment":
                 UIManager.Instance.ChooseEnvironment();

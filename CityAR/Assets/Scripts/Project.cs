@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [NetworkSettings(channel = 1, sendInterval = 0.2f)]
 public class Project : NetworkBehaviour
 {
-	public HexCell Cell;
+	public GameObject Cell;
 	public CellLogic CellLogic;
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
@@ -16,7 +16,7 @@ public class Project : NetworkBehaviour
 	//Vars set by project manager on server
 	public string Title;
 	public string Description;
-	public int Rating;
+	public int Influence;
 	public int Budget;
 	[SyncVar]
 	public int Social;
@@ -62,18 +62,18 @@ public class Project : NetworkBehaviour
 		if (isServer)
 		{
 			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
-			GlobalManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
+			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			Choice1 += 1;
 		}
 
-		if (LocalManager.Instance.RoleType == ProjectOwner)
+		if (LevelManager.Instance.RoleType == ProjectOwner)
 		{
 			LocalVote = true;
 			CreateProjectButton();
 		}
-		EventManager.StartListening("NetworkDisconnect", NetworkDisconnect);
-		EventManager.StartListening("ProjectSelected", ProjectSelected);
-		EventManager.StartListening("PlacementMap", ProjectSelected);
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
+		EventDispatcher.StartListening("PlacementMap", ProjectSelected);
 	}
 
 	void Update()
@@ -119,11 +119,11 @@ public class Project : NetworkBehaviour
 		_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
 		_projectButton.GetComponent<ProjectText>().SetText(ProjectId);
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-        UIManager.Instance.ProjectButton.image.color = Color.red;
+		UIManager.Instance.ProjectButton.image.color = Color.red;
 
-    }
+	}
 
-    public void CreateRepresentation()
+	public void CreateRepresentation()
 	{
 		//create 3d representation
 		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;
@@ -165,10 +165,10 @@ public class Project : NetworkBehaviour
 		UIManager.Instance.ShowPlacementCanvas();
 	}
 
-	public void SetCell(Vector3 pos)
+	public void SetCell(int cellid)
 	{
-		Cell = HexGrid.Instance.GetCell(pos);
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", Cell.CellId);
+		Cell = CellGrid.Instance.GetCell(cellid);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", cellid);
 
 		CellLogic = Cell.GetComponent<CellLogic>();
 	}
@@ -176,7 +176,7 @@ public class Project : NetworkBehaviour
 	public void ShowProjectCanvas()
 	{
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-		EventManager.TriggerEvent("ProjectSelected");
+		EventDispatcher.TriggerEvent("ProjectSelected");
 		if (LocalVote)
 		{
 			Invoke("ShowProjectInfo", .1f);
@@ -202,9 +202,9 @@ public class Project : NetworkBehaviour
 
 	public void InitiateProject()
 	{
-		CellManager.Instance.UpdateFinance(Cell.CellId, Finance);
-		CellManager.Instance.UpdateSocial(Cell.CellId, Social);
-		CellManager.Instance.UpdateEnvironment(Cell.CellId, Environment);
+		CellManager.Instance.UpdateFinance(CellLogic.CellId, Finance);
+		CellManager.Instance.UpdateSocial(CellLogic.CellId, Social);
+		CellManager.Instance.UpdateEnvironment(CellLogic.CellId, Environment);
 		Debug.Log(Finance + " " + " " + Social + " " + Environment);
 	}
 
@@ -232,7 +232,7 @@ public class Project : NetworkBehaviour
 
 	public void RemoveProject()
 	{
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", Cell.CellId);
+		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellLogic.CellId);
 		Destroy(gameObject);
 	}
 }

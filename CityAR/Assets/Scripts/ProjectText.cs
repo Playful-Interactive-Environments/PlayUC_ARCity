@@ -14,9 +14,9 @@ public class ProjectText : MonoBehaviour {
 
 	void Start()
 	{
-    }
+	}
 
-    public void SetText(int id)
+	public void SetText(int id)
 	{
 		Debug.Log("CreateButton" + id);
 
@@ -25,7 +25,7 @@ public class ProjectText : MonoBehaviour {
 		FinanceText.text = "" + ProjectManager.Instance.GetFinanceString(id);
 		SocialText.text = "" + ProjectManager.Instance.GetSocialString(id);
 		EnvironmentText.text = "" + ProjectManager.Instance.GetEnvironmentString(id);
-		RatingText.text = "" + ProjectManager.Instance.GetRatingString(id);
+		RatingText.text = "" + ProjectManager.Instance.GetInfluenceString(id);
 		BudgetText.text = "" + ProjectManager.Instance.GetBudgetString(id);
 
 	}

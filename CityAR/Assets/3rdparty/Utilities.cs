@@ -45,19 +45,26 @@ public static class Utilities
 
 		return string.Format("{0}:{1}", minutesString, secondsString);
 	}
-    #endregion
+	#endregion
 
-    #region RandomNumbers
-    public static int RandomInt(int a, int b)
-    {
-        int i = Random.Range(a, b);
-        return i;
-    }
+	#region RandomNumbers
+	public static int RandomInt(int a, int b)
+	{
+		int i = Random.Range(a, b);
+		return i;
+	}
 
-    public static float RandomFloat(float a, float b)
-    {
-        float i = Random.Range(a, b);
-        return i;
-    }
-    #endregion
+	public static float RandomFloat(float a, float b)
+	{
+		float i = Random.Range(a, b);
+		return i;
+	}
+	#endregion
+
+	#region RemapValue
+	public static float Remap(this float value, float from1, float to1, float from2, float to2)
+	{
+		return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+	}
+	#endregion
 }

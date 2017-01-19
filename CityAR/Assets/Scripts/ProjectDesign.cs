@@ -33,7 +33,7 @@ public class ProjectDesign : MonoBehaviour {
 	public int Social;
 	public int Finance;
 	public int Budget;
-	public int Rating;
+	public int Influence;
 
 	public int MaxComponents = 5;
 	private int AddedValue = 6;
@@ -55,7 +55,7 @@ public class ProjectDesign : MonoBehaviour {
 		EnvironmentText.text = "" + FormatText(Environment);
 		FinanceText.text = "" + FormatText(Finance);
 		SocialText.text = "" + FormatText(Social);
-		RatingText.text = "" + FormatText(Rating);
+		RatingText.text = "" + FormatText(Influence);
 		BudgetText.text = "" + FormatText(Budget);
 		Title = TitleInput.text;
 		Content = DescriptionInput.text;
@@ -96,14 +96,14 @@ public class ProjectDesign : MonoBehaviour {
 				break;
 			case Draggable.DraggableType.Rating:
 				ratingTier.Add(1);
-				Rating += (AddedValue - ratingTier.Count);
+				Influence += (AddedValue - ratingTier.Count);
 				Social -= (RemovedValue + ratingTier.Count);
 				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
 				break;
 			case Draggable.DraggableType.Budget:
 				budgetTier.Add(1);
 				Budget += (AddedValue - budgetTier.Count)*100;
-				Rating -= (RemovedValue + budgetTier.Count);
+				Influence -= (RemovedValue + budgetTier.Count);
 				StartCoroutine(AnimateIcon(BudgetImage, .7f, .5f));
 				break;
 		}
@@ -145,7 +145,7 @@ public class ProjectDesign : MonoBehaviour {
 			case Draggable.DraggableType.Rating:
 				if (ratingTier.Count == 0)
 					return;
-				Rating -= (AddedValue - ratingTier.Count);
+				Influence -= (AddedValue - ratingTier.Count);
 				Social += (RemovedValue + ratingTier.Count);
 				ratingTier.Remove(1);
 				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
@@ -154,7 +154,7 @@ public class ProjectDesign : MonoBehaviour {
 				if (budgetTier.Count == 0)
 					return;
 				Budget -= (AddedValue - budgetTier.Count) * 100;
-				Rating += (RemovedValue + budgetTier.Count);
+				Influence += (RemovedValue + budgetTier.Count);
 				budgetTier.Remove(1);
 				StartCoroutine(AnimateIcon(BudgetImage, .7f, .5f));
 				break;
@@ -184,13 +184,14 @@ public class ProjectDesign : MonoBehaviour {
 	public void Reset()
 	{
 		Id = ProjectManager.Instance.CSVProjects.rowList.Count + 1;
-		CellManager.Instance.NetworkCommunicator.CreatePlayerProject(Id, Title, Content, Environment, Social, Finance, Budget, Rating);
+		Debug.Log(Id);
+		CellManager.Instance.NetworkCommunicator.CreatePlayerProject(Id, Title, Content, Environment, Social, Finance, Budget, Influence);
 		Invoke("SpawnProject", 1f);
 	}
 
 	public void SpawnProject()
 	{
-		ProjectManager.Instance.CreateProject(Id);
+		ProjectManager.Instance.CreateProject(Id, LevelManager.Instance.RoleType);
 		UIManager.Instance.ProjectUI();
 		financeTier.Clear();
 		environmentTier.Clear();
@@ -201,7 +202,7 @@ public class ProjectDesign : MonoBehaviour {
 		Social = 0;
 		Environment = 0;
 		Budget = 0;
-		Rating = 0;
+		Influence = 0;
 		MaxComponents = 5;
 	}
 }

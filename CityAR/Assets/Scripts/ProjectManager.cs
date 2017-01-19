@@ -35,12 +35,12 @@ public class ProjectManager : NetworkBehaviour
 
 	public void CreateRandomProject()
 	{
-		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", new Vector3(0,0,0), LocalManager.Instance.RoleType, GenerateRandomProject());
+		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", 0, LevelManager.Instance.RoleType, GenerateRandomProject());
 	}
 
-	public void CreateProject(int id)
+	public void CreateProject(int id, string roletype)
 	{
-		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", new Vector3(0, 0, 0), LocalManager.Instance.RoleType, id);
+		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", 0, roletype, id);
 	}
 
 	void PopulateIds()
@@ -63,7 +63,7 @@ public class ProjectManager : NetworkBehaviour
 		project.ProjectId = id;
 		project.Title = GetTitle(id);
 		project.Description = GetContent(id);
-		project.Rating = GetRatingInt(id);
+		project.Influence = GetInfluenceInt(id);
 		project.Social = GetSocialInt(id);
 		project.Finance = GetFinanceInt(id);
 		project.Environment = GetEnvironmentInt(id);
@@ -72,11 +72,11 @@ public class ProjectManager : NetworkBehaviour
 		SaveProject(owner, id, project);
 	}
 
-	public void PlaceProject(Vector3 pos, string owner, int id)
+	public void PlaceProject(int cellid, string owner, int id)
 	{
 		Project project = FindProject(id);
-		project.SetCell(pos);
-		project.transform.position = pos;
+		project.SetCell(cellid);
+		project.transform.position = CellGrid.Instance.GetCell(cellid).transform.position;
 		project.RepresentationCreated = true;
 		RemoveProject(owner, id);
 	}
@@ -187,13 +187,13 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return CSVProjects.Find_ID(num).finance;
 	}
-	public int GetRatingInt(int num)
+	public int GetInfluenceInt(int num)
 	{
-		return ConvertString(CSVProjects.Find_ID(num).rating);
+		return ConvertString(CSVProjects.Find_ID(num).influence);
 	}
-	public string GetRatingString(int num)
+	public string GetInfluenceString(int num)
 	{
-		return CSVProjects.Find_ID(num).rating;
+		return CSVProjects.Find_ID(num).influence;
 	}
 	public int GetEnvironmentInt(int num)
 	{
@@ -218,16 +218,16 @@ public class ProjectManager : NetworkBehaviour
 		return parsedInt;
 
 	}
-    string FormatSign(int num)
-    {
-        string text = "";
-        if (num > 0)
-            text = "+" + num;
-        if (num < 0)
-            text = "" + num;
-        if (num == 0)
-            text = "" + num;
-        return text;
-    }
-    #endregion
+	string FormatSign(int num)
+	{
+		string text = "";
+		if (num > 0)
+			text = "+" + num;
+		if (num < 0)
+			text = "" + num;
+		if (num == 0)
+			text = "" + num;
+		return text;
+	}
+	#endregion
 }

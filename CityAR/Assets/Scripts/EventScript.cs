@@ -35,7 +35,7 @@ public class EventScript : NetworkBehaviour {
 	void Start ()
 	{
 		Invoke("TriggerEvent", .5f);
-		GlobalEvents.Instance.CurrentEventScript = GetComponent<EventScript>();
+		EventManager.Instance.CurrentEventScript = GetComponent<EventScript>();
 	}
 
 	void TriggerEvent()
@@ -45,30 +45,30 @@ public class EventScript : NetworkBehaviour {
 		switch (type)
 		{
 			case "Crisis":
-				EventManager.TriggerEvent("Crisis");
+				EventDispatcher.TriggerEvent("Crisis");
 				break;
 			case "DesignProject":
-				EventManager.TriggerEvent("DesignProject");
+				EventDispatcher.TriggerEvent("DesignProject");
 				break;
 			case "Environment":
 				_storedValue = CellManager.Instance.CurrentEnvironmentGlobal;
-				EventManager.TriggerEvent("HelpMayor");
+				EventDispatcher.TriggerEvent("HelpMayor");
 				break;
 			case "Finance":
 				_storedValue = CellManager.Instance.CurrentFinanceGlobal;
-				EventManager.TriggerEvent("HelpMayor");
+				EventDispatcher.TriggerEvent("HelpMayor");
 				break;
 			case "Social":
 				_storedValue = CellManager.Instance.CurrentSocialGlobal;
-				EventManager.TriggerEvent("HelpMayor");
+				EventDispatcher.TriggerEvent("HelpMayor");
 				break;
 			case "Budget":
-				_storedValue = GlobalManager.Instance.GetAllBudget();
-				EventManager.TriggerEvent("HelpMayor");
+				_storedValue = SaveStateManager.Instance.GetAllBudget();
+				EventDispatcher.TriggerEvent("HelpMayor");
 				break;
 			case "Quest":
-                _storedValue = GlobalManager.Instance.GetAllQuests();
-                EventManager.TriggerEvent("HelpMayor");
+                _storedValue = SaveStateManager.Instance.GetAllQuests();
+                EventDispatcher.TriggerEvent("HelpMayor");
 				break;
 		}
 	}
@@ -112,10 +112,10 @@ public class EventScript : NetworkBehaviour {
 				CurrentProgress = CellManager.Instance.CurrentSocialGlobal - _storedValue;
 				break;
 			case "Budget":
-				CurrentProgress = GlobalManager.Instance.GetAllBudget() - _storedValue;
+				CurrentProgress = SaveStateManager.Instance.GetAllBudget() - _storedValue;
 				break;
 			case "Quest":
-                CurrentProgress = GlobalManager.Instance.GetAllQuests() - _storedValue;
+                CurrentProgress = SaveStateManager.Instance.GetAllQuests() - _storedValue;
                 break;
 		}
 		UIManager.Instance.Event_CurrentProgress.text = "" + CurrentProgress + "/" + CurrentGoal;

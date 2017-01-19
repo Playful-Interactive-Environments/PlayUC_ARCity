@@ -109,8 +109,8 @@ public class QuestManager : MonoBehaviour {
 	{
 		if (CurrentQuests < MaxQuests && _questTime > SpawnRate)
 		{
-			HexCell cell = HexGrid.Instance.GetRandomCell();
-
+			//HexCell cell = HexGrid.Instance.GetRandomCell();
+		    GameObject cell = CellGrid.Instance.GetRandomCell();
 			GameObject obj = Instantiate(QuestPrefab, cell.transform.position, Quaternion.identity) as GameObject;
 			obj.transform.parent = CellManager.Instance.ImageTarget.transform;
 			obj.transform.name = "Quest";

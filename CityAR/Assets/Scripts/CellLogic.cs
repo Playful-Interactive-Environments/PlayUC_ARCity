@@ -9,8 +9,8 @@ public class CellLogic : MonoBehaviour {
     {
         PlacementState, SocialMap, EnvironmentMap, FinanceMap, CellSelected
     }
-    HexCell _hexCell;
-    HexGrid _hexGrid;
+    //HexCell _hexCell;
+    //HexGrid _hexGrid;
     private CellInterface _interface;
     public int Count;
     public int SocialRate;
@@ -18,30 +18,32 @@ public class CellLogic : MonoBehaviour {
     public int FinanceRate;
     public float Height;
     private bool Topograhic;
-    private float _chunkValue; // based on max value, must be dividable by 5 due to 5 heatmap steps
+    private float _chunkValue; // based on max value, must be dividable by 4 due to 4 heatmap steps
     public HeatmapState CurrentState = HeatmapState.PlacementState;
     private HeatmapState PreviousState = HeatmapState.PlacementState;
     private int state;
     public int OccupiedSlots;
     public List<int> Slots = new List<int>();
     private float offset = 15f;
+    private Renderer _renderer;
+    public int CellId;
+    public Material[] colors;
      
     void Start()
     {
-        _hexCell = GetComponent<HexCell>();
         _interface = GetComponent<CellInterface>();
-        _hexGrid = HexGrid.Instance;
-        _hexCell.color = _hexGrid.colors[0];
-        EventManager.StartListening("PlacementMap", PlacementMap);
-        EventManager.StartListening("SocialMap", SocialMap);
-        EventManager.StartListening("EnvironmentMap", EnvironmentMap);
-        EventManager.StartListening("FinanceMap", FinanceMap);
+        _renderer = GetComponent<Renderer>();
+        _renderer.material = colors[0];
+        EventDispatcher.StartListening("PlacementMap", PlacementMap);
+        EventDispatcher.StartListening("SocialMap", SocialMap);
+        EventDispatcher.StartListening("EnvironmentMap", EnvironmentMap);
+        EventDispatcher.StartListening("FinanceMap", FinanceMap);
     }
 
     public Vector3 GetPositionOffset()
     {
         Vector3 vector = new Vector3();
-        OccupiedSlots = GlobalManager.Instance.OccupiedList[_hexCell.CellId];
+        OccupiedSlots = SaveStateManager.Instance.OccupiedList[CellId];
         if (OccupiedSlots == 1)
             vector = new Vector3(0, 0, 0);
         if (OccupiedSlots == 2)
@@ -65,7 +67,6 @@ public class CellLogic : MonoBehaviour {
     public void PlacementMap()
     {
         CurrentState = PreviousState;
-        //CurrentState = HeatmapState.PlacementState;
         _interface.CurrentState = CellInterface.InterfaceState.Default;
         GetComponent<CellInterface>().ResetCell();
     }
@@ -98,66 +99,55 @@ public class CellLogic : MonoBehaviour {
 
     void Update()
     {
-        if(GlobalManager.Instance!=null)
-            _chunkValue = GlobalManager.Instance.CellMaxValue / 5;
+        if(SaveStateManager.Instance!=null)
+            _chunkValue = SaveStateManager.Instance.CellMaxValue / 4;
         switch (CurrentState)
         {
             case HeatmapState.PlacementState:
                 state = 0;
-               // _hexCell.Elevation = state;
-                _hexCell.color = _hexGrid.colors[state];
+                _renderer.material = colors[state];
                 break;
             case HeatmapState.CellSelected:
-                state = 6;
-                //_hexCell.Elevation = 0;
-                _hexCell.color = _hexGrid.colors[state];
+                state = 5;
+                _renderer.material = colors[state];
                 break;
-                //5 - terrible social state, civil unreast; 1 - great social state, happyness
+                //4 - terrible social state, civil unrest; 1 - great social state, happyness
             case HeatmapState.SocialMap:
                 if (SocialRate < _chunkValue)
-                    state = 5;
-                if (SocialRate >= _chunkValue && SocialRate < _chunkValue * 2)
                     state = 4;
-                if (SocialRate >= _chunkValue * 2 && SocialRate < _chunkValue * 3)
+                if (SocialRate >= _chunkValue  && SocialRate < _chunkValue * 2)
                     state = 3;
-                if (SocialRate >= _chunkValue * 3 && SocialRate < _chunkValue * 4)
+                if (SocialRate >= _chunkValue * 2 && SocialRate < _chunkValue * 3)
                     state = 2;
-                if (SocialRate >= _chunkValue * 4)
+                if (SocialRate >= _chunkValue * 3)
                     state = 1;
-                _hexCell.color = _hexGrid.colors[state];
-                //_hexCell.Elevation = state - 1;
+                _renderer.material = colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
-                //5- high polution; 1 - low polution
+                //4- high polution; 1 - low polution
             case HeatmapState.EnvironmentMap:
                 if (EnvironmentRate < _chunkValue)
-                    state = 5;
-                if (EnvironmentRate >= _chunkValue && EnvironmentRate < _chunkValue * 2)
                     state = 4;
-                if (EnvironmentRate >= _chunkValue * 2 && EnvironmentRate < _chunkValue * 3)
+                if (EnvironmentRate >= _chunkValue && EnvironmentRate < _chunkValue * 2)
                     state = 3;
-                if (EnvironmentRate >= _chunkValue * 3 && EnvironmentRate < _chunkValue * 4)
+                if (EnvironmentRate >= _chunkValue * 2 && EnvironmentRate < _chunkValue * 3)
                     state = 2;
-                if (EnvironmentRate >= _chunkValue * 4)
+                if (EnvironmentRate >= _chunkValue * 3)
                     state = 1;
-                //_hexCell.Elevation = state - 1;
-                _hexCell.color = _hexGrid.colors[state];
+                _renderer.material = colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
-                //5- finance state worst 1 - finance state best
+                //4- finance state worst 1 - finance state best
             case HeatmapState.FinanceMap:
                 if (FinanceRate < _chunkValue)
-                    state = 5;
-                if (FinanceRate >= _chunkValue && FinanceRate < _chunkValue * 2)
                     state = 4;
-                if (FinanceRate >= _chunkValue * 2 && FinanceRate < _chunkValue * 3)
+                if (FinanceRate >= _chunkValue && FinanceRate < _chunkValue * 2)
                     state = 3;
-                if (FinanceRate >= _chunkValue * 3 && FinanceRate < _chunkValue * 4)
+                if (FinanceRate >= _chunkValue * 2 && FinanceRate < _chunkValue * 3)
                     state = 2;
-                if (FinanceRate >= _chunkValue * 4)
+                if (FinanceRate >= _chunkValue * 3)
                     state = 1;
-                //_hexCell.Elevation = state - 1;
-                _hexCell.color = _hexGrid.colors[state];
+                _renderer.material = colors[state];
                 _interface.CurrentState = CellInterface.InterfaceState.Default;
                 break;
         }
@@ -167,5 +157,11 @@ public class CellLogic : MonoBehaviour {
     {
         string vars = " Environment " + EnvironmentRate + " Social " + SocialRate  + " Finance "+ FinanceRate;
         return vars;
+    }
+
+    public void TouchCell()
+    {
+        EventDispatcher.TriggerEvent("PlacementMap");
+        Invoke("CellSelected", .05f);
     }
 }
