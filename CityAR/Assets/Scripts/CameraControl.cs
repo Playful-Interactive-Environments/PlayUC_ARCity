@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CameraControl : AManager<CameraControl>
 {
-
+    public Camera CurrentCam;
     RaycastHit hitCenter;
     private UIManager _uiManager;
     public bool CarryingObject;
@@ -17,6 +17,7 @@ public class CameraControl : AManager<CameraControl>
     void Start()
     {
         _uiManager = UIManager.Instance;
+        CurrentCam = Camera.main;
     }
 
     void Update()
@@ -25,7 +26,7 @@ public class CameraControl : AManager<CameraControl>
 #if UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
-            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray mouseRay = CurrentCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit mouseHit;
             if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
             {
@@ -61,7 +62,7 @@ public class CameraControl : AManager<CameraControl>
             {
                 if (touch.phase == TouchPhase.Began)
                 {
-                    Ray rayTouch = Camera.main.ScreenPointToRay(touch.position);
+                    Ray rayTouch = CurrentCam.ScreenPointToRay(touch.position);
                     RaycastHit hit;
                    
                     if (Physics.Raycast(rayTouch, out hit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
