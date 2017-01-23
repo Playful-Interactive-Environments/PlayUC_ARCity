@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 
 public class CellManager : NetworkBehaviour
 {
-	public GameObject SpawnPrefab;
 	public GameObject ImageTarget;
 	public NetworkCommunicator NetworkCommunicator;
 	public static CellManager Instance = null;
