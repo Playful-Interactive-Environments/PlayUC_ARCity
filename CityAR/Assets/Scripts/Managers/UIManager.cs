@@ -617,7 +617,7 @@ public class UIManager : AManager<UIManager>
 		//Vote_Choice1();
 		//EventManager.Instance.TriggerRandomEvent();
 		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 10);
-
+		MGManager.Instance.DebugMG(MGManager.MiniGame.Advertise);
 		ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);

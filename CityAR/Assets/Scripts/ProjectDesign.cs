@@ -68,7 +68,7 @@ public class ProjectDesign : MonoBehaviour {
 		
 	}
 
-	public void AddValue(DragDesignProject.DraggableType type)
+	public void AddValue(Draggable.DraggableType type)
 	{
 		if (MaxComponents == 0)
 			return;
@@ -76,31 +76,31 @@ public class ProjectDesign : MonoBehaviour {
 		StartCoroutine(AnimateIcon(ComponentImage, .7f, 1f));
 		switch (type)
 		{
-			case DragDesignProject.DraggableType.Environment:
+			case Draggable.DraggableType.Environment:
 				environmentTier.Add(1);
 				Environment += (AddedValue - environmentTier.Count);
 				Budget -= (RemovedValue + environmentTier.Count) * 100;
 				StartCoroutine(AnimateIcon(EnvironmentImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Finance:
+			case Draggable.DraggableType.Finance:
 				financeTier.Add(1);
 				Finance += (AddedValue - financeTier.Count);
 				Environment -= (RemovedValue + financeTier.Count);
 				StartCoroutine(AnimateIcon(FinanceImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Social:
+			case Draggable.DraggableType.Social:
 				socialTier.Add(1);
 				Social += (AddedValue - socialTier.Count);
 				Finance -= (RemovedValue + socialTier.Count);
 				StartCoroutine(AnimateIcon(SocialImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Rating:
+			case Draggable.DraggableType.Rating:
 				ratingTier.Add(1);
 				Influence += (AddedValue - ratingTier.Count);
 				Social -= (RemovedValue + ratingTier.Count);
 				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Budget:
+			case Draggable.DraggableType.Budget:
 				budgetTier.Add(1);
 				Budget += (AddedValue - budgetTier.Count)*100;
 				Influence -= (RemovedValue + budgetTier.Count);
@@ -110,7 +110,7 @@ public class ProjectDesign : MonoBehaviour {
 		MaxComponents -= 1;
 	}
 
-	public void SubtractValue(DragDesignProject.DraggableType type)
+	public void SubtractValue(Draggable.DraggableType type)
 	{
 		if (MaxComponents == 5)
 			return;
@@ -118,7 +118,7 @@ public class ProjectDesign : MonoBehaviour {
 		StartCoroutine(AnimateIcon(ComponentImage, 1.2f, 1f));
 		switch (type)
 		{
-			case DragDesignProject.DraggableType.Environment:
+			case Draggable.DraggableType.Environment:
 				if (environmentTier.Count == 0)
 					return;
 				Environment -= (AddedValue - environmentTier.Count);
@@ -126,7 +126,7 @@ public class ProjectDesign : MonoBehaviour {
 				environmentTier.Remove(1);
 				StartCoroutine(AnimateIcon(EnvironmentImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Finance:
+			case Draggable.DraggableType.Finance:
 				if (financeTier.Count == 0)
 					return;
 				Finance -= (AddedValue - financeTier.Count);
@@ -134,7 +134,7 @@ public class ProjectDesign : MonoBehaviour {
 				financeTier.Remove(1);
 				StartCoroutine(AnimateIcon(FinanceImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Social:
+			case Draggable.DraggableType.Social:
 				if (socialTier.Count == 0)
 					return;
 				Social -= (AddedValue - socialTier.Count);
@@ -142,7 +142,7 @@ public class ProjectDesign : MonoBehaviour {
 				socialTier.Remove(1);
 				StartCoroutine(AnimateIcon(SocialImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Rating:
+			case Draggable.DraggableType.Rating:
 				if (ratingTier.Count == 0)
 					return;
 				Influence -= (AddedValue - ratingTier.Count);
@@ -150,7 +150,7 @@ public class ProjectDesign : MonoBehaviour {
 				ratingTier.Remove(1);
 				StartCoroutine(AnimateIcon(RatingImage, .7f, .5f));
 				break;
-			case DragDesignProject.DraggableType.Budget:
+			case Draggable.DraggableType.Budget:
 				if (budgetTier.Count == 0)
 					return;
 				Budget -= (AddedValue - budgetTier.Count) * 100;
