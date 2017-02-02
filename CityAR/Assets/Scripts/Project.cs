@@ -28,14 +28,16 @@ public class Project : NetworkBehaviour
 	public string ProjectOwner;
 	//voting
 	[SyncVar]
-	public int ProjectId;
+	public int ID_Spawn;
+	[SyncVar]
+	public int Id_CSV;
 	[SyncVar]
 	public int RepresentationId;
-	public bool Approved;
 	[SyncVar]
 	public int Choice1;
 	[SyncVar]
 	public int Choice2;
+	public bool Approved;
 	public bool LocalVote;
 	private Vector3 CellPos;
 
@@ -48,16 +50,14 @@ public class Project : NetworkBehaviour
 	public TextMesh EnvironmentText;
 
 	//cardtext
-	public GameObject ProjectTemplate;
-	public GridLayoutGroup GridGroup;
+
 
 	void Start ()
 	{
-		transform.name = "Project";
+		transform.name = "Project" + ID_Spawn;
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		RepresentationParent.SetActive(false);
 		TextHolder.SetActive(false);
-
 		GetComponent<BoxCollider>().enabled = false;
 		if (isServer)
 		{
@@ -69,7 +69,7 @@ public class Project : NetworkBehaviour
 		if (LevelManager.Instance.RoleType == ProjectOwner)
 		{
 			LocalVote = true;
-			CreateProjectButton();
+			//CreateProjectButton();
 		}
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
@@ -83,12 +83,12 @@ public class Project : NetworkBehaviour
 			if (Choice1 > Choice2)
 			{
 				InitiateProject();
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ProjectId);
+				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
 				Approved = true;
 			}
 			else if (Choice2 > Choice1)
 			{
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ProjectId);
+				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
 				Approved = true;
 
 			}
@@ -109,19 +109,7 @@ public class Project : NetworkBehaviour
 		Destroy(_projectButton);
 	}
 
-	public void CreateProjectButton()
-	{
-		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
-		ProjectTemplate = GameObject.Find("ProjectTemplate");
-		_projectButton = Instantiate(ProjectTemplate, transform.position, Quaternion.identity) as GameObject;
-		_projectButton.transform.parent = GridGroup.transform;
-		_projectButton.transform.localScale = new Vector3(1, 1, 1);
-		_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
-		_projectButton.GetComponent<ProjectText>().SetText(ProjectId);
-		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-		UIManager.Instance.ProjectButton.image.color = Color.red;
 
-	}
 
 	public void CreateRepresentation()
 	{
@@ -159,12 +147,6 @@ public class Project : NetworkBehaviour
 			transform.position += CellLogic.GetPositionOffset();
 	}
 
-	void SelectProject()
-	{
-		ProjectManager.Instance.SelectedProjectId = ProjectId;
-		UIManager.Instance.ShowPlacementCanvas();
-	}
-
 	public void SetCell(int cellid)
 	{
 		Cell = CellGrid.Instance.GetCell(cellid);
@@ -190,14 +172,14 @@ public class Project : NetworkBehaviour
 	public void ShowVoteCanvas()
 	{
 		TextHolder.SetActive(true);
-		ProjectManager.Instance.SelectedProjectId = ProjectId;
+		ProjectManager.Instance.SelectedProjectId = ID_Spawn;
 		UIManager.Instance.EnableVoteUI();
 	}
 
 	public void ShowProjectInfo()
 	{
 		TextHolder.SetActive(true);
-		ProjectManager.Instance.SelectedProjectId = ProjectId;
+		ProjectManager.Instance.SelectedProjectId = ID_Spawn;
 	}
 
 	public void InitiateProject()
@@ -215,7 +197,8 @@ public class Project : NetworkBehaviour
 			logo.GetComponent<Renderer>().enabled = false;
 		}
 		PlayerLogos[3].GetComponent<Renderer>().enabled = true;
-
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedProjectId));
 	}
 
 	public void ShowRejected()

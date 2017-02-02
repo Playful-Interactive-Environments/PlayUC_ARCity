@@ -299,7 +299,7 @@ public class UIManager : AManager<UIManager>
 				PlacementCanvas.enabled = true;
 				break;
 			case UiState.Vote:
-				VoteDescription.GetComponent<ProjectText>().SetText(ProjectManager.Instance.SelectedProjectId);
+				//VoteDescription.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedProjectId);
 				VoteCanvas.enabled = true;
 				break;
 			case UiState.Notifications:
@@ -473,9 +473,7 @@ public class UIManager : AManager<UIManager>
 	{
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
-			CellManager.Instance.NetworkCommunicator.ActivateProject("PlaceProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedProjectId));
+			CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
 			GameUI();
 		}
 	}
@@ -616,9 +614,9 @@ public class UIManager : AManager<UIManager>
 		//Debug.Log("CLICK");
 		//Vote_Choice1();
 		//EventManager.Instance.TriggerRandomEvent();
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 10);
-		MGManager.Instance.DebugMG(MGManager.MiniGame.Advertise);
-		ProjectManager.Instance.CreateRandomProject();
+		//CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 50);
+		MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
+		//ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);
 	}

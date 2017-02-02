@@ -9,38 +9,55 @@ public class LevelDescription : MonoBehaviour {
 	public CSVLeveling csvLeveling;
 	public Text RankText;
 	public Text UnlockTitle;
-	public string Unlock;
-	string savestring;
+	public string textToParse;
+	private string UnlockType;
+	private string UnlockValue;
 	int parsedValue;
 	private string[] splitString;
+	private bool LevelReached;
 
 	void Start ()
 	{
 		csvLeveling = CSVLeveling.Instance;
-        GetComponent<Image>().color = Color.grey;
-        GetComponent<Button>().enabled = false;
+		GetComponent<Image>().color = Color.grey;
+		GetComponent<Button>().enabled = false;
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		if(LevelManager.Instance.CurrentRank == LevelNumber)
-        {
-            GetComponent<Button>().enabled = true;
-            GetComponent<Image>().color = Color.white;
-        }
-    }
+		if (LevelManager.Instance.CurrentRank == LevelNumber && !LevelReached)
+		{
+			GetComponent<Button>().enabled = true;
+			GetComponent<Image>().color = Color.white;
+			if (UnlockType == "Event")
+			{
+				EventManager.Instance.TriggerEvent(UnlockValue);
+			}
+			if (UnlockType == "Budget")
+			{
+				CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ConvertString(UnlockValue));
 
-    public void SetupLayout(int i)
+			}
+			if (UnlockType == "Project")
+			{
+				ProjectManager.Instance.UnlockProject(ConvertString(UnlockValue));
+			}
+			LevelReached = true;
+		}
+	}
+
+	public void SetupLayout(int i)
 	{
 		LevelNumber = i;
 		RankText.text = "" + LevelNumber;
-		Unlock = csvLeveling.GetUnlock(i);
-		SetUnlockType();
+		textToParse = csvLeveling.GetUnlock(i);
+		ExtractData();
 	}
 
-	public void SetUnlockType()
+	public void ExtractData()
 	{
-		splitString = Unlock.Split('/');
+		splitString = textToParse.Split('/');
 		//SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
 
 		for (int i = 0; i < splitString.Length; i++)
@@ -48,27 +65,25 @@ public class LevelDescription : MonoBehaviour {
 			//even members are the names. save them and get corresponding values
 			if (i % 2 == 0)
 			{
-				savestring = splitString[i];
 				UnlockTitle.text = splitString[i];
+				UnlockType = splitString[i];
 			}
 			//odd members are values. parse the value and act depending on the already saved name
 			if (i % 2 != 0)
 			{
 				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
 				UnlockTitle.text += " " + splitString[i];
-				if (savestring == "Event")
-				{
+				UnlockValue = splitString[i];
 
-				}
-				if (savestring == "Budget")
-				{
-
-				}
-				if (savestring == "Project")
-				{
-
-				}
 			}
+
 		}
+	}
+	private int ConvertString(string input)
+	{
+		int parsedInt = 0;
+		int.TryParse(input, NumberStyles.Any, null, out parsedInt);
+		return parsedInt;
+
 	}
 }

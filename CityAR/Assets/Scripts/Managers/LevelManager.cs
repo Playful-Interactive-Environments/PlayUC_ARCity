@@ -100,7 +100,7 @@ public class LevelManager : MonoBehaviour
 			_levelbutton.transform.localScale = new Vector3(1, 1, 1);
 			//_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
 			_levelbutton.GetComponent<LevelDescription>().SetupLayout(i);
-
+			LevelLayoutList.Add(_levelbutton);
 		}
 	}
 	

@@ -1,9 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MGManager : AManager<MGManager> {
+
+    public MiniGame CurrentMG = MiniGame.None;
+    public enum MiniGame
+    {
+        None, Advertise, Pointer, Sorting, Area
+    }
 
     //main objects & vars
     public Camera MainCam;
@@ -12,103 +19,125 @@ public class MGManager : AManager<MGManager> {
     public GameObject MGCanvas;
     public Text TimerText;
     public Text ScoreText;
+    public Text WinStateText;
+
     public float Height;
     public float Width;
     private float _currentTime;
-    private float _timeLimit = 20f;
+    private float _timeLimit;
     public bool Started;
 
-    public enum MiniGame
-    {
-        None, Advertise, Pointer, Sorting, Garbage
-    }
-
-    public MiniGame CurrentMG = MiniGame.None;
-
-    //Mini-Game 1 - Advertise Voters
-    public GameObject MG_1;
-    public List<Vector3> Waypoints = new List<Vector3>();
-    public List<Vector3> StartPoints = new List<Vector3>();
-    public GameObject Advertisement;
-    public GameObject TargetStage;
-    public GameObject VoterPrefab;
-    private Vector3 startingPos;
-    private int _votersNeeded = 20;
-    public int VotersCollected;
+    //MiniGames
+    public GameObject MG_1_GO;
+    public MG_1 MG_1_Mng;
+    public GameObject MG_2_GO;
+    public MG_2 MG_2_Mng;
+    public GameObject MG_3_GO;
+    public MG_3 MG_3_Mng;
 
 
     void Start () {
-        //Find Objects
+        //Find Cameras & Canvas
         MGCam = GameObject.Find("MGCam");
         MainCam = Camera.main;
-        MG_1 = GameObject.Find("MG_1");
+        MG_1_GO = GameObject.Find("MG_1");
+        MG_1_Mng = MG_1.Instance;
+        MG_2_GO = GameObject.Find("MG_2");
+        MG_2_Mng = MG_2.Instance;
+        MG_3_GO = GameObject.Find("MG_3");
+        MG_3_Mng = MG_3.Instance;
         MainCanvas = GameObject.Find("Canvas");
         MGCanvas = GameObject.Find("MGCanvas");
-        Camera c = MGCam.GetComponent<Camera>();
-        c.backgroundColor = Color.white;
-        MainGame();
-        ObjectPool.CreatePool(VoterPrefab, _votersNeeded);
-        //adjust play space to screen res
-        c.orthographicSize = Screen.width / 32;
-        Height = c.orthographicSize;
-        Width = c.orthographicSize;
 
+        //adjust play space & cam
+        MGCam.GetComponent<Camera>().backgroundColor = Color.white;
+        MGCam.GetComponent<Camera>().orthographicSize = Screen.width / 32;
+        Height = MGCam.GetComponent<Camera>().orthographicSize * 2;
+        Width = Height / Screen.height * Screen.width;
+        MGStart(MiniGame.None);
     }
 
     void Update () {
         if (Input.GetKeyDown(KeyCode.A))
-            DebugMG(MiniGame.Advertise);
+            DebugButton();
         if (Started)
         {
             _currentTime += Time.deltaTime;
             TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
-            ScoreText.text = "Voters: " + VotersCollected;
-            if (_currentTime >= _timeLimit)
-                EndMG();
-            if(VotersCollected >= _votersNeeded)
-                EndMG();
+            switch (CurrentMG)
+            {
+                case MiniGame.Advertise:
+                    ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected;
+                    if (_currentTime >= _timeLimit)
+                    {
+                        WinStateText.text = "GAME LOST!";
+                        EndMG();
+                    }
+
+                    if (MG_2_Mng.VotersCollected >= MG_2_Mng.VotersNeeded)
+                    {
+                        WinStateText.text = "TIME RAN OUT!";
+                        EndMG();
+                    }
+                    break;
+                case MiniGame.Area:
+                    ScoreText.text = "Confiscated: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
+                    if (_currentTime >= _timeLimit)
+                    {
+                        WinStateText.text = "TIME RAN OUT!";
+                        EndMG();
+                    }
+
+                    if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
+                    {
+                        WinStateText.text = "YOU WIN!";
+                        EndMG();
+                    }
+
+                    break;
+            }
         }
     }
-    void StartMG(MiniGame state)
+
+    void MGStart(MiniGame state)
     {
         Started = true;
         CurrentMG = state;
+        MainCam.gameObject.SetActive(false);
+        MainCanvas.SetActive(false);
+        MGCanvas.SetActive(false);
+        MGCam.SetActive(false);
+        MG_1_GO.SetActive(false);
+        MG_2_GO.SetActive(false);
+        MG_3_GO.SetActive(false);
+        CameraControl.Instance.CurrentCam = MGCam.GetComponent<Camera>();
+        WinStateText.text = "";
         switch (state)
         {
             case MiniGame.Advertise:
-                InitAdvertiseVoters();
-                break;
-            case MiniGame.Garbage:
+                MGCanvas.SetActive(true);
+                MGCam.SetActive(true);
+                _timeLimit = MG_2_Mng.TimeLimit;
+                MG_2_Mng.InitGame();
+                MG_2_GO.SetActive(true);
+
                 break;
             case MiniGame.Pointer:
                 break;
             case MiniGame.Sorting:
                 break;
-        }
-    }
-    
-    void InitAdvertiseVoters()
-    {
-
-        StartPoints.Add(new Vector3(0, 0, 0));
-        StartPoints.Add(new Vector3(-Height, 0, 0));
-        StartPoints.Add(new Vector3(Height, 0, 0));
-        StartPoints.Add(new Vector3(-Height, -Width, 0));
-        StartPoints.Add(new Vector3(0, Width, 0));
-        StartPoints.Add(new Vector3(0, -Width, 0));
-        Advertisement.transform.position = new Vector3(MGCam.GetComponent<Camera>().pixelWidth, 0, 0);
-        TargetStage.transform.position = new Vector3(0, -Height +5f, 0);
-
-        int waypoints = 40;
-        for (int i = 0; i <= waypoints; i++)
-        {
-            Waypoints.Add(new Vector3(Utilities.RandomFloat(-Width, Width), Utilities.RandomFloat(-Height, Height), 0));
-        }
-
-        for (int i = 0; i < _votersNeeded; i++)
-        {
-            startingPos = StartPoints[Utilities.RandomInt(0, StartPoints.Count)];
-            ObjectPool.Spawn(VoterPrefab, MG_1.transform, startingPos, Quaternion.identity);
+            case MiniGame.Area:
+                MGCanvas.SetActive(true);
+                MGCam.SetActive(true);
+                _timeLimit = MG_3_Mng.TimeLimit;
+                MG_3_GO.SetActive(true);
+                MG_3_Mng.InitGame();
+                break;
+            case MiniGame.None:
+                MainCam.gameObject.SetActive(true);
+                MainCanvas.SetActive(true);
+                CameraControl.Instance.CurrentCam = MainCam;
+                break;
         }
     }
 
@@ -117,14 +146,12 @@ public class MGManager : AManager<MGManager> {
         switch (CurrentMG)
         {
             case MiniGame.Advertise:
-                ObjectPool.RecycleAll(VoterPrefab);
                 _currentTime = 0;
-                VotersCollected = 0;
-                StartPoints.Clear();
-                Waypoints.Clear();
-                Advertisement.GetComponent<Advertisement>().Reset();
+                MG_2_Mng.ResetGame();
                 break;
-            case MiniGame.Garbage:
+            case MiniGame.Area:
+                _currentTime = 0;
+                MG_3_Mng.ResetGame();
                 break;
             case MiniGame.Pointer:
                 break;
@@ -138,38 +165,17 @@ public class MGManager : AManager<MGManager> {
     {
         if (MainCam.gameObject.activeInHierarchy == false)
         {
-            MainGame();
             EndMG();
+            MGStart(MiniGame.None);
         }
         else
         {
-            MiniGameCamera();
-            StartMG(state);
+            MGStart(state);
         }
     }
-
-    public void BackButton()
+    
+    public void DebugButton()
     {
-        DebugMG(MiniGame.Advertise);    
-    }
-
-    void MiniGameCamera()
-    {
-        MainCam.gameObject.SetActive(false);
-        MainCanvas.SetActive(false);
-        MGCanvas.SetActive(true);
-        MGCam.SetActive(true);
-        MG_1.SetActive(true);
-        CameraControl.Instance.CurrentCam = MGCam.GetComponent<Camera>();
-    }
-
-    void MainGame()
-    {
-        MainCam.gameObject.SetActive(true);
-        MainCanvas.SetActive(true);
-        MGCanvas.SetActive(false);
-        MGCam.SetActive(false);
-        MG_1.SetActive(false);
-        CameraControl.Instance.CurrentCam = MainCam;
+        DebugMG(MiniGame.Area);    
     }
 }

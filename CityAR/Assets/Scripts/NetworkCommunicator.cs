@@ -96,11 +96,9 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (action)
             {
                 case "CreateProject":
-                    ProjectManager.Instance.InstantiateProject(owner, id);
+                    ProjectManager.Instance.SpawnProject(cellid, owner, id);
                     break;
-                case "PlaceProject":
-                    ProjectManager.Instance.PlaceProject(cellid, owner, id);
-                    break;
+
             }
         }
         if (isClient && !isServer)

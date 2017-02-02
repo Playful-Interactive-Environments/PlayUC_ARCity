@@ -24,7 +24,6 @@ public class EventManager : NetworkBehaviour
     void Start()
     {
         CSVEvents = CSVEvents.Instance;
-        Invoke("PopulateEventPool", .1f);
         if (isServer)
         {
             EventDispatcher.StartListening("EnvironmentEvent", EnvironmentEvent);
@@ -60,9 +59,33 @@ public class EventManager : NetworkBehaviour
 
     }
     
-    public void TriggerRandomEvent()
+    public void TriggerEvent(string type)
     {
-        CellManager.Instance.NetworkCommunicator.HandleEvent("StartEvent", GenerateRandomEvent());
+        //reacts on event type; store all events of this type and randomly trigger one of the chosen type
+        List<int> eventIds = new List<int>();
+
+            switch (type)
+            {
+                case "Crisis":
+                    for (int i = 0; i <= CSVEvents.rowList.Count - 1; i++)
+                        {
+                            if (type.Equals(CSVEvents.rowList[i].type))
+                                eventIds.Add(ConvertToInt(CSVEvents.rowList[i].id));
+                        }
+                        CellManager.Instance.NetworkCommunicator.HandleEvent("StartEvent", eventIds[Utilities.RandomInt(0, eventIds.Count)]);
+                break;
+                case "Project":
+                    UIManager.Instance.Change(UIManager.UiState.DesignProject);
+                    break;
+                case "Quest":
+                    for (int i = 0; i <= CSVEvents.rowList.Count - 1; i++)
+                    {
+                        if (type.Equals(CSVEvents.rowList[i].type))
+                            eventIds.Add(ConvertToInt(CSVEvents.rowList[i].id));
+                    }
+                    CellManager.Instance.NetworkCommunicator.HandleEvent("StartEvent", eventIds[Utilities.RandomInt(0, eventIds.Count)]);
+                break;
+        }
     }
 
     public void CreateEvent(int id)
@@ -81,28 +104,8 @@ public class EventManager : NetworkBehaviour
         eventscript.CurrentGoal = ConvertToInt(CSVEvents.GetGoal(id));
         NetworkServer.Spawn(gobj);
     }
-
-    public int GenerateRandomEvent()
-    {
-        if (EventPool.Count == 0)
-            PopulateEventPool();
-        int randomProject = Random.Range(0, EventPool.Count);
-        int returnId = EventPool[randomProject];
-        EventPool.RemoveAt(randomProject);
-        return returnId;
-    }
-    void PopulateEventPool()
-    {
-        if (isServer)
-        {
-            for (int i = 1; i <= CSVEvents.rowList.Count; i++)
-            {
-                EventPool.Add(i);
-            }
-        }
-    }
-
-    public EventScript FindProject(int projectnum)
+    
+    public EventScript FindEvent(int projectnum)
     {
         if (isClient && !isServer)
         {
@@ -124,6 +127,7 @@ public class EventManager : NetworkBehaviour
         }
         return null;
     }
+
     private float ConvertToFloat(string input)
     {
         float parsedInt = 0;

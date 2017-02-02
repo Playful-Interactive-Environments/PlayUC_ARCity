@@ -18,7 +18,10 @@ public class ProjectManager : NetworkBehaviour
 	public SyncListInt EnvironmentProjects = new SyncListInt();
 	public SyncListInt SocialProjects = new SyncListInt();
 	public SyncListInt FinanceProjects = new SyncListInt();
+	public GameObject ProjectTemplate;
+	public GridLayoutGroup GridGroup;
 
+	private int CurrentProjectId = 0;
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
@@ -30,37 +33,29 @@ public class ProjectManager : NetworkBehaviour
 
 	void Start()
 	{
-		Invoke("PopulateIds", .1f);
 	}
 
-	public void CreateRandomProject()
+	public void UnlockProject(int id)
 	{
-		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", 0, LevelManager.Instance.RoleType, GenerateRandomProject());
-	}
-
-	public void CreateProject(int id, string roletype)
-	{
-		CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", 0, roletype, id);
-	}
-
-	void PopulateIds()
-	{
-		if (isServer)
-		{
-			for (int i = 1; i <= CSVProjects.rowList.Count; i++)
-			{
-				ProjectPool.Add(i);
-			}
-		}
+		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
+		ProjectTemplate = GameObject.Find("ProjectTemplate");
+		GameObject projectButton = Instantiate(ProjectTemplate, transform.position, Quaternion.identity);
+		projectButton.transform.parent = GridGroup.transform;
+		projectButton.transform.localScale = new Vector3(1, 1, 1);
+		projectButton.GetComponent<ProjectButton>().SetupProjectButton(id);
+		UIManager.Instance.ProjectButton.image.color = Color.red;
 	}
 
 	//called only on server
-	public void InstantiateProject(string owner, int id)
+	public void SpawnProject(int cellid, string owner, int id)
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+
+
 		Project project = gobj.GetComponent<Project>();
 		project.ProjectOwner = owner;
-		project.ProjectId = id;
+		project.Id_CSV = id;
+		project.ID_Spawn = CurrentProjectId;
 		project.Title = GetTitle(id);
 		project.Description = GetContent(id);
 		project.Influence = GetInfluenceInt(id);
@@ -68,27 +63,12 @@ public class ProjectManager : NetworkBehaviour
 		project.Finance = GetFinanceInt(id);
 		project.Environment = GetEnvironmentInt(id);
 		project.Budget = GetBudgetInt(id);
-		NetworkServer.Spawn(gobj);
-		SaveProject(owner, id, project);
-	}
-
-	public void PlaceProject(int cellid, string owner, int id)
-	{
-		Project project = FindProject(id);
 		project.SetCell(cellid);
 		project.transform.position = CellGrid.Instance.GetCell(cellid).transform.position;
 		project.RepresentationCreated = true;
-		RemoveProject(owner, id);
-	}
-
-	public int GenerateRandomProject()
-	{
-		if (ProjectPool.Count == 0)
-			PopulateIds();
-		int randomProject = Random.Range(0, ProjectPool.Count);
-		int returnId = ProjectPool[randomProject];
-		ProjectPool.RemoveAt(randomProject);
-		return returnId;
+		NetworkServer.Spawn(gobj);
+		SaveProject(owner, CurrentProjectId, project);
+		CurrentProjectId++;
 	}
 
 	public Project FindProject(int projectnum)
@@ -107,7 +87,7 @@ public class ProjectManager : NetworkBehaviour
 
 		foreach (Project p in Projects)
 		{
-			if (p.ProjectId == projectnum)
+			if (p.ID_Spawn == projectnum)
 			{
 				return p;
 			}
@@ -122,7 +102,6 @@ public class ProjectManager : NetworkBehaviour
 
 	public void ProjectRejected(int num)
 	{
-		Debug.Log("ProjectManager");
 		FindProject(num).ShowRejected();
 		if (isServer)
 			Projects.Remove(FindProject(num));

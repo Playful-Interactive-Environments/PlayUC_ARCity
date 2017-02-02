@@ -17,7 +17,6 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	void Start () {
-		InvokeRepeating("CreateProject", 0f, 15f);
 
 	}
 	
@@ -25,13 +24,4 @@ public class GameManager : NetworkBehaviour {
 
 	}
 
-	void CreateProject()
-	{
-		ProjectManager.Instance.GenerateRandomProject();
-	}
-
-	void CreateNewProjects()
-	{
-		
-	}
 }

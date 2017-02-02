@@ -14,10 +14,27 @@ public static class Utilities
 			);
 		return aPosOnCircle; 
 	}
-	#endregion
 
-	#region extension methods for: Color
-	public static Color SetAlpha(this Color theColor, float theAlpha)
+	public static float GetLowerVal(float value1, float value2)
+	{
+		if (value1 < value2)
+			return value1;
+		if (value2 < value1)
+			return value2;
+		else return value1;
+	}
+    public static float GetHigherVal(float value1, float value2)
+    {
+        if (value1 > value2)
+            return value1;
+        if (value2 > value1)
+            return value2;
+        else return value1;
+    }
+    #endregion
+
+    #region extension methods for: Color
+    public static Color SetAlpha(this Color theColor, float theAlpha)
 	{
 		theColor.a = theAlpha;
 		return theColor;

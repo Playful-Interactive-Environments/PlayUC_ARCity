@@ -29,12 +29,13 @@ public class Advertisement : MonoBehaviour
 	void Start ()
 	{
 		Timer.gameObject.SetActive(false);
+		linerenderer = GetComponent<LineRenderer>();
+
 	}
 
 	void Update () {
 		if (_started)
 		{
-			linerenderer = GetComponent<LineRenderer>();
 			_started = false;
 			_dragging = true;
 			InvokeRepeating("AddCurrentPosition", 0, RepeatRate);
@@ -78,9 +79,8 @@ public class Advertisement : MonoBehaviour
 	{
 		if (other.transform.tag.Equals("Voter") && _released)
 		{
-			Debug.Log("+1");
-			other.gameObject.GetComponent<Voter>().Capture();
-			MGManager.Instance.VotersCollected += 1;
+			other.gameObject.GetComponent<Agent>().Capture();
+			MG_2.Instance.VotersCollected += 1;
 		}
 	}
 	private void AddCurrentPosition()

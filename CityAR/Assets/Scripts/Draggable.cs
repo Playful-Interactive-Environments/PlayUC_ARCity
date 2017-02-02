@@ -7,94 +7,112 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public Vector3 startingPos;
     public DraggableType CurrentType;
-    public DraggableUse CurrentUse;
+    
+    public enum DraggableType
+    {
+        Environment, Social, Finance, Rating, Budget, Advertisement, Pointer, Area
+    }
 
     void Start()
     {
-        {
-            switch (CurrentUse)
-            {
-                case DraggableUse.ProjectDesign:
-                    startingPos = GetComponent<RectTransform>().localPosition;
-                    break;
-                case DraggableUse.MiniGame:
-                    break;
-            }
-        }
-    }
 
-    public enum DraggableUse
-    {
-        ProjectDesign, MiniGame
     }
-
-    public enum DraggableType
-    {
-        Environment, Finance, Social, Rating, Budget, Advertisement, Pointer, 
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        switch (CurrentUse)
+        Vector3 calcPos = CameraControl.Instance.CurrentCam.ScreenToWorldPoint(eventData.position);
+        switch (CurrentType)
         {
-            case DraggableUse.ProjectDesign:
+            case DraggableType.Environment:
                 iTween.ScaleTo(gameObject, iTween.Hash("x", 1.5f, "y", 1.5f, "time", .3f));
+                startingPos = GetComponent<RectTransform>().localPosition;
                 break;
-            case DraggableUse.MiniGame:
-                switch (CurrentType)
-                {
-                    case DraggableType.Advertisement:
-                        GetComponent<Advertisement>().StartDragging();
-                        break;
-                }
+            case DraggableType.Social:
+                iTween.ScaleTo(gameObject, iTween.Hash("x", 1.5f, "y", 1.5f, "time", .3f));
+                startingPos = GetComponent<RectTransform>().localPosition;
+                break;
+            case DraggableType.Finance:
+                iTween.ScaleTo(gameObject, iTween.Hash("x", 1.5f, "y", 1.5f, "time", .3f));
+                startingPos = GetComponent<RectTransform>().localPosition;
+                break;
+            case DraggableType.Rating:
+                iTween.ScaleTo(gameObject, iTween.Hash("x", 1.5f, "y", 1.5f, "time", .3f));
+                startingPos = GetComponent<RectTransform>().localPosition;
+                break;
+            case DraggableType.Budget:
+                iTween.ScaleTo(gameObject, iTween.Hash("x", 1.5f, "y", 1.5f, "time", .3f));
+                startingPos = GetComponent<RectTransform>().localPosition;
+                break;
+            case DraggableType.Advertisement:
+                GetComponent<Advertisement>().StartDragging();
+                break;
+            case DraggableType.Area:
+               MG_3.Instance.BeginDrag(calcPos, gameObject);
                 break;
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        switch (CurrentUse)
+        Vector3 calcPos = CameraControl.Instance.CurrentCam.ScreenToWorldPoint(eventData.position);
+        switch (CurrentType)
         {
-            case DraggableUse.ProjectDesign:
+            case DraggableType.Environment:
                 transform.position = eventData.position;
                 break;
-            case DraggableUse.MiniGame:
-                Vector3 calcPos = CameraControl.Instance.CurrentCam.ScreenToWorldPoint(eventData.position);
+            case DraggableType.Social:
+                transform.position = eventData.position;
+                break;
+            case DraggableType.Finance:
+                transform.position = eventData.position;
+                break;
+            case DraggableType.Rating:
+                transform.position = eventData.position;
+                break;
+            case DraggableType.Budget:
+                transform.position = eventData.position;
+                break;
+            case DraggableType.Advertisement:
                 transform.position = new Vector3(calcPos.x, calcPos.y, 0);
+                break;
+            case DraggableType.Area:
+                MG_3.Instance.Drag(calcPos);
                 break;
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        switch (CurrentUse)
+        switch (CurrentType)
         {
-            case DraggableUse.ProjectDesign:
+            case DraggableType.Environment:
+                StartCoroutine(ResetPos());
                 break;
-            case DraggableUse.MiniGame:
-                switch (CurrentType)
-                {
-                    case DraggableType.Advertisement:
-                        GetComponent<Advertisement>().Release();
-                        break;
-                }
+            case DraggableType.Social:
+                StartCoroutine(ResetPos());
+                break;
+            case DraggableType.Finance:
+                StartCoroutine(ResetPos());
+                break;
+            case DraggableType.Rating:
+                StartCoroutine(ResetPos());
+                break;
+            case DraggableType.Budget:
+                StartCoroutine(ResetPos());
+                break;
+            case DraggableType.Advertisement:
+                GetComponent<Advertisement>().Release();
+                break;
+            case DraggableType.Area:
+                MG_3.Instance.EndDrag();
                 break;
         }
-        StartCoroutine(ResetPos());
     }
 
     public IEnumerator ResetPos()
     {
-        switch (CurrentUse)
-        {
-            case DraggableUse.ProjectDesign:
-                iTween.ScaleTo(gameObject, iTween.Hash("x", 0f, "y", 0f, "time", .5f));
-                yield return new WaitForSeconds(.5f);
-                GetComponent<RectTransform>().localPosition = startingPos;
-                iTween.ScaleTo(gameObject, iTween.Hash("x", 1f, "y", 1f, "time", .3f));
-                break;
-            case DraggableUse.MiniGame:
-                break;
-        }
+        iTween.ScaleTo(gameObject, iTween.Hash("x", 0f, "y", 0f, "time", .5f));
+        yield return new WaitForSeconds(.5f);
+        GetComponent<RectTransform>().localPosition = startingPos;
+        iTween.ScaleTo(gameObject, iTween.Hash("x", 1f, "y", 1f, "time", .3f));
     }
 }

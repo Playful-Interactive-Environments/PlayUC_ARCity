@@ -90,7 +90,6 @@ public class Quest : MonoBehaviour
 				}
 				if (savestring == "Project")
 				{
-					ProjectManager.Instance.CreateRandomProject();
 					UIManager.Instance.UpdateResult("Project", "new");
 				}
 				if (savestring == "Environment")

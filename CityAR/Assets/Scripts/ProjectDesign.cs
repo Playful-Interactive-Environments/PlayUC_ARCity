@@ -191,7 +191,7 @@ public class ProjectDesign : MonoBehaviour {
 
 	public void SpawnProject()
 	{
-		ProjectManager.Instance.CreateProject(Id, LevelManager.Instance.RoleType);
+		//ProjectManager.Instance.UnlockProject(Id);
 		UIManager.Instance.ProjectUI();
 		financeTier.Clear();
 		environmentTier.Clear();
