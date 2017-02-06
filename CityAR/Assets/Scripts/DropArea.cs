@@ -7,15 +7,10 @@ public class DropArea : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
 
     public ProjectDesign DesignScript;
     public DragZoneType CurrentType;
-    public DragZoneUse CurrentUse;
 
-    public enum DragZoneUse
-    {
-        ProjectDesign, MiniGame
-    }
     public enum DragZoneType
     {
-        AddValue, SubtractValue
+        AddValue, SubtractValue, Finance, Social, Environment
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -31,21 +26,18 @@ public class DropArea : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
 
     public void OnDrop(PointerEventData eventData)
     {
-        switch (CurrentUse)
-        {
-            case DragZoneUse.ProjectDesign:
-                //Debug.Log(eventData.pointerDrag.name + " was dropped on " + gameObject.name);
-                Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-                if (CurrentType == DragZoneType.AddValue)
-                    DesignScript.AddValue(d.CurrentType);
-                if (CurrentType == DragZoneType.SubtractValue)
-                    DesignScript.SubtractValue(d.CurrentType);
-                d.StartCoroutine("ResetPos");
-                break;
-            case DragZoneUse.MiniGame:
+        Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
 
+        switch (CurrentType)
+        {
+            case DragZoneType.AddValue:
+                    DesignScript.AddValue(d.CurrentType);
+                break;
+            case DragZoneType.SubtractValue:
+
+                    DesignScript.SubtractValue(d.CurrentType);
+                    d.StartCoroutine("ResetPos");
                 break;
         }
-
     }
 }

@@ -17,7 +17,7 @@ public class Agent : MonoBehaviour {
 	private Vector3 _moveDirection;
 	private Vector3 _startingPos;
 	private float angle;
-	private float speed = 20f;
+	private float speed = 15f;
 
 	public float xEast; //max
 	public float xWest; // min
@@ -26,6 +26,7 @@ public class Agent : MonoBehaviour {
 	private float randomX;
 	private float randomY;
 	private float tChange = 0;
+    private float prevangle;
 
 	void Start ()
 	{
@@ -36,12 +37,12 @@ public class Agent : MonoBehaviour {
 		Waypoints.Clear();
 		Invoke("GetRandomPoint",.1f);
 	}
+
 	public void AddWaypoint(Vector3 point)
 	{
 		Waypoints.Add(point);
 	}
-
-
+    
 	void Update () {
 		switch (currentState)
 		{
@@ -63,33 +64,38 @@ public class Agent : MonoBehaviour {
 			GetRandomPoint();
 		}
 	}
+
 	void Walk()
 	{
 		if (_nextWayPointPosition != transform.position)
 		{
-			_moveDirection = transform.position - _startingPos;
+			_moveDirection = (transform.position - _startingPos);
 			transform.position = Vector3.MoveTowards(transform.position, _nextWayPointPosition, speed * Time.deltaTime);
 		}
-
 		if (_moveDirection != Vector3.zero)
 		{
 			angle = Mathf.Atan2(_moveDirection.y, _moveDirection.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+		    transform.rotation = Quaternion.Euler(0, 0, angle);
 		}
 	}
 
-	void GetRandomPoint()
+    public Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
+    {
+        return Quaternion.Euler(angles) * (point - pivot) + pivot;
+    }
+
+    void GetRandomPoint()
 	{
 		int i = Utilities.RandomInt(0, Waypoints.Count);
 		_nextWayPointPosition = Waypoints[i];
-	}
+        _startingPos = transform.position;
+    }
 
 	public void Capture()
 	{
 		_nextWayPointPosition = MG_2.Instance.TargetStage.transform.position;
 		currentState = VoterState.Captured;
 	}
-
 }
 
 /*

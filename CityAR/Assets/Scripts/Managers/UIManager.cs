@@ -367,10 +367,15 @@ public class UIManager : AManager<UIManager>
 
 	public void LevelUI()
 	{
-		if (LevelCanvas.enabled == false)
-			Change(UiState.Level);
-		else
-			GameUI();
+	    if (LevelCanvas.enabled == false)
+	    {
+	        Change(UiState.Level);
+	        LevelManager.Instance.PushGrid();
+	    }
+	    else
+	    {
+            GameUI();
+        }
 	}
 
 	public void RestartApp()
@@ -614,8 +619,8 @@ public class UIManager : AManager<UIManager>
 		//Debug.Log("CLICK");
 		//Vote_Choice1();
 		//EventManager.Instance.TriggerRandomEvent();
-		//CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 50);
-		MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
+		//MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
 		//ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);

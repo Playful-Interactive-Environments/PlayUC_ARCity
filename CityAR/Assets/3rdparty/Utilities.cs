@@ -31,6 +31,48 @@ public static class Utilities
             return value2;
         else return value1;
     }
+    public static void RotateX(this Vector3 v, float angle)
+    {
+        float sin = Mathf.Sin(angle);
+        float cos = Mathf.Cos(angle);
+
+        float ty = v.y;
+        float tz = v.z;
+        v.y = (cos * ty) - (sin * tz);
+        v.z = (cos * tz) + (sin * ty);
+    }
+
+    public static void RotateY(this Vector3 v, float angle)
+    {
+        float sin = Mathf.Sin(angle);
+        float cos = Mathf.Cos(angle);
+
+        float tx = v.x;
+        float tz = v.z;
+        v.x = (cos * tx) + (sin * tz);
+        v.z = (cos * tz) - (sin * tx);
+    }
+
+    public static void RotateZ(this Vector3 v, float angle)
+    {
+        float sin = Mathf.Sin(angle);
+        float cos = Mathf.Cos(angle);
+
+        float tx = v.x;
+        float ty = v.y;
+        v.x = (cos * tx) - (sin * ty);
+        v.y = (cos * ty) + (sin * tx);
+    }
+    public static float GetPitch(this Vector3 v)
+    {
+        float len = Mathf.Sqrt((v.x * v.x) + (v.z * v.z));    // Length on xz plane.
+        return (-Mathf.Atan2(v.y, len));
+    }
+
+    public static float GetYaw(this Vector3 v)
+    {
+        return (Mathf.Atan2(v.x, v.z));
+    }
     #endregion
 
     #region extension methods for: Color

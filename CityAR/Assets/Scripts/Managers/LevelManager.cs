@@ -23,7 +23,6 @@ public class LevelManager : MonoBehaviour
 	public GameObject LevelTemplate;
 	public GridLayoutGroup GridGroup;
 	public List<GameObject> LevelLayoutList = new List<GameObject>();
-
 	public int Value
 	{
 		get
@@ -50,16 +49,23 @@ public class LevelManager : MonoBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-
 		Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		//Level Bar
 		_csvLeveling = CSVLeveling.Instance;
 	}
 
-	void Update()
+    public void PushGrid()
+    {
+        float gridHeight = GridGroup.GetComponent<RectTransform>().sizeDelta.y;
+        float cellSpacing = GridGroup.GetComponent<GridLayoutGroup>().cellSize.y + GridGroup.GetComponent<GridLayoutGroup>().spacing.y;
+        Debug.Log(gridHeight + " " + cellSpacing);
+        GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -gridHeight/2 - cellSpacing + CurrentRank * cellSpacing, 0);
+    }
+
+    void Update()
 	{
-	   UpdateProgress();
+        UpdateProgress();
 	}
 
 	public void UpdateProgress()
@@ -101,7 +107,8 @@ public class LevelManager : MonoBehaviour
 			//_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
 			_levelbutton.GetComponent<LevelDescription>().SetupLayout(i);
 			LevelLayoutList.Add(_levelbutton);
-		}
+            GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -855f, 0);
+        }
 	}
 	
 	private int ConvertString(string input)
@@ -109,6 +116,5 @@ public class LevelManager : MonoBehaviour
 		int parsedInt = 0;
 		int.TryParse(input,NumberStyles.Any, null, out parsedInt);
 		return parsedInt;
-
 	}
 }

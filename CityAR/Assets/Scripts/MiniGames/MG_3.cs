@@ -24,7 +24,7 @@ public class MG_3 : AManager<MG_3>
 			bool contains = false;
 			float x = pos.x;
 			float y = pos.y;
-			if (GetWest().x < x && GetEast().x > x && GetSouth().y < y && GetNorth().y > y)
+			if (GetWest().x <= x && GetEast().x >= x && GetSouth().y <= y && GetNorth().y >= y)
 				contains = true;
 			return contains;
 		}
@@ -145,8 +145,7 @@ public class MG_3 : AManager<MG_3>
 	public int agentsContained;
 	private float distanceNeeded;
 
-
-
+    private GameObject test1;
 	void Start () {
 		
 		ObjectPool.CreatePool(WallPrefab, 5);
@@ -156,10 +155,9 @@ public class MG_3 : AManager<MG_3>
 	}
 	
 	void Update () {
-		Height = MGManager.Instance.Height;
-		Width = MGManager.Instance.Width;
 		CurrentPercent = Mathf.Round(CoveredSize/StartSize*100f);
-
+	    if (dragLine != null)
+            ContainsPos();
 	}
 
 	public void BeginDrag(Vector3 startPos, GameObject wall)
@@ -171,9 +169,10 @@ public class MG_3 : AManager<MG_3>
 		dragObject.layer = LayerMask.NameToLayer("MG_3");
 		dragObject.transform.parent = MGManager.Instance.MG_3_GO.transform;
 		dragLine = dragObject.GetComponent<LineRenderer>();
-		dragLine.material = LineMats[1];
-		//goal of dragged line is always symmetric of the starting point
-		switch (dragStartWall.transform.name)
+        dragLine.numPositions = 2;
+        dragLine.material = LineMats[1];
+        //goal of dragged line is always symmetric of the starting point
+        switch (dragStartWall.transform.name)
 		{
 			case "south":
 				lineStart = new Vector3(dragStart.x, freeArea.GetSouth().y, 0);
@@ -194,7 +193,6 @@ public class MG_3 : AManager<MG_3>
 		}
 		splitDistance = Vector3.Distance(lineStart, lineGoal);
 		CalculateAreas();
-		InvokeRepeating("ContainsPos",0f, .01f);
 	}
 
 	public void Drag(Vector3 dragEnd)
@@ -211,23 +209,28 @@ public class MG_3 : AManager<MG_3>
 				break;
 			case "west":
 				distanceNeeded = Vector3.Distance(dragEnd, new Vector3(dragEnd.x,lineGoal.y, 0));
-
 				break;
 			case "east":
 				goto case "west";
 				break;
 		}
-		//distanceNeeded = Vector3.Distance(dragEnd, lineGoal);
 	}
 
 	void ContainsPos()
 	{
-		agentsContained = 0;
-		foreach (GameObject agent in Agents)
+        agentsContained = 0;
+        foreach (GameObject agent in Agents)
 		{
-			if (coverArea.Contains(agent.transform.localPosition))
-				agentsContained += 1;
-		}
+		    if (coverArea.Contains(agent.transform.position))
+		    {
+		        agentsContained += 1;
+		        agent.GetComponent<SpriteRenderer>().color = Color.red;
+		    }
+		    else
+		    {
+                agent.GetComponent<SpriteRenderer>().color = Color.black;
+            }
+        }
 		if (distanceNeeded <= 5f && agentsContained == 0)
 		{
 			dragLine.material = LineMats[0];
@@ -303,49 +306,35 @@ public class MG_3 : AManager<MG_3>
 		float val1;
 		float val2;
 		GameObject occupyArea = ObjectPool.Spawn(AreaPrefab, MGManager.Instance.MG_3_GO.transform);
-		switch (dragStartWall.transform.name)
+        occupyArea.transform.localScale = new Vector3(coverArea.GetX(), coverArea.GetY(), 1);
+        occupyArea.transform.position = coverArea.GetCenter();
+        CoveredSize += (coverArea.AreaSize());
+        //adjust walls
+        switch (dragStartWall.transform.name)
 		{
 			case "south":
 				val1 = Vector3.Distance(freeArea.GetSW(), lineStart);
 				val2 = Vector3.Distance(freeArea.GetSE(), lineStart);
-				//fill area west of division
 				if (val1 < val2)
-				{
-					//create cover area
-					occupyArea.transform.localScale = new Vector3(val1, splitDistance, 1);
-					//define size of covered area
-					occupyArea.transform.position = new Vector3(freeArea.GetSW().x + val1 / 2, freeArea.GetCenter().y, 0);
-					//define center point of covered area
-					//update free area
-					freeArea.ResetArea(val2, splitDistance,
-						new Vector3(freeArea.GetSE().x - val2 / 2, freeArea.GetCenter().y, 0));
-					//reset size and center point of free area
-					//adjust west wall to new surface area
-					westWall.transform.localScale = new Vector3(thickness, splitDistance + thickness, 1);
+                {
+                    freeArea = newFreeArea;
+                    westWall.transform.localScale = new Vector3(thickness, splitDistance + thickness, 1);
 					westWall.transform.position = freeArea.GetWest();
-					//adjust other walls to fit the new free area
 					northWall.transform.localScale = new Vector3(freeArea.GetX() + thickness, thickness, 1);
 					northWall.transform.position = freeArea.GetNorth();
 					southWall.transform.localScale = new Vector3(freeArea.GetX() + thickness, thickness, 1);
 					southWall.transform.position = freeArea.GetSouth();
-					CoveredSize += (val1 * splitDistance); //adjust already occupied area
 				}
-				//fill area east of division
 				if (val2 < val1)
-				{
-					occupyArea.transform.localScale = new Vector3(val2, splitDistance, 1);
-					occupyArea.transform.position = new Vector3(freeArea.GetSE().x - val2 / 2, freeArea.GetCenter().y, 0);
-					freeArea.ResetArea(val1, splitDistance,
-						new Vector3(freeArea.GetSW().x + val1 / 2, freeArea.GetCenter().y, 0));
-
-					eastWall.transform.localScale = new Vector3(thickness, splitDistance + thickness, 1);
+                {
+                    freeArea = newFreeArea;
+                    eastWall.transform.localScale = new Vector3(thickness, splitDistance + thickness, 1);
 					eastWall.transform.position = freeArea.GetEast();
 
 					northWall.transform.localScale = new Vector3(freeArea.GetX() + thickness, thickness, 1);
 					northWall.transform.position = freeArea.GetNorth();
 					southWall.transform.localScale = new Vector3(freeArea.GetX() + thickness, thickness, 1);
 					southWall.transform.position = freeArea.GetSouth();
-					CoveredSize += (val2 * splitDistance);
 				}
 				break;
 			case "north":
@@ -355,38 +344,27 @@ public class MG_3 : AManager<MG_3>
 			case "west":
 				val1 = Vector3.Distance(freeArea.GetNW(), lineStart);
 				val2 = Vector3.Distance(freeArea.GetSW(), lineStart);
-				//fill area west of division
 				if (val1 < val2)
-				{
-					occupyArea.transform.localScale = new Vector3(splitDistance, val1, 1);
-					occupyArea.transform.position = new Vector3(freeArea.GetCenter().x, freeArea.GetNW().y - val1 / 2, 0);
-					freeArea.ResetArea(splitDistance, val2,
-						new Vector3(freeArea.GetCenter().x, freeArea.GetSW().y + val2 / 2, 0));
-
-					northWall.transform.localScale = new Vector3(splitDistance + thickness, thickness, 1);
+                {
+                    freeArea = newFreeArea;
+                    northWall.transform.localScale = new Vector3(splitDistance + thickness, thickness, 1);
 					northWall.transform.position = freeArea.GetNorth();
 
 					westWall.transform.localScale = new Vector3(thickness, freeArea.GetY() + thickness, 1);
 					westWall.transform.position = freeArea.GetWest();
 					eastWall.transform.localScale = new Vector3(thickness, freeArea.GetY() + thickness, 1);
 					eastWall.transform.position = freeArea.GetEast();
-					CoveredSize += (val1 * splitDistance);
 				}
 				if (val2 < val1)
-				{
-					occupyArea.transform.localScale = new Vector3(splitDistance, val2, 1);
-					occupyArea.transform.position = new Vector3(freeArea.GetCenter().x, freeArea.GetSW().y + val2 / 2, 0);
-					freeArea.ResetArea(splitDistance, val1,
-						new Vector3(freeArea.GetCenter().x, freeArea.GetNW().y - val1 / 2, 0));
-
-					southWall.transform.localScale = new Vector3(splitDistance + thickness, thickness, 1);
+                {
+                    freeArea = newFreeArea;
+                    southWall.transform.localScale = new Vector3(splitDistance + thickness, thickness, 1);
 					southWall.transform.position = freeArea.GetSouth();
 
 					westWall.transform.localScale = new Vector3(thickness, freeArea.GetY() + thickness, 1);
 					westWall.transform.position = freeArea.GetWest();
 					eastWall.transform.localScale = new Vector3(thickness, freeArea.GetY() + thickness, 1);
 					eastWall.transform.position = freeArea.GetEast();
-					CoveredSize += (val2 * splitDistance);
 				}
 				break;
 			case "east":
@@ -403,8 +381,9 @@ public class MG_3 : AManager<MG_3>
 			CreateCoveredArea();
 			UpdateAgentBorders();
 		}
-		ObjectPool.Recycle(dragObject);
-		CancelInvoke("ContainsPos");
+        dragLine.numPositions = 0;
+	    dragLine = null;
+        ObjectPool.Recycle(dragObject);
 	}
 
 	void UpdateAgentBorders()
@@ -442,11 +421,12 @@ public class MG_3 : AManager<MG_3>
 	}
 
 	public void InitGame()
-	{
-		freeArea = new Area(Width / 2, Height / 2, new Vector3(0, 0, 0));
-		coverArea = new Area(Width / 2, Height / 2, new Vector3(0, 0, 0));
-		newFreeArea = new Area(Width / 2, Height / 2, new Vector3(0, 0, 0));
-
+    {
+        Height = MGManager.Instance.Height;
+        Width = MGManager.Instance.Width;
+        freeArea = new Area(Width / 2, Height / 2, new Vector3(0, 0, 0));
+		coverArea = new Area(0, 0, new Vector3(0, 0, 0));
+		newFreeArea = new Area(0, 0, new Vector3(0, 0, 0));
 		StartSize = freeArea.AreaSize();
 
 		//Create SouthBorder
@@ -481,8 +461,8 @@ public class MG_3 : AManager<MG_3>
 		westWall.transform.localScale = new Vector3(thickness, freeArea.GetY() + thickness, 1);
 		westWall.transform.name = "west";
 
-		//create agents based on set borders
-		SpawnAgents();
+        //create agents based on set borders
+        SpawnAgents();
 	}
 
 	public void ResetGame()
@@ -491,11 +471,12 @@ public class MG_3 : AManager<MG_3>
 		ObjectPool.RecycleAll(WallPrefab);
 		ObjectPool.RecycleAll(DrawPrefab);
 		ObjectPool.RecycleAll(AgentPrefab);
+        Agents.Clear();
 		CoveredSize = 0;
 		StartSize = 0;
 		agentsContained = 0;
 		AgentWaypoints.Clear();
-	}
+    }
 }
 
 

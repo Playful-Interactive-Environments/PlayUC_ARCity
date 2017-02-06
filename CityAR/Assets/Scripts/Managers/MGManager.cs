@@ -87,13 +87,24 @@ public class MGManager : AManager<MGManager> {
                         WinStateText.text = "TIME RAN OUT!";
                         EndMG();
                     }
-
                     if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
                     {
                         WinStateText.text = "YOU WIN!";
                         EndMG();
                     }
-
+                    break;
+                case MiniGame.Sorting:
+                    ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs;
+                    if (_currentTime >= _timeLimit)
+                    {
+                        WinStateText.text = "TIME RAN OUT!";
+                        EndMG();
+                    }
+                    if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
+                    {
+                        WinStateText.text = "YOU WIN!";
+                        EndMG();
+                    }
                     break;
             }
         }
@@ -117,14 +128,19 @@ public class MGManager : AManager<MGManager> {
             case MiniGame.Advertise:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
+                MG_2_Mng.SetVars(40, 20, 30);
                 _timeLimit = MG_2_Mng.TimeLimit;
                 MG_2_Mng.InitGame();
                 MG_2_GO.SetActive(true);
-
                 break;
             case MiniGame.Pointer:
                 break;
             case MiniGame.Sorting:
+                MGCanvas.SetActive(true);
+                MGCam.SetActive(true);
+                _timeLimit = MG_1_Mng.TimeLimit;
+                MG_1_GO.SetActive(true);
+                MG_1_Mng.InitGame();
                 break;
             case MiniGame.Area:
                 MGCanvas.SetActive(true);
@@ -156,6 +172,8 @@ public class MGManager : AManager<MGManager> {
             case MiniGame.Pointer:
                 break;
             case MiniGame.Sorting:
+                _currentTime = 0;
+                MG_3_Mng.ResetGame();
                 break;
         }
         Started = false;
@@ -176,6 +194,6 @@ public class MGManager : AManager<MGManager> {
     
     public void DebugButton()
     {
-        DebugMG(MiniGame.Area);    
+        DebugMG(MiniGame.Sorting);    
     }
 }
