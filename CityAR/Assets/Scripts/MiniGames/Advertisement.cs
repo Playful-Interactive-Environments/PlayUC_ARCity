@@ -6,7 +6,6 @@ using System.Linq;
 
 public class Advertisement : MonoBehaviour
 {
-	public GameObject Timer;
 	public GameObject Icon;
 	public GameObject Radius;
 	private LineRenderer linerenderer;
@@ -14,7 +13,6 @@ public class Advertisement : MonoBehaviour
 	public List<Vector3> points;
 	public int pointIndex;
 	public int followIndex;
-	private Vector3 _startingPos;
 	private Vector3 _lastPointPos;
 	
 	private bool _started;
@@ -22,13 +20,12 @@ public class Advertisement : MonoBehaviour
 	private bool _released;
 
 	public float AdvertisementActiveTime;
-	public float CurrentPathTime;
-	private const float DrawPathTime = 3.0f;
 	private const float RepeatRate = 0.1f;
+	private float distanceSum;
+	private float maxDistance = 75f;
 
 	void Start ()
 	{
-		Timer.gameObject.SetActive(false);
 		linerenderer = GetComponent<LineRenderer>();
 
 	}
@@ -42,20 +39,13 @@ public class Advertisement : MonoBehaviour
 		}
 		if (_dragging)
 		{
-			//Track Time
-			CurrentPathTime += Time.deltaTime;
-			Timer.gameObject.SetActive(true);
-			Timer.GetComponent<TextMesh>().text = Mathf.Round(DrawPathTime - CurrentPathTime) + "s";
-
-			if (CurrentPathTime >= DrawPathTime)
+			if (distanceSum >= maxDistance)
 			{
 				Release();
 			}
 		}
 		if (_released)
 		{
-			CurrentPathTime += Time.deltaTime;
-			Timer.GetComponent<TextMesh>().text = Mathf.Round(CurrentPathTime) + "s";
 			Radius.transform.Rotate(Vector3.forward, 40 * Time.deltaTime, 0);
 			Vector3 nextWayPoint = points.ElementAt(followIndex);
 			_lastPointPos = points[points.Count - 1];
@@ -75,6 +65,7 @@ public class Advertisement : MonoBehaviour
 			}
 		}
 	}
+
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.transform.tag.Equals("Voter") && _released)
@@ -85,15 +76,16 @@ public class Advertisement : MonoBehaviour
 	}
 	private void AddCurrentPosition()
 	{
-			points.Add(transform.position);
-			linerenderer.numPositions = points.Count;
-			linerenderer.SetPositions(points.ToArray());
-			pointIndex++;
+		if(points.Count > 0)
+			distanceSum += Vector3.Distance(points[points.Count - 1], transform.position);
+		points.Add(transform.position);
+		linerenderer.numPositions = points.Count;
+		linerenderer.SetPositions(points.ToArray());
+		pointIndex++;
 	}
 
 	public void StartDragging()
 	{
-		_startingPos = transform.position;
 		_started = true;
 	}
 
@@ -106,23 +98,22 @@ public class Advertisement : MonoBehaviour
 		_dragging = false;
 		_released = true;
 		linerenderer.enabled = false;
-		CurrentPathTime = 0.0f;
+		distanceSum = 0;
 	}
 
 	public void Reset()
 	{
 		StopAllCoroutines();
 		iTween.Stop();
-		transform.position = _startingPos;
+		if (points.Count > 0)
+			transform.position = points[points.Count-1]; // set to last pos
 		_released = false;
 		GetComponent<Draggable>().enabled = true;
 		linerenderer.enabled = true;
-		CurrentPathTime = 0;
 		linerenderer.numPositions = 0;
 		pointIndex = 0;
 		followIndex = 0;
 		points.Clear();
-
 	}
 
 	IEnumerator AdvertisementAnimation()

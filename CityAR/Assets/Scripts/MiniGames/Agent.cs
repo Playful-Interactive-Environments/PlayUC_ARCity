@@ -5,146 +5,200 @@ using UnityEngine;
 
 public class Agent : MonoBehaviour {
 
-	public enum VoterState
-	{
-		Walking, Captured
-	}
+    public enum VoterState
+    {
+        Walking, Captured
+    }
 
-	private VoterState currentState = VoterState.Walking;
-	public Vector3 _nextWayPointPosition;
-	private List<Vector3> Waypoints = new List<Vector3>();
+    public enum MovementPattern
+    {
+        Random, RightLeft, LeftRight, Downtop, TopDown, Circle, RandomArea
+    }
 
-	private Vector3 _moveDirection;
-	private Vector3 _startingPos;
-	private float angle;
-	private float speed = 15f;
+    public MovementPattern currentPattern = MovementPattern.Random;
+    private VoterState currentState = VoterState.Walking;
+    public Vector3 _nextWayPointPosition;
+    private int nextWaypoint;
+    private List<Vector3> Waypoints = new List<Vector3>();
 
-	public float xEast; //max
-	public float xWest; // min
-	public float yNorth; //max
-	public float ySouth; //min
-	private float randomX;
-	private float randomY;
-	private float tChange = 0;
-    private float prevangle;
+    private Vector3 _moveDirection;
+    private Vector3 _startingPos;
+    private float angle;
+    private float speed = 15f;
 
-	void Start ()
-	{
-	}
+    public float xEast; //max
+    public float xWest; // min
+    public float yNorth; //max
+    public float ySouth; //min
+    private float Height;
+    private float Width;
 
-	public void ResetWaypoints()
-	{
-		Waypoints.Clear();
-		Invoke("GetRandomPoint",.1f);
-	}
+    void Start ()
+    {
 
-	public void AddWaypoint(Vector3 point)
-	{
-		Waypoints.Add(point);
-	}
-    
-	void Update () {
-		switch (currentState)
-		{
-			case VoterState.Walking:
-				Search();
-				Walk();
-				break;
-			case VoterState.Captured:
-				Walk();
-				break;
-		}
-	}
+    }
 
-	void Search()
-	{
-		if (transform.position == _nextWayPointPosition)
-		{
-			// Loop through all points nextWayPoint = (nextWayPoint + 1) % agent.wayPoints.Length; or randomize:
-			GetRandomPoint();
-		}
-	}
+    public void SetWaypoints(float xE, float xW, float yN, float yS)
+    {
+        //agents in MG-3
+        xEast = xE;
+        xWest = xW;
+        yNorth = yN;
+        ySouth = yS;
+        ResetWaypoints();
+        for (int i = 0; i <= 40f; i++)
+        {
+            Vector3 waypoint = new Vector3(Utilities.RandomFloat(xWest, xEast), Utilities.RandomFloat(yNorth, ySouth), 0);
+            Waypoints.Add(waypoint);
+        }
+        GetNextPoint();
+    }
 
-	void Walk()
-	{
-		if (_nextWayPointPosition != transform.position)
-		{
-			_moveDirection = (transform.position - _startingPos);
-			transform.position = Vector3.MoveTowards(transform.position, _nextWayPointPosition, speed * Time.deltaTime);
-		}
-		if (_moveDirection != Vector3.zero)
-		{
-			angle = Mathf.Atan2(_moveDirection.y, _moveDirection.x) * Mathf.Rad2Deg;
-		    transform.rotation = Quaternion.Euler(0, 0, angle);
-		}
-	}
+    public void SetWaypoints(float w, float h, MovementPattern pattern)
+    {
+        //agents in MG-2
+        Width = w;
+        Height = h;
+        ResetWaypoints();
+        currentPattern = pattern;
+        //define movement pattern
+        switch (currentPattern)
+        {
+            case MovementPattern.Random:
+                for (int i = 0; i <= 40f; i++)
+                {
+                    Vector3 waypoint = new Vector3(Utilities.RandomFloat(-Width/2, Width/2), Utilities.RandomFloat(-Height/2, Height/2), 0);
+                    Waypoints.Add(waypoint);
+                }
+                speed = Random.Range(10f, 30f);
+                break;
+            case MovementPattern.RightLeft:
+                float b = Random.Range(2, 7);
+                Waypoints.Add(new Vector3(-Width/2, Height / b + Random.Range(-10, 10), 0));
+                Waypoints.Add(new Vector3(Width/2, Height / b + Random.Range(-10, 10), 0));
+                speed = Random.Range(25f,35f);
+                break;
+            case MovementPattern.LeftRight:
+                float a = Random.Range(2, 7);
+                Waypoints.Add(new Vector3(Width / 2, Height / a + Random.Range(-10, 10), 0));
+                Waypoints.Add(new Vector3(-Width / 2, Height / a + Random.Range(-10, 10), 0));
+                speed = Random.Range(25f, 35f);
+                break;
+            case MovementPattern.TopDown:
+                float d = Random.Range(2, 7);
+                Waypoints.Add(new Vector3(Width / d + Random.Range(-10, 10), Height/2, 0));
+                Waypoints.Add(new Vector3(Width / d + Random.Range(-10, 10), -Height/2, 0));
+                speed = Random.Range(20f, 30f);
+                break;
+            case MovementPattern.Downtop:
+                float c = Random.Range(2, 7);
+                Waypoints.Add(new Vector3(-Width / c + Random.Range(-10, 10), -Height / 2, 0));
+                Waypoints.Add(new Vector3(-Width / c + Random.Range(-10, 10), Height / 2, 0));
+                speed = Random.Range(20f, 30f);
+                break;
+            case MovementPattern.Circle:
+                Vector3 centerPos = new Vector3(Random.Range(-Width/2, Width/2), Random.Range(-Height/2, Height/2), 0);
+                float radius = Random.Range(Width/10, Width/5);
+                for (float i = Random.Range(-10, 10); i <= 10; i++)
+                {
+                    float anAngle = i / 10 * 360;
+                    Vector3 aPosOnCircle = new Vector3(
+                        centerPos.x + radius * Mathf.Sin(anAngle * Mathf.Deg2Rad),
+                        centerPos.y + radius * Mathf.Cos(anAngle * Mathf.Deg2Rad),
+                        centerPos.z
+                        );
+                    Waypoints.Add(aPosOnCircle);
+                }
+                speed = Random.Range(5f, 12f);
+                break;
+        }
+        GetNextPoint();
+        transform.position = _nextWayPointPosition;
+    }
+
+    public void ResetWaypoints()
+    {
+        Waypoints.Clear();
+        currentState = VoterState.Walking;
+    }
+
+    void Update () {
+        switch (currentState)
+        {
+            case VoterState.Walking:
+                Search();
+                Walk();
+                break;
+            case VoterState.Captured:
+                Walk();
+                break;
+        }
+    }
+
+    void Search()
+    {
+        if (transform.position == _nextWayPointPosition)
+        {
+            // Loop through all points nextWayPoint = (nextWayPoint + 1) % agent.wayPoints.Length; or randomize:
+            GetNextPoint();
+        }
+    }
+
+    void Walk()
+    {
+        if (_nextWayPointPosition != transform.position)
+        {
+            _moveDirection = (transform.position - _startingPos);
+            transform.position = Vector3.MoveTowards(transform.position, _nextWayPointPosition, speed * Time.deltaTime);
+        }
+        if (_moveDirection != Vector3.zero)
+        {
+            angle = Mathf.Atan2(_moveDirection.y, _moveDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
 
     public Vector3 RotatePointAroundPivot(Vector3 point, Vector3 pivot, Vector3 angles)
     {
         return Quaternion.Euler(angles) * (point - pivot) + pivot;
     }
 
-    void GetRandomPoint()
-	{
-		int i = Utilities.RandomInt(0, Waypoints.Count);
-		_nextWayPointPosition = Waypoints[i];
+    void GetNextPoint()
+    {
+        switch (currentPattern)
+        {
+            case MovementPattern.Random:
+                nextWaypoint = Utilities.RandomInt(0, Waypoints.Count);
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+            case MovementPattern.RightLeft:
+                nextWaypoint = (nextWaypoint + 1 )% Waypoints.Count;
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+            case MovementPattern.TopDown:
+                nextWaypoint = (nextWaypoint + 1) % Waypoints.Count;
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+            case MovementPattern.LeftRight:
+                nextWaypoint = (nextWaypoint + 1) % Waypoints.Count;
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+            case MovementPattern.Downtop:
+                nextWaypoint = (nextWaypoint + 1) % Waypoints.Count;
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+            case MovementPattern.Circle:
+                nextWaypoint = (nextWaypoint + 1) % Waypoints.Count;
+                _nextWayPointPosition = Waypoints[nextWaypoint];
+                break;
+        }
         _startingPos = transform.position;
     }
 
-	public void Capture()
-	{
-		_nextWayPointPosition = MG_2.Instance.TargetStage.transform.position;
-		currentState = VoterState.Captured;
-	}
+    public void Capture()
+    {
+        _nextWayPointPosition = MG_2.Instance.TargetStage.transform.position;
+        _startingPos = transform.position;
+        currentState = VoterState.Captured;
+    }
 }
-
-/*
-		if (Time.time >= tChange)
-		{
-			randomX = Random.Range(xEast, xWest);
-			randomY = Random.Range(ySouth, yNorth);
-			_nextWayPointPosition = new Vector3(randomX, randomY);
-			angle = Vector3.Angle(transform.position, _nextWayPointPosition);
-			tChange = Time.time + Utilities.RandomFloat(.5f, 1.5f);
-		}
-		transform.Translate(new Vector3(randomX, randomY, 0) * speed *Time.deltaTime);
-		
-		transform.Rotate(0, 0, iTween.FloatUpdate(transform.position.z, angle, .5f), Space.World);
-
-		if (transform.position.x <= xWest || transform.position.x >= xEast)
-		{
-			randomX = -randomX;
-		}
-		if (transform.position.y <= ySouth || transform.position.y >= yNorth)
-		{
-			randomY = -randomY;
-		}
-
-			if (changePos)
-		{
-			randomX = Random.Range(xEast, xWest);
-			randomY = Random.Range(ySouth, yNorth);
-			_nextWayPointPosition = new Vector3(randomX, randomY);
-			angle = Vector3.Angle(transform.position, _nextWayPointPosition);
-			changePos = false;
-		}
-		if (transform.position == _nextWayPointPosition)
-			changePos = true;
-		transform.Translate(new Vector3(randomX, randomY, 0) *moveSpeed*Time.deltaTime);
-		transform.Rotate(0, 0, iTween.FloatUpdate(transform.position.z, angle, rotSpeed), Space.World);
-		if (transform.position.x <= xWest || transform.position.x >= xEast)
-		{
-			changePos = true;
-		}
-		if (transform.position.y <= ySouth || transform.position.y >= yNorth)
-		{
-			changePos = true;
-		}
-			public void SetBorders(float xE, float xW, float yN, float yS)
-	{
-		xEast = xE;
-		xWest = xW;
-		yNorth = yN;
-		ySouth = yS;
-	}
-	 */

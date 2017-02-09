@@ -10,13 +10,14 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     
     public enum DraggableType
     {
-        Environment, Social, Finance, Rating, Budget, Advertisement, Pointer, Area
+        Environment, Social, Finance, Rating, Budget, Advertisement, Pointer, Area, Word
     }
 
     void Start()
     {
 
     }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         Vector3 calcPos = CameraControl.Instance.CurrentCam.ScreenToWorldPoint(eventData.position);
@@ -48,6 +49,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             case DraggableType.Area:
                MG_3.Instance.BeginDrag(calcPos, gameObject);
                 break;
+            case DraggableType.Word:
+                startingPos = transform.localPosition;
+                GetComponent<Word>().Grab();
+                break;
         }
     }
 
@@ -77,6 +82,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             case DraggableType.Area:
                 MG_3.Instance.Drag(calcPos);
                 break;
+            case DraggableType.Word:
+                transform.position = new Vector3(calcPos.x, calcPos.y, 0);
+                break;
         }
     }
 
@@ -104,6 +112,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
                 break;
             case DraggableType.Area:
                 MG_3.Instance.EndDrag();
+                break;
+            case DraggableType.Word:
+                GetComponent<Word>().Drop();
                 break;
         }
     }

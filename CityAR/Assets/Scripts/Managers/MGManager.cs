@@ -20,7 +20,10 @@ public class MGManager : AManager<MGManager> {
     public Text TimerText;
     public Text ScoreText;
     public Text WinStateText;
+    public Text GameDescription;
 
+    public float targetAspect = 9f/16f;
+    private float scaleFactor = 32f;
     public float Height;
     public float Width;
     private float _currentTime;
@@ -50,11 +53,12 @@ public class MGManager : AManager<MGManager> {
         MGCanvas = GameObject.Find("MGCanvas");
 
         //adjust play space & cam
-        MGCam.GetComponent<Camera>().backgroundColor = Color.white;
-        MGCam.GetComponent<Camera>().orthographicSize = Screen.width / 32;
-        Height = MGCam.GetComponent<Camera>().orthographicSize * 2;
-        Width = Height / Screen.height * Screen.width;
-        MGStart(MiniGame.None);
+        Camera cam = MGCam.GetComponent<Camera>();
+        cam.backgroundColor = Color.white;
+        cam.orthographicSize = 80f;
+        Height = cam.orthographicSize * 2;
+        Width = Height*cam.aspect;
+        MGState(MiniGame.None);
     }
 
     void Update () {
@@ -67,21 +71,21 @@ public class MGManager : AManager<MGManager> {
             switch (CurrentMG)
             {
                 case MiniGame.Advertise:
-                    ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected;
+                    ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected + "/" + MG_2_Mng.VotersNeeded;
                     if (_currentTime >= _timeLimit)
                     {
-                        WinStateText.text = "GAME LOST!";
+                        WinStateText.text = "TIME RAN OUT!";
                         EndMG();
                     }
 
                     if (MG_2_Mng.VotersCollected >= MG_2_Mng.VotersNeeded)
                     {
-                        WinStateText.text = "TIME RAN OUT!";
+                        WinStateText.text = "YOU WIN!";
                         EndMG();
                     }
                     break;
                 case MiniGame.Area:
-                    ScoreText.text = "Confiscated: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
+                    ScoreText.text = "Land: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
                     if (_currentTime >= _timeLimit)
                     {
                         WinStateText.text = "TIME RAN OUT!";
@@ -94,13 +98,13 @@ public class MGManager : AManager<MGManager> {
                     }
                     break;
                 case MiniGame.Sorting:
-                    ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs;
+                    ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs + "/" + MG_1_Mng.DocsNeeded;
                     if (_currentTime >= _timeLimit)
                     {
                         WinStateText.text = "TIME RAN OUT!";
                         EndMG();
                     }
-                    if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
+                    if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
                     {
                         WinStateText.text = "YOU WIN!";
                         EndMG();
@@ -110,7 +114,7 @@ public class MGManager : AManager<MGManager> {
         }
     }
 
-    void MGStart(MiniGame state)
+    void MGState(MiniGame state)
     {
         Started = true;
         CurrentMG = state;
@@ -128,10 +132,10 @@ public class MGManager : AManager<MGManager> {
             case MiniGame.Advertise:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
-                MG_2_Mng.SetVars(40, 20, 30);
                 _timeLimit = MG_2_Mng.TimeLimit;
-                MG_2_Mng.InitGame();
+                MG_2_Mng.StartCoroutine("InitGame");
                 MG_2_GO.SetActive(true);
+                GameDescription.text = "Drag the megaphone to attract voters to the stage!";
                 break;
             case MiniGame.Pointer:
                 break;
@@ -141,6 +145,7 @@ public class MGManager : AManager<MGManager> {
                 _timeLimit = MG_1_Mng.TimeLimit;
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
+                GameDescription.text = "Sort the documents on the correct stack!";
                 break;
             case MiniGame.Area:
                 MGCanvas.SetActive(true);
@@ -148,8 +153,10 @@ public class MGManager : AManager<MGManager> {
                 _timeLimit = MG_3_Mng.TimeLimit;
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
+                GameDescription.text = "Draw a straight line to block off land for your project!";
                 break;
             case MiniGame.None:
+                Started = false;
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;
@@ -173,7 +180,7 @@ public class MGManager : AManager<MGManager> {
                 break;
             case MiniGame.Sorting:
                 _currentTime = 0;
-                MG_3_Mng.ResetGame();
+                MG_1_Mng.ResetGame();
                 break;
         }
         Started = false;
@@ -184,11 +191,11 @@ public class MGManager : AManager<MGManager> {
         if (MainCam.gameObject.activeInHierarchy == false)
         {
             EndMG();
-            MGStart(MiniGame.None);
+            MGState(MiniGame.None);
         }
         else
         {
-            MGStart(state);
+            MGState(state);
         }
     }
     

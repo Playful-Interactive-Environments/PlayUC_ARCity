@@ -4,66 +4,91 @@ using UnityEngine;
 
 public class MG_2 : AManager<MG_2> {
 
+	public float TimeLimit;
+	public int VotersNeeded = 10;
+	public int VotersCollected;
 	public GameObject Advertisement;
 	public GameObject TargetStage;
 	public GameObject VoterPrefab;
-	public int VotersNeeded = 20;
-    public int VotersCollected;
-    private int agentNum;
-    private int waypoints = 40;
+
 	private float Height;
 	private float Width;
-	public float TimeLimit = 20f;
-    private MGManager manager;
-    public List<GameObject> Agents = new List<GameObject>();
+
+	private MGManager manager;
+	public List<GameObject> Agents = new List<GameObject>();
 
 	void Start ()
 	{
 		ObjectPool.CreatePool(VoterPrefab, VotersNeeded);
-        manager = MGManager.Instance;
+		manager = MGManager.Instance;
 
-    }
+	}
 
-    public void SetVars(int agents, int needed, float time)
-    {
-        agentNum = agents;
-        VotersNeeded = needed;
-        TimeLimit = time;
-    }
+	public void SetVars(int agents, int needed, float time)
+	{
+		VotersNeeded = needed;
+		TimeLimit = time;
+	}
 
-    void Update ()
+	void Update ()
 	{
 		Height = manager.Height;
 		Width = manager.Width;
 	}
 	#region AdGame
-	public void InitGame()
+	public IEnumerator InitGame()
 	{
-		//create voter start points; position advertisement & stage
-		float xEast = Width;
-		float xWest = -Width/2;
-		float yNorth = -Height/2;
-		float ySouth = Height;
 		Advertisement.transform.position = new Vector3(0, Height / 4, 0);
 		TargetStage.transform.position = new Vector3(0, -Height / 4, 0);
 
-        for (int i = 0; i < agentNum; i++)
-        {
-            Vector3 waypoint = new Vector3(Utilities.RandomFloat(xWest, xEast), Utilities.RandomFloat(yNorth, ySouth), 0);
-            GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform, waypoint, Quaternion.identity);
-            agent.layer = LayerMask.NameToLayer("MG_2");
-            Agents.Add(agent);
-        }
-        foreach (GameObject agent in Agents)
-        {
-            agent.GetComponent<Agent>().ResetWaypoints();
-            for (int i = 0; i <= waypoints; i++)
-            {
-                Vector3 waypoint = new Vector3(Utilities.RandomFloat(xWest, xEast), Utilities.RandomFloat(yNorth, ySouth), 0);
-                agent.GetComponent<Agent>().AddWaypoint(waypoint);
-            }
-        }
-    }
+		for (int i = 0; i < 10; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.Random);
+			Agents.Add(agent);
+		}
+		for (int i = 0; i < 10; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.Circle);
+			Agents.Add(agent);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.RightLeft);
+			Agents.Add(agent); Agents.Add(agent);
+			yield return new WaitForSeconds(.2f);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.LeftRight);
+			Agents.Add(agent); Agents.Add(agent);
+			yield return new WaitForSeconds(.2f);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.Downtop);
+			Agents.Add(agent); Agents.Add(agent);
+			yield return new WaitForSeconds(.2f);
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);
+			agent.layer = LayerMask.NameToLayer("MG_2");
+			agent.GetComponent<Agent>().SetWaypoints(Width, Height, Agent.MovementPattern.TopDown);
+			Agents.Add(agent);
+			yield return new WaitForSeconds(.3f);
+		}
+
+	}
 	#endregion
 
 	public void ResetGame()

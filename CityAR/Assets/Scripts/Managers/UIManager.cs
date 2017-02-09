@@ -367,15 +367,15 @@ public class UIManager : AManager<UIManager>
 
 	public void LevelUI()
 	{
-	    if (LevelCanvas.enabled == false)
-	    {
-	        Change(UiState.Level);
-	        LevelManager.Instance.PushGrid();
-	    }
-	    else
-	    {
-            GameUI();
-        }
+		if (LevelCanvas.enabled == false)
+		{
+			Change(UiState.Level);
+			LevelManager.Instance.PushGrid();
+		}
+		else
+		{
+			GameUI();
+		}
 	}
 
 	public void RestartApp()
@@ -614,15 +614,27 @@ public class UIManager : AManager<UIManager>
 		iTween.ScaleTo(icon, iTween.Hash("x", originalScale, "y", originalScale, "time", .2f));
 	}
 
-	public void DebugButton()
+	public void Debug_2()
 	{
 		//Debug.Log("CLICK");
 		//Vote_Choice1();
 		//EventManager.Instance.TriggerRandomEvent();
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
-		//MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
+		//CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
+		//MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
 		//ProjectManager.Instance.CreateRandomProject();
 		//ProjectManager.Instance.AddProject();
 		//ProjectManager.Instance.ProjectApproved(2);
+		MGManager.Instance.DebugMG(MGManager.MiniGame.Advertise);
+
+	}
+    public void Debug_3()
+    {
+        MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
+
+    }
+    public void Debug_1()
+	{
+		MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
+
 	}
 }
