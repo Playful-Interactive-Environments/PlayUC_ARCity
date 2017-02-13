@@ -31,7 +31,7 @@ public class Quest : MonoBehaviour
 
 	void CreateRepresentation()
 	{
-		GameObject representation = Instantiate(RepresentationSets[UnityEngine.Random.Range(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity) as GameObject;
+		GameObject representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity) as GameObject;
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(3, 3, 3);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);

@@ -21,10 +21,8 @@ public class LevelDescription : MonoBehaviour {
 		csvLeveling = CSVLeveling.Instance;
 		GetComponent<Image>().color = Color.grey;
 		GetComponent<Button>().enabled = false;
-
 	}
 
-	// Update is called once per frame
 	void Update () {
 		if (LevelManager.Instance.CurrentRank == LevelNumber && !LevelReached)
 		{
@@ -37,11 +35,23 @@ public class LevelDescription : MonoBehaviour {
 			if (UnlockType == "Budget")
 			{
 				CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ConvertString(UnlockValue));
-
 			}
 			if (UnlockType == "Project")
 			{
-				ProjectManager.Instance.UnlockProject(ConvertString(UnlockValue));
+			    int projectId = 0;
+                switch (LevelManager.Instance.RoleType)
+                {
+                    case "Environment":
+                        projectId = ConvertString(csvLeveling.GetEnvironmentPlayer(LevelNumber));
+                        break;
+                    case "Social":
+                        projectId = ConvertString(csvLeveling.GetSocialPlayer(LevelNumber));
+                        break;
+                    case "Finance":
+                        projectId = ConvertString(csvLeveling.GetFinancePlayer(LevelNumber));
+                        break;
+                }
+                ProjectManager.Instance.UnlockProject(projectId);
 			}
 			LevelReached = true;
 		}
@@ -74,16 +84,14 @@ public class LevelDescription : MonoBehaviour {
 				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
 				UnlockTitle.text += " " + splitString[i];
 				UnlockValue = splitString[i];
-
 			}
-
 		}
 	}
+
 	private int ConvertString(string input)
 	{
 		int parsedInt = 0;
 		int.TryParse(input, NumberStyles.Any, null, out parsedInt);
 		return parsedInt;
-
 	}
 }

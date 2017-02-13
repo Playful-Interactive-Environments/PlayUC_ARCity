@@ -16,7 +16,8 @@ public class CSVProjects : AManager<CSVProjects>
         public string environment;
         public string finance;
         public string cost;
-
+        public string cooldown;
+        public string minigame;
     }
     public TextAsset File;
     public List<Row> rowList = new List<Row>();
@@ -47,10 +48,12 @@ public class CSVProjects : AManager<CSVProjects>
         row.cost = "" + cost;
         rowList.Add(row);
     }
+
     public bool IsLoaded()
     {
         return isLoaded;
     }
+
     public void Load(TextAsset csv)
     {
         rowList.Clear();
@@ -66,6 +69,8 @@ public class CSVProjects : AManager<CSVProjects>
             row.environment = grid[i][5];
             row.finance = grid[i][6];
             row.cost = grid[i][7];
+            row.cooldown = grid[i][8];
+            row.minigame = grid[i][9];
             rowList.Add(row);
         }
         isLoaded = true;
@@ -87,10 +92,10 @@ public class CSVProjects : AManager<CSVProjects>
     {
         return rowList[find];
     }
+
     public Row Find_Title(string find)
     {
         return rowList.Find(x => x.title == find);
     }
-
     #endregion
 }

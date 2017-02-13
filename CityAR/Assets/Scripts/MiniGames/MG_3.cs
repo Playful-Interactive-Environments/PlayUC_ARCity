@@ -223,11 +223,11 @@ public class MG_3 : AManager<MG_3>
 			if (coverArea.Contains(agent.transform.position))
 			{
 				agentsContained += 1;
-				agent.GetComponent<SpriteRenderer>().color = Color.red;
+				//agent.GetComponent<SpriteRenderer>().color = Color.red;
 			}
 			else
 			{
-				agent.GetComponent<SpriteRenderer>().color = Color.black;
+				//agent.GetComponent<SpriteRenderer>().color = Color.black;
 			}
 		}
 		if (distanceSnap <= 5f && agentsContained == 0 && currentLength > minLength)

@@ -141,10 +141,8 @@ public class UIManager : AManager<UIManager>
 	//Crisis Event & Button
 	void Crisis()
 	{
-		Debug.Log("Crisis");
 		Event_Choice1.onClick.AddListener(() => Crisis_Choice1());
 		Event_Choice2.onClick.AddListener(() => Crisis_Choice2());
-
 	}
 	void Crisis_Choice1()
 	{
@@ -616,25 +614,26 @@ public class UIManager : AManager<UIManager>
 
 	public void Debug_2()
 	{
-		//Debug.Log("CLICK");
-		//Vote_Choice1();
-		//EventManager.Instance.TriggerRandomEvent();
-		//CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
-		//MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
-		//ProjectManager.Instance.CreateRandomProject();
-		//ProjectManager.Instance.AddProject();
-		//ProjectManager.Instance.ProjectApproved(2);
 		MGManager.Instance.DebugMG(MGManager.MiniGame.Advertise);
-
 	}
     public void Debug_3()
     {
         MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
-
     }
     public void Debug_1()
 	{
 		MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
-
 	}
+
+    public void Debug()
+    {
+        //Debug.Log("CLICK");
+        //Vote_Choice1();
+        //EventManager.Instance.TriggerRandomEvent();
+        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
+        //MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
+        //ProjectManager.Instance.CreateRandomProject();
+        //ProjectManager.Instance.AddProject();
+        //ProjectManager.Instance.ProjectApproved(2);
+    }
 }

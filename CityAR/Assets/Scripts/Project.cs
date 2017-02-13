@@ -11,13 +11,17 @@ public class Project : NetworkBehaviour
 	public GameObject RepresentationParent;
 	private GameObject _projectButton;
 	public GameObject[] PlayerLogos;
-	[SyncVar]
-	public bool RepresentationCreated;
-	//Vars set by project manager on server
-	public string Title;
-	public string Description;
-	public int Influence;
-	public int Budget;
+    //Vars set by project manager on server
+    [SyncVar]
+	public bool ProjectCreated;
+    [SyncVar]
+    public string Title;
+    [SyncVar]
+    public string Description;
+    [SyncVar]
+    public int Influence;
+    [SyncVar]
+    public int Budget;
 	[SyncVar]
 	public int Social;
 	[SyncVar]
@@ -26,8 +30,12 @@ public class Project : NetworkBehaviour
 	public int Finance;
 	[SyncVar]
 	public string ProjectOwner;
-	//voting
-	[SyncVar]
+    [SyncVar]
+    public float Cooldown;
+    [SyncVar]
+    public int MiniGame;
+    //voting
+    [SyncVar]
 	public int ID_Spawn;
 	[SyncVar]
 	public int Id_CSV;
@@ -48,9 +56,6 @@ public class Project : NetworkBehaviour
 	public TextMesh FinanceText;
 	public TextMesh SocialText;
 	public TextMesh EnvironmentText;
-
-	//cardtext
-
 
 	void Start ()
 	{
@@ -93,12 +98,14 @@ public class Project : NetworkBehaviour
 
 			}
 		}
-		if (RepresentationCreated && !RepresentationParent.activeInHierarchy)
+		if (ProjectCreated && !RepresentationParent.activeInHierarchy)
 		{
+            ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
 			CreateRepresentation();
 			GetComponent<BoxCollider>().enabled = true;
 		}
 	}
+
 	void ProjectSelected()
 	{
 		TextHolder.SetActive(false);
@@ -109,7 +116,24 @@ public class Project : NetworkBehaviour
 		Destroy(_projectButton);
 	}
 
-
+    public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
+        int influence, int social, int finance, int environment, int budget, float cooldown, int minigame, int cellid, bool reprCreated )
+    {
+        ProjectOwner = owner;
+        Id_CSV = idcsv;
+        ID_Spawn = idspawn;
+        Title = title;
+        Description = description;
+        Influence = influence;
+        Social = social;
+        Finance = finance;
+        Environment = environment;
+        Budget = budget;
+        Cooldown = cooldown;
+        MiniGame = minigame;
+        SetCell(cellid);
+        ProjectCreated = reprCreated;
+    }
 
 	public void CreateRepresentation()
 	{
@@ -151,7 +175,6 @@ public class Project : NetworkBehaviour
 	{
 		Cell = CellGrid.Instance.GetCell(cellid);
 		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", cellid);
-
 		CellLogic = Cell.GetComponent<CellLogic>();
 	}
 

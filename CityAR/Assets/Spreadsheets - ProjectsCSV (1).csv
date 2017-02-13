@@ -1,0 +1,37 @@
+minimum Rank,title,content,Influence,Social{-3 3},Environment{-3 3},Finance{-3 3},Budget,cooldown,mini game,,Sum Effects
+1,Marathon,Organize a marathon in the city,20,7,-4,9,-400,15,0,,32
+2,Event,Organize a refugee support event,20,15,0,-6,-250,15,0,,29
+3,Concert,Organize a public concert,40,14,-5,5,-450,15,1,,54
+4,Market,Approve a christmas market,40,5,-6,9,500,25,2,,48
+5,Factory,Approve the construction of a new steel factory,40,6,-6,12,500,25,3,,52
+6,Funfair,Organize a funfair in the area.,60,15,-5,2,-500,25,0,,72
+7,Solar Panels,Start a neighborhood initiative to collectively install solar panels on rooftops.,60,3,12,-5,-650,30,3,,70
+8,School,Convince the teachers and director of a school to install solar panels on the roof to cover the building’s energy needs.,80,4,11,-3,-250,30,2,,92
+9,Static Bikes,Talk to a gym company to connect their static bikes to a generator in order to cover part of the buildings energy needs.,80,0,5,8,250,60,1,,93
+10,Electric Vehicles,Propose tax reduction on electric vehicles,100,-5,14,0,300,60,1,,109
+11,Energy Storage,Create a local energy storage system to be able to be less dependent on the grid.,20,11,5,-6,-450,15,0,,30
+12,Biomass Production,Start a small biomass production unit.,20,4,8,-7,-250,15,0,,25
+13,City Park,Open a new city park,40,9,10,-7,-500,15,1,,52
+14,Solar Park,Set up a solar park.,40,0,12,2,-750,25,2,,54
+15,Thermal Storage,"Set up a Thermal Energy Storage, where you heat up water at 65-80 degrees.",40,-5,15,0,-250,25,3,,50
+16,Energy Cooperation,Start an energy cooperation to facilitate other people who want to start their own energy projects.,60,11,4,-3,-250,25,0,,72
+17,High-Speed Internet,Set-up a hub for a new high-speed internet connection in the region.,60,12,-5,0,-500,30,3,,67
+18,Tourist Camping,Set up a camping for tourists who come to bird watch in the area.,80,5,5,4,-750,30,2,,94
+19,IT Company,Support a small scale IT firm specialized in algorithms that balance production and usage of electricity produced by solar panels.,80,3,0,11,-500,60,1,,94
+20,Thermostats,Support a start-up company to develop a new type of thermostat that can connect to people’s smart meters and their smartphones.,100,3,0,12,-500,60,1,,115
+21,Wearable solar,Support a smart energy start-up focused on wearable solar-powered technologies.,20,-8,6,8,-150,15,0,,26
+22,Cooling Systems,Support a start-up testing out special cooling systems for servers based on excess heat from households.,20,-4,6,9,-250,15,0,,31
+23,Automated Lights,Support a company to offer smart lighting solutions to allow people to control and automate lighting systems in their house through an app.,40,5,0,5,250,15,1,,50
+24,Waste Disposal App,Support an app that offers all key information regarding waste disposal.,40,3,12,0,-150,25,2,,55
+25,Bike Sharing,Support a new bike sharing innitiative.,40,7,12,-5,-500,25,3,,54
+26,New Train Station,A new train station construction,60,10,-10,15,-1000,25,0,,75
+27,New Bus Station,A new bus station construction,60,8,-5,6,-250,30,3,,69
+28,New Recycling Plant,A new automated recycling plant,80,-10,15,10,-1000,30,2,,95
+29,New Dumpster,A new garbage dumpster,80,7,-5,10,250,60,1,,92
+30,New Office Building,A new office building,100,7,-5,12,-500,60,1,,114
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,1620,142,96,118,-8950,,,,1965

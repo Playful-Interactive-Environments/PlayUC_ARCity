@@ -1,0 +1,272 @@
+fileFormatVersion: 2
+guid: e31cf7869346df548b68bb6ae25a9990
+timeCreated: 1486718859
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: arm
+    100002: arm 1
+    100004: arm 2
+    100006: arm 3
+    100008: armL
+    100010: armL 1
+    100012: armR
+    100014: armR 1
+    100016: body
+    100018: body 1
+    100020: bodyDeails
+    100022: bodyDeails 1
+    100024: bottom
+    100026: collar
+    100028: collar 1
+    100030: earL
+    100032: earL 1
+    100034: earR
+    100036: earR 1
+    100038: eyebrowL
+    100040: eyebrowL 1
+    100042: eyebrowR
+    100044: eyebrowR 1
+    100046: eyeL
+    100048: eyeL 1
+    100050: eyeR
+    100052: eyeR 1
+    100054: hair
+    100056: hair 1
+    100058: handL
+    100060: handL 1
+    100062: handR
+    100064: handR 1
+    100066: head
+    100068: head 1
+    100070: headDetails
+    100072: headDetails 1
+    100074: left
+    100076: nose
+    100078: nose 1
+    100080: //RootNode
+    100082: Person6
+    100084: Person7
+    100086: sleeve
+    100088: sleeve 1
+    100090: sleeve 2
+    100092: sleeve 3
+    400000: arm
+    400002: arm 1
+    400004: arm 2
+    400006: arm 3
+    400008: armL
+    400010: armL 1
+    400012: armR
+    400014: armR 1
+    400016: body
+    400018: body 1
+    400020: bodyDeails
+    400022: bodyDeails 1
+    400024: bottom
+    400026: collar
+    400028: collar 1
+    400030: earL
+    400032: earL 1
+    400034: earR
+    400036: earR 1
+    400038: eyebrowL
+    400040: eyebrowL 1
+    400042: eyebrowR
+    400044: eyebrowR 1
+    400046: eyeL
+    400048: eyeL 1
+    400050: eyeR
+    400052: eyeR 1
+    400054: hair
+    400056: hair 1
+    400058: handL
+    400060: handL 1
+    400062: handR
+    400064: handR 1
+    400066: head
+    400068: head 1
+    400070: headDetails
+    400072: headDetails 1
+    400074: left
+    400076: nose
+    400078: nose 1
+    400080: //RootNode
+    400082: Person6
+    400084: Person7
+    400086: sleeve
+    400088: sleeve 1
+    400090: sleeve 2
+    400092: sleeve 3
+    2300000: arm
+    2300002: arm 1
+    2300004: arm 2
+    2300006: arm 3
+    2300008: body
+    2300010: body 1
+    2300012: collar
+    2300014: collar 1
+    2300016: earL
+    2300018: earL 1
+    2300020: earR
+    2300022: earR 1
+    2300024: eyebrowL
+    2300026: eyebrowL 1
+    2300028: eyebrowR
+    2300030: eyebrowR 1
+    2300032: eyeL
+    2300034: eyeL 1
+    2300036: eyeR
+    2300038: eyeR 1
+    2300040: hair
+    2300042: hair 1
+    2300044: handL
+    2300046: handL 1
+    2300048: handR
+    2300050: handR 1
+    2300052: head
+    2300054: head 1
+    2300056: nose
+    2300058: nose 1
+    2300060: sleeve
+    2300062: sleeve 1
+    2300064: sleeve 2
+    2300066: sleeve 3
+    3300000: arm
+    3300002: arm 1
+    3300004: arm 2
+    3300006: arm 3
+    3300008: body
+    3300010: body 1
+    3300012: collar
+    3300014: collar 1
+    3300016: earL
+    3300018: earL 1
+    3300020: earR
+    3300022: earR 1
+    3300024: eyebrowL
+    3300026: eyebrowL 1
+    3300028: eyebrowR
+    3300030: eyebrowR 1
+    3300032: eyeL
+    3300034: eyeL 1
+    3300036: eyeR
+    3300038: eyeR 1
+    3300040: hair
+    3300042: hair 1
+    3300044: handL
+    3300046: handL 1
+    3300048: handR
+    3300050: handR 1
+    3300052: head
+    3300054: head 1
+    3300056: nose
+    3300058: nose 1
+    3300060: sleeve
+    3300062: sleeve 1
+    3300064: sleeve 2
+    3300066: sleeve 3
+    4300000: body
+    4300002: arm
+    4300004: sleeve
+    4300006: arm
+    4300008: sleeve
+    4300010: head
+    4300012: eyebrowL
+    4300014: eyebrowR
+    4300016: eyeL
+    4300018: eyeR
+    4300020: earL
+    4300022: earR
+    4300024: nose
+    4300026: hair
+    4300028: collar
+    4300030: handR
+    4300032: handL
+    4300034: body
+    4300036: arm
+    4300038: sleeve
+    4300040: arm
+    4300042: sleeve
+    4300044: head
+    4300046: eyebrowL
+    4300048: eyebrowR
+    4300050: eyeL
+    4300052: eyeR
+    4300054: earL
+    4300056: earR
+    4300058: nose
+    4300060: hair
+    4300062: collar
+    4300064: handR
+    4300066: handL
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
