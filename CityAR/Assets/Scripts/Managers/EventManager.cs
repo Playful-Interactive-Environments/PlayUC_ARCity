@@ -31,7 +31,13 @@ public class EventManager : NetworkBehaviour
             EventDispatcher.StartListening("EnvironmentEvent", QuestEvenet);
             EventDispatcher.StartListening("EnvironmentEvent", FinanceEvent);
             EventDispatcher.StartListening("EnvironmentEvent", SocialEvent);
+            EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+
         }
+    }
+    void NetworkDisconnect()
+    {
+        Events.Clear();
     }
 
     void EnvironmentEvent()

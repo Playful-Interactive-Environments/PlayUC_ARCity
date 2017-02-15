@@ -83,7 +83,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
                 MG_3.Instance.Drag(calcPos);
                 break;
             case DraggableType.Word:
-                transform.position = new Vector3(calcPos.x, calcPos.y, 0);
+                GetComponent<Word>().Drag(new Vector3(calcPos.x, calcPos.y, 0));
                 break;
         }
     }

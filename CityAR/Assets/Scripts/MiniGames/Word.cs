@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 using UnityEngine;
 
 public class Word : MonoBehaviour
 {
-
 	public TextMesh WordText;
 	public string Title;
 	public string Type;
 
 	private float currentSpeed;
-	private float maxSpeed = 200f;
+	private float maxSpeed = 240f;
 	private float nextTick;
 	private Vector3 currentPos;
 	private Vector3 lastPos;
 	private Vector3 startPos;
 	private Vector3 moveDirection;
 	private Vector3 stackPos;
+	private float distance;
 	private bool dropped;
 	private bool collected;
 
@@ -29,28 +30,34 @@ public class Word : MonoBehaviour
 
 	public void SetVars(Vector3 start, string title, string type)
 	{
-		Title = title;
+		Title = SplitText(title, 15);
 		Type = type;
 		transform.position = start;
 		startPos = start;
+		WordText.text = Title;
 	}
 
 	void OnEnable()
 	{
 		iTween.Stop();
-		transform.position = Vector3.zero;
+		transform.position = MG_1.Instance.StartingPos;
 		transform.localScale = new Vector3(1, 1, 1);
 	}
 
 	public void Grab()
 	{
-	    dropped = false;
+		dropped = false;
 	}
 
+	public void Drag(Vector3 dragPos)
+	{
+		transform.position = Vector3.Lerp(transform.position, dragPos, Time.deltaTime * 10f);
+	}
 	public void Drop()
 	{
 		currentSpeed = maxSpeed;
 		moveDirection = transform.position - lastPos;
+		distance = Vector3.Distance(transform.position, lastPos);
 		moveDirection = moveDirection.normalized;
 		if(!collected)
 			dropped = true;
@@ -58,17 +65,16 @@ public class Word : MonoBehaviour
 
 	void Update ()
 	{
-		WordText.text = "" + currentSpeed;
 		if (dropped)
 		{
 			transform.Translate(moveDirection * Time.deltaTime * currentSpeed, Space.World);
-			currentSpeed -= 10f;
+			currentSpeed -= 8;
 			if (currentSpeed <= 0)
 				dropped = false;
 		}
 		if (collected)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, stackPos, 100f * Time.deltaTime);
+			transform.position = Vector3.Lerp(transform.position, stackPos, Time.deltaTime * 10f);
 		}
 		
 		if (Time.time > nextTick)
@@ -99,23 +105,28 @@ public class Word : MonoBehaviour
 
 	void Reset()
 	{
-		StopAllCoroutines();
-		ObjectPool.Recycle(this.gameObject);
 		GetComponent<Draggable>().enabled = true;
 		dropped = false;
 		collected = false;
 		currentSpeed = 0;
 		transform.position = Vector3.zero;
+		ObjectPool.Recycle(this.gameObject);
+	}
+
+	string SplitText(string text, int charSize)
+	{
+		return text.Replace(" ", Environment.NewLine);
 	}
 }
-
-/*
-		dropPos = transform.position;
-		var force = (dropPos - startPos);
-		force = force.normalized;
-				//iTween.ScaleTo(gameObject, iTween.Hash("x", 0f, "y", 0f, "time", 1.5f));
-
-		force /= Mathf.Abs(Time.time - nextTick);
-		rigidbody.AddForce(force*factor);
-		Invoke("Reset", 2f);
- */
+/*       StringBuilder sb = new StringBuilder(text);
+		int spaces = 0;
+		int length = sb.Length;
+		for (int i = 0; i < length; i++)
+		{
+			if (spaces % charSize == 0)
+			{
+				sb.Insert(i, Environment.NewLine);
+			}
+			spaces++;
+		}
+*/

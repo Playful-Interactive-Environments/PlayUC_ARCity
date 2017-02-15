@@ -33,9 +33,28 @@ public class Agent : MonoBehaviour {
     private float Height;
     private float Width;
 
+    //Representation
+    public GameObject[] RepresentationSets;
+    
     void Start ()
     {
+        //creates agent representation, solve better later!
+        CreateRepresentation();
+    }
 
+    void CreateRepresentation()
+    {
+        GameObject representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
+        representation.transform.parent = this.transform;
+        representation.transform.localScale = new Vector3(75, 75, 75);
+        representation.transform.localEulerAngles += new Vector3(0, 90, -90);
+        representation.transform.localPosition = new Vector3(0,0, 20f);
+        representation.layer = LayerMask.NameToLayer("MG_3");
+        Transform[] allChildren = representation.GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            child.gameObject.layer = LayerMask.NameToLayer("MG_3");
+        }
     }
 
     public void SetWaypoints(float xE, float xW, float yN, float yS)

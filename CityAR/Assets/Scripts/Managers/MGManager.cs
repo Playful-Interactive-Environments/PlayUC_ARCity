@@ -9,7 +9,7 @@ public class MGManager : AManager<MGManager> {
     public MiniGame CurrentMG = MiniGame.None;
     public enum MiniGame
     {
-        None, Advertise, Pointer, Sorting, Area
+        None, Advertise, Pointer, Sort, Area
     }
 
     //main objects & vars
@@ -21,7 +21,7 @@ public class MGManager : AManager<MGManager> {
     public Text ScoreText;
     public Text WinStateText;
     public Text GameDescription;
-
+    //vars
     public float targetAspect = 9f/16f;
     private float scaleFactor = 32f;
     public float Height;
@@ -29,7 +29,7 @@ public class MGManager : AManager<MGManager> {
     private float _currentTime;
     private float _timeLimit;
     public bool Started;
-
+    private float _resetTime = 5f;
     //MiniGames
     public GameObject MG_1_GO;
     public MG_1 MG_1_Mng;
@@ -58,65 +58,75 @@ public class MGManager : AManager<MGManager> {
         cam.orthographicSize = 80f;
         Height = cam.orthographicSize * 2;
         Width = Height*cam.aspect;
-        MGState(MiniGame.None);
+        TriggerMiniGame(MiniGame.None);
+        EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
     }
 
     void Update () {
-        if (Input.GetKeyDown(KeyCode.A))
+        if(Input.GetKeyDown(KeyCode.A))
             DebugButton();
+        TrackProgress();
+    }
+
+    void TrackProgress()
+    {
         if (Started)
         {
-            _currentTime += Time.deltaTime;
-            TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
+
             switch (CurrentMG)
             {
                 case MiniGame.Advertise:
+                    //update UI
+                    _currentTime = MG_2_Mng.TimeSpent;
+                    TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected + "/" + MG_2_Mng.VotersNeeded;
+                    //check win/lose state
                     if (_currentTime >= _timeLimit)
                     {
-                        WinStateText.text = "TIME RAN OUT!";
-                        EndMG();
+                        StartCoroutine(EndMG("lose", _resetTime));
                     }
 
                     if (MG_2_Mng.VotersCollected >= MG_2_Mng.VotersNeeded)
                     {
-                        WinStateText.text = "YOU WIN!";
-                        EndMG();
+                        StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
                 case MiniGame.Area:
+                    _currentTime += Time.deltaTime;
+                    TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Land: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
+
                     if (_currentTime >= _timeLimit)
                     {
-                        WinStateText.text = "TIME RAN OUT!";
-                        EndMG();
+                        StartCoroutine(EndMG("lose", _resetTime));
                     }
                     if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
                     {
-                        WinStateText.text = "YOU WIN!";
-                        EndMG();
+                        WinStateText.text = "You made it! Good job!";
+                        StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
-                case MiniGame.Sorting:
+                case MiniGame.Sort:
+                    _currentTime += Time.deltaTime;
+                    TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs + "/" + MG_1_Mng.DocsNeeded;
+
                     if (_currentTime >= _timeLimit)
                     {
-                        WinStateText.text = "TIME RAN OUT!";
-                        EndMG();
+                        StartCoroutine(EndMG("lose", _resetTime));
                     }
                     if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
                     {
-                        WinStateText.text = "YOU WIN!";
-                        EndMG();
+                        StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
             }
         }
     }
 
-    void MGState(MiniGame state)
+    void TriggerMiniGame(MiniGame state)
     {
-        Started = true;
+        //Reset all minigames and get proper text & variables
         CurrentMG = state;
         MainCam.gameObject.SetActive(false);
         MainCanvas.SetActive(false);
@@ -125,8 +135,13 @@ public class MGManager : AManager<MGManager> {
         MG_1_GO.SetActive(false);
         MG_2_GO.SetActive(false);
         MG_3_GO.SetActive(false);
+        MG_1_Mng.ResetGame();
+        MG_2_Mng.ResetGame();
+        MG_3_Mng.ResetGame();
         CameraControl.Instance.CurrentCam = MGCam.GetComponent<Camera>();
         WinStateText.text = "";
+        _currentTime = 0;
+        Started = true;
         switch (state)
         {
             case MiniGame.Advertise:
@@ -139,7 +154,7 @@ public class MGManager : AManager<MGManager> {
                 break;
             case MiniGame.Pointer:
                 break;
-            case MiniGame.Sorting:
+            case MiniGame.Sort:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_1_Mng.TimeLimit;
@@ -164,8 +179,13 @@ public class MGManager : AManager<MGManager> {
         }
     }
 
-    public void EndMG()
+    public IEnumerator EndMG(string winstate, float time)
     {
+        if(winstate == "win")
+            WinStateText.text = "You made it. Great job!";
+        if(winstate == "lose")
+            WinStateText.text = "You failed. Try again later.";
+
         switch (CurrentMG)
         {
             case MiniGame.Advertise:
@@ -178,29 +198,40 @@ public class MGManager : AManager<MGManager> {
                 break;
             case MiniGame.Pointer:
                 break;
-            case MiniGame.Sorting:
+            case MiniGame.Sort:
                 _currentTime = 0;
                 MG_1_Mng.ResetGame();
                 break;
         }
         Started = false;
+        yield return new WaitForSeconds(time);
+        //Go back to game
+        if (winstate == "win")
+            UIManager.Instance.ShowPlacementCanvas();
+        if (winstate == "lose")
+            UIManager.Instance.GameUI();
     }
 
-    public void DebugMG(MiniGame state)
+    public void StartMG(MiniGame state)
     {
         if (MainCam.gameObject.activeInHierarchy == false)
         {
-            EndMG();
-            MGState(MiniGame.None);
+            EndMG("lose", _resetTime);
+            TriggerMiniGame(MiniGame.None);
         }
         else
         {
-            MGState(state);
+            TriggerMiniGame(state);
         }
     }
     
     public void DebugButton()
     {
-        DebugMG(MiniGame.Sorting);    
+        StartMG(MiniGame.Sort);    
+    }
+
+    void NetworkDisconnect()
+    {
+        TriggerMiniGame(MiniGame.None);
     }
 }

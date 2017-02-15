@@ -22,7 +22,7 @@ public class NetworkingManager : NetworkManager
     public Button ConnectButton;
     public Button AutoConnectButton;
     public Text DebugText;
-    public GameObject GameManager;
+    public GameObject GameManagerPrefab;
     public ServerBroadcast broadcast;
     public ClientListen listen;
     bool AutoConnectEnabled;
@@ -60,7 +60,7 @@ public class NetworkingManager : NetworkManager
         StopHosting();
         SetPort();
         StartHost();
-        GameObject gamemng = Instantiate(GameManager, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        GameObject gamemng = Instantiate(GameManagerPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
         NetworkServer.Spawn(gamemng);
         isServer = true;
         broadcast.StartServerBroadcast();
@@ -84,8 +84,7 @@ public class NetworkingManager : NetworkManager
             StopClient();
         }
         NetworkServer.Reset();
-        UIManager.Instance.ResetMenus();
-
+        Reset();
     }
 
     public void SetIPAddress()
@@ -221,7 +220,7 @@ public class NetworkingManager : NetworkManager
     public override void OnStartClient(NetworkClient client)
     {
         base.OnStartClient(client);
-        Debug.Log("OnStartClient");
+            Debug.Log("OnStartClient");
     }
 
     public override void OnStopClient()
@@ -252,6 +251,11 @@ public class NetworkingManager : NetworkManager
         Debug.Log(errorCode);
     }
 
+    public void Reset()
+    {
+        UIManager.Instance.ResetMenus();
+
+    }
     IEnumerator Reconnect()
     {
         yield return new WaitForSeconds(.2f);

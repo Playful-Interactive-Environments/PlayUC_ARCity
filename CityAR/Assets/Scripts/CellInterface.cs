@@ -12,6 +12,8 @@ public class CellInterface : MonoBehaviour {
 	public TextMesh CellName;
 	private CellLogic cell;
 	public GameObject[] Images;
+	public Material WhiteMat;
+	public Material GreyMat;
 	void Start ()
 	{
 		cell = GetComponent<CellLogic>();
@@ -50,15 +52,18 @@ public class CellInterface : MonoBehaviour {
 		switch (CurrentState)
 		{
 			case InterfaceState.Default:
-				StatusText.color = Color.grey;
-		        CellName.color = Color.grey;
-				Images[0].GetComponent<SpriteRenderer>().color = Color.grey;
+                StatusText.gameObject.GetComponent<Renderer>().material = GreyMat;
+                CellName.gameObject.GetComponent<Renderer>().material = GreyMat;
+                Images[0].GetComponent<SpriteRenderer>().color = Color.grey;
 				Images[1].GetComponent<SpriteRenderer>().color = Color.grey;
 				Images[2].GetComponent<SpriteRenderer>().color = Color.grey;
 				break;
 			case InterfaceState.Menu:
-				StatusText.color = Color.white;
-				CellName.color = Color.white;
+		        StatusText.gameObject.GetComponent<Renderer>().material = WhiteMat;
+                CellName.gameObject.GetComponent<Renderer>().material = WhiteMat;
+
+                //StatusText.color = Color.white;
+				//CellName.color = Color.white;
 				Images[0].GetComponent<SpriteRenderer>().color = Color.white;
 				Images[1].GetComponent<SpriteRenderer>().color = Color.white;
 				Images[2].GetComponent<SpriteRenderer>().color = Color.white;

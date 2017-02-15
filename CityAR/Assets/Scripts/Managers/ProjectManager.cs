@@ -11,18 +11,19 @@ public class ProjectManager : NetworkBehaviour
 	public GameObject ProjectPrefab;
 	public CSVProjects CSVProjects;
 	public QuestManager Quests;
-	public int SelectedProjectId;
+	public int SelectedCSV;
+	public int SelectedId;
 	public Project SelectedProject;
 	public List<Project> Projects;
-    public List<GameObject> ProjectButtons = new List<GameObject>();
+	public List<GameObject> ProjectButtons = new List<GameObject>();
 	public SyncListInt ProjectPool = new SyncListInt();
 	public SyncListInt EnvironmentProjects = new SyncListInt();
 	public SyncListInt SocialProjects = new SyncListInt();
 	public SyncListInt FinanceProjects = new SyncListInt();
 	public GameObject ProjectTemplate;
 	public GridLayoutGroup GridGroup;
-
 	private int CurrentProjectId = 0;
+
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
@@ -34,9 +35,14 @@ public class ProjectManager : NetworkBehaviour
 
 	void Start()
 	{
-
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
+	void NetworkDisconnect()
+	{
+		ProjectButtons.Clear();
+	}
+	
 	public void UnlockProject(int id)
 	{
 		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
@@ -45,27 +51,27 @@ public class ProjectManager : NetworkBehaviour
 		projectButton.transform.parent = GridGroup.transform;
 		projectButton.transform.localScale = new Vector3(1, 1, 1);
 		projectButton.GetComponent<ProjectButton>().SetupProjectButton(id);
-        ProjectButtons.Add(projectButton);
+		ProjectButtons.Add(projectButton);
 		UIManager.Instance.ProjectButton.image.color = Color.red;
 	}
 
-    public void ActivateButtonCooldown(int id)
-    {
-        foreach (GameObject button in ProjectButtons)
-        {
-            if (button.GetComponent<ProjectButton>().ProjectCSVId == id)
-            {
-                button.GetComponent<ProjectButton>().ActivateCooldown();
-            }
-        }
-    }
+	public void ActivateButtonCooldown(int id)
+	{
+		foreach (GameObject button in ProjectButtons)
+		{
+			if (button.GetComponent<ProjectButton>().ProjectCSVId == id)
+			{
+				button.GetComponent<ProjectButton>().ActivateCooldown();
+			}
+		}
+	}
 	//called only on server
 	public void SpawnProject(int cellid, string owner, int id)
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        Project project = gobj.GetComponent<Project>();
-        project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
-            GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, true);
+		Project project = gobj.GetComponent<Project>();
+		project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
+			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, true);
 		project.transform.position = CellGrid.Instance.GetCell(cellid).transform.position;
 		NetworkServer.Spawn(gobj);
 		SaveProject(owner, CurrentProjectId, project);
@@ -191,27 +197,27 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return CSVProjects.Find_ID(num).cost;
 	}
-    public float GetCooldown(int num)
-    {
-        return ConvertToFloat(CSVProjects.Find_ID(num).cooldown);
-    }
-    public int GetMiniGame(int num)
-    {
-        return ConvertToInt(CSVProjects.Find_ID(num).minigame);
-    }
-    private int ConvertToInt(string input)
+	public float GetCooldown(int num)
+	{
+		return ConvertToFloat(CSVProjects.Find_ID(num).cooldown);
+	}
+	public string GetMiniGame(int num)
+	{
+		return CSVProjects.Find_ID(num).minigame;
+	}
+	private int ConvertToInt(string input)
 	{
 		int parsedInt = 0;
 		int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
 		return parsedInt;
 	}
-    private float ConvertToFloat(string input)
-    {
-        float parsedInt = 0;
-        float.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
-        return parsedInt;
-    }
-    string FormatSign(int num)
+	private float ConvertToFloat(string input)
+	{
+		float parsedInt = 0;
+		float.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
+		return parsedInt;
+	}
+	string FormatSign(int num)
 	{
 		string text = "";
 		if (num > 0)

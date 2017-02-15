@@ -13,6 +13,7 @@ public class CellManager : NetworkBehaviour
 	public SyncListInt FinanceRates = new SyncListInt();
 
 	private int _maxValue;
+	private int maxTotalValue;
 	private int cellsleft;
 	int totalStartingSocial;
 	int totalStartingEnvironment;
@@ -55,11 +56,12 @@ public class CellManager : NetworkBehaviour
 
 	void GenerateValues()
 	{
-		_maxValue = (int)SaveStateManager.Instance.CellMaxValue; 
-		cellsleft = _cellGrid.Count; 
-		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Social");
-		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Environment");
-		randSum(_cellGrid.Count, (_maxValue * cellsleft) / 2, "Finance");
+		_maxValue = (int)SaveStateManager.Instance.CellMaxValue;
+		maxTotalValue = SaveStateManager.Instance.MaxTotalValue;
+	   cellsleft = _cellGrid.Count; 
+		randSum(_cellGrid.Count, maxTotalValue, "Social");
+		randSum(_cellGrid.Count, maxTotalValue, "Environment");
+		randSum(_cellGrid.Count, maxTotalValue, "Finance");
 	}
 
 	private float[] randSum(int n, int m, string type)
@@ -69,7 +71,8 @@ public class CellManager : NetworkBehaviour
 
 		for (int i = 0; (i < randNums.Length); i++)
 		{
-			randNums[i] = Utilities.RandomFloat(0, m);
+			//limit generated number to a 10% value from total cell sum
+			randNums[i] = Utilities.RandomFloat(Mathf.RoundToInt((float)m/10), m);
 			sum += randNums[i];
 		}
 

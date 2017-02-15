@@ -24,7 +24,7 @@ public class CellLogic : MonoBehaviour {
     private int state;
     public int OccupiedSlots;
     public List<int> Slots = new List<int>();
-    private float offset = 15f;
+    private float offset = 20f;
     private Renderer _renderer;
     public int CellId;
     public Material[] colors;

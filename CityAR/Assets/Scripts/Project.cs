@@ -11,17 +11,17 @@ public class Project : NetworkBehaviour
 	public GameObject RepresentationParent;
 	private GameObject _projectButton;
 	public GameObject[] PlayerLogos;
-    //Vars set by project manager on server
-    [SyncVar]
+	//Vars set by project manager on server
+	[SyncVar]
 	public bool ProjectCreated;
-    [SyncVar]
-    public string Title;
-    [SyncVar]
-    public string Description;
-    [SyncVar]
-    public int Influence;
-    [SyncVar]
-    public int Budget;
+	[SyncVar]
+	public string Title;
+	[SyncVar]
+	public string Description;
+	[SyncVar]
+	public int Influence;
+	[SyncVar]
+	public int Budget;
 	[SyncVar]
 	public int Social;
 	[SyncVar]
@@ -30,12 +30,12 @@ public class Project : NetworkBehaviour
 	public int Finance;
 	[SyncVar]
 	public string ProjectOwner;
-    [SyncVar]
-    public float Cooldown;
-    [SyncVar]
-    public int MiniGame;
-    //voting
-    [SyncVar]
+	[SyncVar]
+	public float Cooldown;
+	[SyncVar]
+	public string MiniGame;
+	//voting
+	[SyncVar]
 	public int ID_Spawn;
 	[SyncVar]
 	public int Id_CSV;
@@ -45,24 +45,18 @@ public class Project : NetworkBehaviour
 	public int Choice1;
 	[SyncVar]
 	public int Choice2;
+	[SyncVar]
 	public bool Approved;
 	public bool LocalVote;
 	private Vector3 CellPos;
 
 	//contextual text
-	public GameObject TextHolder;
-	public TextMesh TitleText;
-	public TextMesh ContentText;
-	public TextMesh FinanceText;
-	public TextMesh SocialText;
-	public TextMesh EnvironmentText;
 
 	void Start ()
 	{
 		transform.name = "Project" + ID_Spawn;
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		RepresentationParent.SetActive(false);
-		TextHolder.SetActive(false);
 		GetComponent<BoxCollider>().enabled = false;
 		if (isServer)
 		{
@@ -77,8 +71,6 @@ public class Project : NetworkBehaviour
 			//CreateProjectButton();
 		}
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
-		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
-		EventDispatcher.StartListening("PlacementMap", ProjectSelected);
 	}
 
 	void Update()
@@ -95,59 +87,48 @@ public class Project : NetworkBehaviour
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
 				Approved = true;
-
 			}
 		}
 		if (ProjectCreated && !RepresentationParent.activeInHierarchy)
 		{
-            ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
+			ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
 			CreateRepresentation();
 			GetComponent<BoxCollider>().enabled = true;
 		}
 	}
 
-	void ProjectSelected()
-	{
-		TextHolder.SetActive(false);
-	}
-
 	void NetworkDisconnect()
 	{
-		Destroy(_projectButton);
+		//Destroy(gameObject);
 	}
 
-    public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
-        int influence, int social, int finance, int environment, int budget, float cooldown, int minigame, int cellid, bool reprCreated )
-    {
-        ProjectOwner = owner;
-        Id_CSV = idcsv;
-        ID_Spawn = idspawn;
-        Title = title;
-        Description = description;
-        Influence = influence;
-        Social = social;
-        Finance = finance;
-        Environment = environment;
-        Budget = budget;
-        Cooldown = cooldown;
-        MiniGame = minigame;
-        SetCell(cellid);
-        ProjectCreated = reprCreated;
-    }
+	public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
+		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, bool reprCreated )
+	{
+		ProjectOwner = owner;
+		Id_CSV = idcsv;
+		ID_Spawn = idspawn;
+		Title = title;
+		Description = description;
+		Influence = influence;
+		Social = social;
+		Finance = finance;
+		Environment = environment;
+		Budget = budget;
+		Cooldown = cooldown;
+		MiniGame = minigame;
+		SetCell(cellid);
+		ProjectCreated = reprCreated;
+	}
 
 	public void CreateRepresentation()
 	{
 		//create 3d representation
-		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity) as GameObject;
+		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
 		representation.transform.parent = RepresentationParent.transform;
-		representation.transform.localScale = new Vector3(1, 1, 1);
+		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
 		RepresentationParent.SetActive(true);
-		TitleText.text = Title;
-		ContentText.text = Description;
-		EnvironmentText.text = "" + Environment;
-		SocialText.text = "" + Social;
-		FinanceText.text = "" + Finance;
 		foreach (GameObject logo in PlayerLogos)
 		{
 			logo.GetComponent<Renderer>().enabled = false;
@@ -181,12 +162,11 @@ public class Project : NetworkBehaviour
 	public void ShowProjectCanvas()
 	{
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-		EventDispatcher.TriggerEvent("ProjectSelected");
-		if (LocalVote)
+		if (LocalVote || (!LocalVote && Approved))
 		{
 			Invoke("ShowProjectInfo", .1f);
 		}
-		if (!LocalVote)
+		if (!LocalVote && !Approved)
 		{
 			Invoke("ShowVoteCanvas", .1f);
 		}
@@ -194,15 +174,16 @@ public class Project : NetworkBehaviour
 
 	public void ShowVoteCanvas()
 	{
-		TextHolder.SetActive(true);
-		ProjectManager.Instance.SelectedProjectId = ID_Spawn;
+		ProjectManager.Instance.SelectedCSV = Id_CSV;
+		ProjectManager.Instance.SelectedId = ID_Spawn;
 		UIManager.Instance.EnableVoteUI();
 	}
 
 	public void ShowProjectInfo()
 	{
-		TextHolder.SetActive(true);
-		ProjectManager.Instance.SelectedProjectId = ID_Spawn;
+		ProjectManager.Instance.SelectedCSV = Id_CSV;
+		ProjectManager.Instance.SelectedId = ID_Spawn;
+		UIManager.Instance.ProjectInfoUI();
 	}
 
 	public void InitiateProject()
@@ -220,8 +201,11 @@ public class Project : NetworkBehaviour
 			logo.GetComponent<Renderer>().enabled = false;
 		}
 		PlayerLogos[3].GetComponent<Renderer>().enabled = true;
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.SelectedProjectId));
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Rating", ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedProjectId));
+		if (LevelManager.Instance.RoleType == ProjectOwner)
+		{
+			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
+			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Influence", Influence);
+		}
 	}
 
 	public void ShowRejected()

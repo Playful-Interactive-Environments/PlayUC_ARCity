@@ -5,6 +5,7 @@ using UnityEngine;
 public class MG_2 : AManager<MG_2> {
 
 	public float TimeLimit;
+	public float TimeSpent;
 	public int VotersNeeded = 10;
 	public int VotersCollected;
 	public GameObject Advertisement;
@@ -95,6 +96,7 @@ public class MG_2 : AManager<MG_2> {
 	{
 		ObjectPool.RecycleAll(VoterPrefab);
 		VotersCollected = 0;
+	    TimeSpent = 0;
 		Advertisement.GetComponent<Advertisement>().Reset();
 	}
 }

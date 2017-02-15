@@ -18,11 +18,13 @@ public class LevelManager : MonoBehaviour
 	private int _currentGoal;
 	private int _prevGoal = 0;
 	private float _valueGoal;
-
+	private int _lastRank;
+	private bool levelUnlocked;
 	//LevelDisplay
 	public GameObject LevelTemplate;
 	public GridLayoutGroup GridGroup;
-	public List<GameObject> LevelLayoutList = new List<GameObject>();
+	public List<GameObject> LevelInstances = new List<GameObject>();
+
 	public int Value
 	{
 		get
@@ -49,23 +51,28 @@ public class LevelManager : MonoBehaviour
 		else if (Instance != this)
 			Destroy(gameObject);
 		DontDestroyOnLoad(gameObject);
-		Application.targetFrameRate = 30;
-		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		//Level Bar
 		_csvLeveling = CSVLeveling.Instance;
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+
 	}
 
-    public void PushGrid()
-    {
-        float gridHeight = GridGroup.GetComponent<RectTransform>().sizeDelta.y;
-        float cellSpacing = GridGroup.GetComponent<GridLayoutGroup>().cellSize.y + GridGroup.GetComponent<GridLayoutGroup>().spacing.y;
-        Debug.Log(gridHeight + " " + cellSpacing);
-        GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -gridHeight/2 - cellSpacing + CurrentRank * cellSpacing, 0);
-    }
-
-    void Update()
+	void NetworkDisconnect()
 	{
-        UpdateProgress();
+		LevelInstances.Clear();
+		CancelInvoke("UpdateProgress");
+	}
+
+	public void PushGrid()
+	{
+		float gridHeight = GridGroup.GetComponent<RectTransform>().sizeDelta.y;
+		float cellSpacing = GridGroup.GetComponent<GridLayoutGroup>().cellSize.y + GridGroup.GetComponent<GridLayoutGroup>().spacing.y;
+		Debug.Log(gridHeight + " " + cellSpacing);
+		GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -gridHeight/2 - cellSpacing + CurrentRank * cellSpacing, 0);
+	}
+
+	void Update()
+	{
 	}
 
 	public void UpdateProgress()
@@ -75,10 +82,10 @@ public class LevelManager : MonoBehaviour
 			//keep track of influence & rank
 			_currentInfluence = SaveStateManager.Instance.GetInfluence(RoleType);
 			CurrentRank = SaveStateManager.Instance.GetRank(RoleType);
-			_currentGoal = ConvertString(_csvLeveling.Find_Rank(CurrentRank).influencegoal);
+			_currentGoal = ConvertString(_csvLeveling.Find_Rank(CurrentRank + 1).influencegoal);
 			//update value variable for the progress bar
-			if(CurrentRank > 1)
-				_prevGoal = ConvertString(_csvLeveling.Find_Rank(CurrentRank - 1).influencegoal);
+			_prevGoal = ConvertString(_csvLeveling.Find_Rank(CurrentRank).influencegoal);
+
 			Value = _currentInfluence - _prevGoal;
 			_valueGoal = _currentGoal - _prevGoal;
 
@@ -87,28 +94,32 @@ public class LevelManager : MonoBehaviour
 			RankText.text = CurrentRank + "";
 
 			//check if new level reached
-			if (_currentInfluence >= _currentGoal && CellManager.Instance.NetworkCommunicator !=null)
+			if (_currentInfluence >= _currentGoal && CellManager.Instance.NetworkCommunicator !=null && !levelUnlocked)
 			{
 				CellManager.Instance.NetworkCommunicator.UpdateData(RoleType, "Rank", 1);
-				_currentInfluence = 0;
+				_lastRank = CurrentRank;
+				levelUnlocked = true;
 			}
+			if (_lastRank < CurrentRank)
+				levelUnlocked = false;
 		}
 	}
 
 	public void CreateLevelTemplate()
 	{
+		InvokeRepeating("UpdateProgress", 0f, .3f);
 		for (int i = 1; i <= _csvLeveling.rowList.Count-1; i++)
 		{
 			GridGroup = GameObject.Find("LevelLayout").GetComponent<GridLayoutGroup>();
 			LevelTemplate = GameObject.Find("LevelTemplate");
-			GameObject _levelbutton = Instantiate(LevelTemplate, transform.position, Quaternion.identity) as GameObject;
-			_levelbutton.transform.parent = GridGroup.transform;
-			_levelbutton.transform.localScale = new Vector3(1, 1, 1);
+			GameObject level = Instantiate(LevelTemplate, transform.position, Quaternion.identity) as GameObject;
+			level.transform.parent = GridGroup.transform;
+			level.transform.localScale = new Vector3(1, 1, 1);
 			//_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());
-			_levelbutton.GetComponent<LevelDescription>().SetupLayout(i);
-			LevelLayoutList.Add(_levelbutton);
-            GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -855f, 0);
-        }
+			level.GetComponent<LevelDescription>().SetupLayout(i);
+			LevelInstances.Add(level);
+			GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -855f, 0);
+		}
 	}
 	
 	private int ConvertString(string input)

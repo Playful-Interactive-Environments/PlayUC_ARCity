@@ -29,7 +29,6 @@ public class NetworkCommunicator : NetworkBehaviour
     void Update () {
         if (CellManager.Instance != null && isLocalPlayer)
             CellManager.Instance.NetworkCommunicator = this;
-
     }
 
     public void HandleEvent(string action, int id)
@@ -49,10 +48,34 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    [Command]
-    void CmdHandleEvent(string action, int id)
+    public void SetPlayerState(string player, string state)
     {
-        HandleEvent(action, id);
+        if (isServer)
+        {
+            switch (player)
+            {
+                case "Finance":
+                    GameManager.Instance.FinanceState = state;
+                    break;
+                case "Social":
+                    GameManager.Instance.SocialState = state;
+                    break;
+                case "Environment":
+                    GameManager.Instance.EnvironmentState = state;
+                    break;
+            }
+        }
+        
+        if (isClient && !isServer)
+        {
+            CmdSetPlayerState(player, state);
+        }
+    }
+
+    [Command]
+    void CmdSetPlayerState(string player, string state)
+    {
+        SetPlayerState(player, state);
     }
 
     public void CellOccupiedStatus(string action, int id)
@@ -199,6 +222,12 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
+    void CmdHandleEvent(string action, int id)
+    {
+        HandleEvent(action, id);
+    }
+
+    [Command]
     void CmdAddOccupied(string action, int id)
     {
         CellOccupiedStatus(action, id);
@@ -255,12 +284,9 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    Debug.Log("Choice1");
-
                     NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
                     break;
                 case "Result_Choice2":
-                    Debug.Log("Choice2");
                     ProjectManager.Instance.ProjectRejected(projectnum);
                     NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
                     break;

@@ -21,7 +21,8 @@ public class MG_1 : AManager<MG_1>
 	private float Width;
 	private float threshold = 2f;
 	private float spawnTime;
-	private Vector3 startingPos;
+	public Vector3 StartingPos;
+
 
 	//CSV Rows
 	public class Row
@@ -73,7 +74,7 @@ public class MG_1 : AManager<MG_1>
 
 		Background.transform.localScale = new Vector3(Width, Height, 0);
 		Background.transform.localPosition = new Vector3(0,0,1);
-		startingPos = new Vector3(0, -Height / 4, 0);
+		StartingPos = new Vector3(0, -Height / 4, 0);
 	}
 
 	void Update()
@@ -85,7 +86,7 @@ public class MG_1 : AManager<MG_1>
 	{
 		GameObject word = ObjectPool.Spawn(WordPrefab, manager.MG_1_GO.transform);
 		int random = Utilities.RandomInt(0, rowList.Count - 1);
-		word.GetComponent<Word>().SetVars(startingPos, GetRow(random).title, GetRow(random).type);
+		word.GetComponent<Word>().SetVars(StartingPos, GetRow(random).title, GetRow(random).type);
 		WordList.Add(word);
 	}
 

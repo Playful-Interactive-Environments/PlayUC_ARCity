@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class GameManager : NetworkBehaviour {
+public class GameManager : NetworkBehaviour
+{
+
+	public string[] States = new[] {"Default", "MiniGame", "Event"};
+	public string EnvironmentState;
+	public string FinanceState;
+	public string SocialState;
 
 	public static GameManager Instance;
 
@@ -21,7 +27,14 @@ public class GameManager : NetworkBehaviour {
 	}
 	
 	void Update () {
-
+		if (isServer)
+		{
+			StartEvent();
+		}
 	}
 
+	void StartEvent()
+	{
+		
+	}
 }

@@ -29,7 +29,6 @@ public class UIManager : AManager<UIManager>
 	public Canvas NotificationResult;
 	public Canvas ProjectCanvas;
 	public Canvas ProjectDesignCanvas;
-	public Canvas VoteCanvas;
 	public Canvas NotificationCanvas;
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
@@ -57,6 +56,9 @@ public class UIManager : AManager<UIManager>
 	public GameObject SocialImage;
 	public GameObject RatingImage;
 	public GameObject BudgetImage;
+	public GameObject ProjectInfo;
+	public Button ButtonVote1;
+	public Button ButtonVote2;
 	//QUEST & RESULT CANVAS
 	public Text Title;
 	public Text Content;
@@ -73,7 +75,6 @@ public class UIManager : AManager<UIManager>
 	public Quest CurrentQuest;
 	//PROJECT & VOTING CANVAS
 	public Button ProjectButton;
-	public GameObject VoteDescription;
 	public Text EventText;
 	public int CurrentProjectButton;
 	//GLOBAL STATE CANVAS
@@ -94,7 +95,11 @@ public class UIManager : AManager<UIManager>
 	public bool EventProgressEnabled;
 
 
-
+	void Awake()
+	{
+		Application.targetFrameRate = 30;
+		Screen.orientation = ScreenOrientation.LandscapeLeft;
+	}
 	void Start ()
 	{
 		ResetMenus();
@@ -221,8 +226,6 @@ public class UIManager : AManager<UIManager>
 		QuestCanvas.enabled = false;
 		ResultCanvas.gameObject.SetActive(true);
 		ResultCanvas.enabled = false;
-		VoteCanvas.gameObject.SetActive(true);
-		VoteCanvas.enabled = false;
 		PlacementCanvas.gameObject.SetActive(true);
 		PlacementCanvas.enabled = false;
 		NotificationCanvas.gameObject.SetActive(true);
@@ -253,6 +256,12 @@ public class UIManager : AManager<UIManager>
 		EventDisplay.enabled = false;
 		EventResult.gameObject.SetActive(true);
 		EventResult.enabled = false;
+		ProjectInfo.GetComponent<Animator>().SetBool("Show", false);
+		//ProjectInfo.SetActive(false);
+		ButtonVote1.gameObject.SetActive(false);
+		ButtonVote2.gameObject.SetActive(false);
+
+
 		switch (CurrentState)
 		{
 			case UiState.Network:
@@ -295,10 +304,6 @@ public class UIManager : AManager<UIManager>
 				break;
 			case UiState.Placement:
 				PlacementCanvas.enabled = true;
-				break;
-			case UiState.Vote:
-				//VoteDescription.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedProjectId);
-				VoteCanvas.enabled = true;
 				break;
 			case UiState.Notifications:
 				NotificationCanvas.enabled = true;
@@ -359,7 +364,6 @@ public class UIManager : AManager<UIManager>
 
 	public void GameUI()
 	{
-
 		Change(UiState.Game);
 	}
 
@@ -476,7 +480,7 @@ public class UIManager : AManager<UIManager>
 	{
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
-			CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProjectId);
+			CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedCSV);
 			GameUI();
 		}
 	}
@@ -486,11 +490,6 @@ public class UIManager : AManager<UIManager>
 		Change(UiState.Placement);
 	}
 
-	public void EnableVoteUI()
-	{
-		Change(UiState.Vote);
-	}
-
 	public void ShowProjectDesignCanvas()
 	{
 		Change(UiState.DesignProject);
@@ -498,14 +497,14 @@ public class UIManager : AManager<UIManager>
 
 	public void Vote_Choice1()
 	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedProjectId);
+		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedId);
 		ProjectManager.Instance.SelectedProject.LocalVote = true;
 		GameUI();
 	}
 
 	public void Vote_Choice2()
 	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedProjectId);
+		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedId);
 		ProjectManager.Instance.SelectedProject.LocalVote = true;
 		GameUI();
 	}
@@ -528,6 +527,21 @@ public class UIManager : AManager<UIManager>
 			NotificationButton.image.color = Color.white;
 		}
 	}
+
+	public void ProjectInfoUI()
+	{
+		ProjectInfo.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedCSV);
+		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
+
+	}
+
+	public void EnableVoteUI()
+	{
+		ProjectInfo.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedCSV);
+		ButtonVote1.gameObject.SetActive(true);
+		ButtonVote2.gameObject.SetActive(true);
+		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
+	}
 	#endregion
 
 	#region Choose Roles
@@ -537,7 +551,7 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
 		LevelManager.Instance.RoleType = "Environment";
 		EventDispatcher.TriggerEvent("EnvironmentMap");
-		RoleDescriptionText.text = "You are responsible of environment, green and open space, transportation and mobility";
+		RoleDescriptionText.text = "\u2022 You are responsible for environment, green and open space, transportation and mobility.\n\u2022 The value represents the number of open spaces in your city.\n\u2022 The higher the amount, the higher the quality of air becomes.";
 		Invoke("GameUI", .1f);
 		LevelManager.Instance.CreateLevelTemplate();
 
@@ -548,7 +562,7 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Finance");
 		LevelManager.Instance.RoleType = "Finance";
 		EventDispatcher.TriggerEvent("FinanceMap");
-		RoleDescriptionText.text = "You are responsible of economy, real estate and industrial development.";
+		RoleDescriptionText.text = "\u2022 You are responsible for economy, real estate and industrial development.\n\u2022 The value represents value in Millions of Euros.\n\u2022 More financial projects incrase the wealth of your city.";
 		Invoke("GameUI", .1f);
 		LevelManager.Instance.CreateLevelTemplate();
 	}
@@ -558,7 +572,7 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Social");
 		LevelManager.Instance.RoleType = "Social";
 		EventDispatcher.TriggerEvent("SocialMap");
-		RoleDescriptionText.text = "You are responsible of social infrastructure and urban development.";
+		RoleDescriptionText.text = "\u2022 You are responsible for social infrastructure and urban development.\n\u2022 The value represents the amount of employed people.\n\u2022 More social projects increase employment and social stability.";
 		LevelManager.Instance.CreateLevelTemplate();
 		Invoke("GameUI", .1f);
 	}
@@ -614,26 +628,26 @@ public class UIManager : AManager<UIManager>
 
 	public void Debug_2()
 	{
-		MGManager.Instance.DebugMG(MGManager.MiniGame.Advertise);
+		MGManager.Instance.StartMG(MGManager.MiniGame.Advertise);
 	}
-    public void Debug_3()
-    {
-        MGManager.Instance.DebugMG(MGManager.MiniGame.Area);
-    }
-    public void Debug_1()
+	public void Debug_3()
 	{
-		MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
+		MGManager.Instance.StartMG(MGManager.MiniGame.Area);
+	}
+	public void Debug_1()
+	{
+		MGManager.Instance.StartMG(MGManager.MiniGame.Sort);
 	}
 
-    public void Debug()
-    {
-        //Debug.Log("CLICK");
-        //Vote_Choice1();
-        //EventManager.Instance.TriggerRandomEvent();
-        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 100);
-        //MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
-        //ProjectManager.Instance.CreateRandomProject();
-        //ProjectManager.Instance.AddProject();
-        //ProjectManager.Instance.ProjectApproved(2);
-    }
+	public void Debug()
+	{
+		//Debug.Log("CLICK");
+		//Vote_Choice1();
+		//EventManager.Instance.TriggerRandomEvent();
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", 50);
+		//MGManager.Instance.DebugMG(MGManager.MiniGame.Sorting);
+		//ProjectManager.Instance.CreateRandomProject();
+		//ProjectManager.Instance.AddProject();
+		//ProjectManager.Instance.ProjectApproved(2);
+	}
 }

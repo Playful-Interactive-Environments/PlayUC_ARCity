@@ -36,6 +36,12 @@ public class EventScript : NetworkBehaviour {
 	{
 		Invoke("TriggerEvent", .5f);
 		EventManager.Instance.CurrentEventScript = GetComponent<EventScript>();
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+	}
+
+	void NetworkDisconnect()
+	{
+		Destroy(gameObject);
 	}
 
 	void TriggerEvent()

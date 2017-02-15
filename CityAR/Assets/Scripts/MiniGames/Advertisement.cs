@@ -48,6 +48,7 @@ public class Advertisement : MonoBehaviour
 		{
 			Radius.transform.Rotate(Vector3.forward, 40 * Time.deltaTime, 0);
 			Vector3 nextWayPoint = points.ElementAt(followIndex);
+		    MG_2.Instance.TimeSpent += Time.deltaTime;
 			_lastPointPos = points[points.Count - 1];
 
 			if (transform.position != nextWayPoint)

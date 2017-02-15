@@ -19,7 +19,8 @@ public class SaveStateManager : NetworkBehaviour
 	private float _currentTime;
 	private string[] _months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 	public int MonthDuration = 10; //in seconds - time for month change
-	public float CellMaxValue = 50; //5 heatmap steps!
+	public float CellMaxValue; //4 heatmap steps!
+	public int MaxTotalValue;
 	public int StartingBudget;
 	private int defaultConnId = -1;
 	public float TimeStamp;
@@ -42,9 +43,9 @@ public class SaveStateManager : NetworkBehaviour
 		if (isServer)
 		{
 			//init player save
-			Players.Add(new PlayerDataSave("Environment", false, 0, StartingBudget, defaultConnId,0,1));
-			Players.Add(new PlayerDataSave("Social", false, 0, StartingBudget, defaultConnId,0,1));
-			Players.Add(new PlayerDataSave("Finance", false, 0, StartingBudget, defaultConnId,0,1));
+			Players.Add(new PlayerDataSave("Environment", false, 0, StartingBudget, defaultConnId,0,0));
+			Players.Add(new PlayerDataSave("Social", false, 0, StartingBudget, defaultConnId,0,0));
+			Players.Add(new PlayerDataSave("Finance", false, 0, StartingBudget, defaultConnId,0,0));
 			//init event logging
 			GlobalSave = new EventSave();
 			//init occupied cell save

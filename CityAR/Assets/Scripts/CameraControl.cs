@@ -10,7 +10,6 @@ public class CameraControl : AManager<CameraControl>
     public bool CarryingObject;
     private GameObject _carriedObject;
     string objectTag;
-    //public HexCell LastTouchedCell;
     public GameObject LastTouchedCell;
 
 
@@ -35,18 +34,13 @@ public class CameraControl : AManager<CameraControl>
                 {
                     mouseHit.transform.gameObject.GetComponent<CellLogic>().TouchCell();
                     LastTouchedCell = mouseHit.transform.gameObject;
-                    //LastTouchedCell = HexGrid.Instance.GetCell(mouseHit.point);
-                    //HexGrid.Instance.TouchCell(mouseHit.point);
+
                 }
-                if (mouseHit.transform.name.Equals("Build"))
-                {
-                    //CellManager.Instance.NetworkCommunicator.SpawnObject(LastTouchedPos);
-                }
-                if (mouseHit.transform.name.Equals("Quest"))
+                if (mouseHit.transform.tag.Equals("Quest"))
                 {
                     UIManager.Instance.QuestUI(mouseHit.transform.gameObject.GetComponent<Quest>());
                 }
-                if (mouseHit.transform.name.Equals("Project"))
+                if (mouseHit.transform.tag.Equals("Project"))
                 {
                    mouseHit.transform.gameObject.GetComponent<Project>().ShowProjectCanvas();
                 }
@@ -80,11 +74,11 @@ public class CameraControl : AManager<CameraControl>
                         {
                             //CellManager.Instance.NetworkCommunicator.SpawnObject(LastTouchedPos);
                         }
-                        if (hit.transform.name.Equals("Quest"))
+                        if (hit.transform.tag.Equals("Quest"))
                         {
                             UIManager.Instance.QuestUI(hit.transform.gameObject.GetComponent<Quest>());
                         }
-                        if (hit.transform.name.Equals("Project"))
+                        if (hit.transform.tag.Equals("Project"))
                         {
                             hit.transform.gameObject.GetComponent<Project>().ShowProjectCanvas();
                         }

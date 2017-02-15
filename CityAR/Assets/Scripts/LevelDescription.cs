@@ -5,63 +5,76 @@ using UnityEngine;
 using UnityEngine.UI;
 public class LevelDescription : MonoBehaviour {
 
-	public int LevelNumber;
-	public CSVLeveling csvLeveling;
+	public int ThisLevel;
+	public CSVLeveling levelData;
 	public Text RankText;
 	public Text UnlockTitle;
 	public string textToParse;
-	private string UnlockType;
-	private string UnlockValue;
+	private string BonusType;
+	private string BonusValue;
 	int parsedValue;
 	private string[] splitString;
-	private bool LevelReached;
+	private bool levelUnlocked;
+	private bool bonusUnlocked;
 
 	void Start ()
 	{
-		csvLeveling = CSVLeveling.Instance;
+		levelData = CSVLeveling.Instance;
 		GetComponent<Image>().color = Color.grey;
 		GetComponent<Button>().enabled = false;
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+	}
+
+	void NetworkDisconnect()
+	{
+		if(transform.name != "LevelTemplate")
+			Destroy(gameObject);
 	}
 
 	void Update () {
-		if (LevelManager.Instance.CurrentRank == LevelNumber && !LevelReached)
+		if (ThisLevel <= LevelManager.Instance.CurrentRank  && !levelUnlocked)
 		{
 			GetComponent<Button>().enabled = true;
 			GetComponent<Image>().color = Color.white;
-			if (UnlockType == "Event")
+			if (BonusType == "Event" && !bonusUnlocked)
 			{
-				EventManager.Instance.TriggerEvent(UnlockValue);
+				//EventManager.Instance.TriggerEvent(BonusValue);
 			}
-			if (UnlockType == "Budget")
+			if (BonusType == "Budget" && !bonusUnlocked)
 			{
-				CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ConvertString(UnlockValue));
+				CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ConvertString(BonusValue));
 			}
-			if (UnlockType == "Project")
+			if (BonusType == "Project")
 			{
-			    int projectId = 0;
-                switch (LevelManager.Instance.RoleType)
-                {
-                    case "Environment":
-                        projectId = ConvertString(csvLeveling.GetEnvironmentPlayer(LevelNumber));
-                        break;
-                    case "Social":
-                        projectId = ConvertString(csvLeveling.GetSocialPlayer(LevelNumber));
-                        break;
-                    case "Finance":
-                        projectId = ConvertString(csvLeveling.GetFinancePlayer(LevelNumber));
-                        break;
-                }
-                ProjectManager.Instance.UnlockProject(projectId);
+				int projectId = 0;
+				switch (LevelManager.Instance.RoleType)
+				{
+					case "Environment":
+						projectId = ConvertString(levelData.GetEnvironmentPlayer(ThisLevel));
+						break;
+					case "Social":
+						projectId = ConvertString(levelData.GetSocialPlayer(ThisLevel));
+						break;
+					case "Finance":
+						projectId = ConvertString(levelData.GetFinancePlayer(ThisLevel));
+						break;
+				}
+				ProjectManager.Instance.UnlockProject(projectId);
 			}
-			LevelReached = true;
+			levelUnlocked = true;
 		}
 	}
 
 	public void SetupLayout(int i)
 	{
-		LevelNumber = i;
-		RankText.text = "" + LevelNumber;
-		textToParse = csvLeveling.GetUnlock(i);
+
+		if (LevelManager.Instance.CurrentRank > 0)
+		{
+			bonusUnlocked = true;
+		}
+		ThisLevel = i;
+		RankText.text = "" + ThisLevel;
+		textToParse = levelData.GetUnlock(i);
 		ExtractData();
 	}
 
@@ -76,14 +89,14 @@ public class LevelDescription : MonoBehaviour {
 			if (i % 2 == 0)
 			{
 				UnlockTitle.text = splitString[i];
-				UnlockType = splitString[i];
+				BonusType = splitString[i];
 			}
 			//odd members are values. parse the value and act depending on the already saved name
 			if (i % 2 != 0)
 			{
 				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
 				UnlockTitle.text += " " + splitString[i];
-				UnlockValue = splitString[i];
+				BonusValue = splitString[i];
 			}
 		}
 	}
