@@ -80,13 +80,13 @@ public class ProjectButton : MonoBehaviour {
 				UIManager.Instance.ShowPlacementCanvas();
 				break;
 			case "Sort":
-				MGManager.Instance.StartMG(MGManager.MiniGame.Sort);
+				MGManager.Instance.SwitchState(MGManager.MiniGame.Sort);
 				break;
 			case "Advertise":
-				MGManager.Instance.StartMG(MGManager.MiniGame.Advertise);
+				MGManager.Instance.SwitchState(MGManager.MiniGame.Advertise);
 				break;
 			case "Area":
-				MGManager.Instance.StartMG(MGManager.MiniGame.Area);
+				MGManager.Instance.SwitchState(MGManager.MiniGame.Area);
 				break;
 		}
 	}

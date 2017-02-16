@@ -77,7 +77,7 @@ public class LevelManager : MonoBehaviour
 
 	public void UpdateProgress()
 	{
-		if(SaveStateManager.Instance != null)
+		if(SaveStateManager.Instance != null && CurrentRank < 20)
 		{
 			//keep track of influence & rank
 			_currentInfluence = SaveStateManager.Instance.GetInfluence(RoleType);
@@ -103,7 +103,15 @@ public class LevelManager : MonoBehaviour
 			if (_lastRank < CurrentRank)
 				levelUnlocked = false;
 		}
-	}
+	    if (CurrentRank == 20)
+	    {
+            ProgressText.text = "WINNER!";
+
+            Debug.Log("Trigger Mayor Game Over");
+            CancelInvoke("UpdateProgress");
+
+        }
+    }
 
 	public void CreateLevelTemplate()
 	{

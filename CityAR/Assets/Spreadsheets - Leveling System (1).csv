@@ -1,4 +1,4 @@
-rank,unlock,Influence Goal,Environment Player,Social Player,Finance Player
+rank,unlock,Influence Goal,Environment Player Project ID,Social Player Project ID,Finance Player Project ID
 0,Project/1,0,1,11,21
 1,Project/2,100,2,12,22
 2,Project/3,200,3,13,23
@@ -19,3 +19,4 @@ rank,unlock,Influence Goal,Environment Player,Social Player,Finance Player
 17,Event/Crisis,6750,,,
 18,Project/9,8000,9,19,29
 19,Project/10,9000,10,20,30
+20,Win,0,,,

@@ -35,10 +35,12 @@ public class Quest : MonoBehaviour
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(50, 50, 50);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
-		transform.position += CellLogic.GetPositionOffset();    
-	}
+		transform.position += CellLogic.GetPositionOffset();
+        representation.GetComponentInChildren<Animator>().SetBool("wave", true);
 
-	void Update () {
+    }
+
+    void Update () {
 	
 	}
 

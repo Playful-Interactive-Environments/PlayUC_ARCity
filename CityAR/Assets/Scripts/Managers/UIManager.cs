@@ -94,7 +94,6 @@ public class UIManager : AManager<UIManager>
 	public Text Event_TimeLeft;
 	public bool EventProgressEnabled;
 
-
 	void Awake()
 	{
 		Application.targetFrameRate = 30;
@@ -173,7 +172,6 @@ public class UIManager : AManager<UIManager>
 	void AcceptDesignProject()
 	{
 		Change(UiState.DesignProject);
-
 	}
 	#endregion
 
@@ -532,7 +530,6 @@ public class UIManager : AManager<UIManager>
 	{
 		ProjectInfo.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedCSV);
 		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
-
 	}
 
 	public void EnableVoteUI()
@@ -628,15 +625,15 @@ public class UIManager : AManager<UIManager>
 
 	public void Debug_2()
 	{
-		MGManager.Instance.StartMG(MGManager.MiniGame.Advertise);
+		MGManager.Instance.SwitchState(MGManager.MiniGame.Advertise);
 	}
 	public void Debug_3()
 	{
-		MGManager.Instance.StartMG(MGManager.MiniGame.Area);
+		MGManager.Instance.SwitchState(MGManager.MiniGame.Area);
 	}
 	public void Debug_1()
 	{
-		MGManager.Instance.StartMG(MGManager.MiniGame.Sort);
+		MGManager.Instance.SwitchState(MGManager.MiniGame.Sort);
 	}
 
 	public void Debug()

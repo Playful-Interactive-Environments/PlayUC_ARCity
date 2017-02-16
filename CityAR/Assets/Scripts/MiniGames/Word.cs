@@ -22,10 +22,11 @@ public class Word : MonoBehaviour
 	private float distance;
 	private bool dropped;
 	private bool collected;
+    public GameObject Representation;
 
 	void Start ()
 	{
-		WordText = GetComponentInChildren<TextMesh>();
+		WordText = Representation.GetComponentInChildren<TextMesh>();
 	}
 
 	public void SetVars(Vector3 start, string title, string type)
@@ -39,7 +40,11 @@ public class Word : MonoBehaviour
 
 	void OnEnable()
 	{
-		iTween.Stop();
+        //order words so they stack on top of each other
+        Representation.transform.position = new Vector3(0,0, MG_1.Instance.zLayer);
+	    GetComponent<BoxCollider>().center = new Vector3(0, 0, MG_1.Instance.zLayer);
+        MG_1.Instance.zLayer--;
+        iTween.Stop();
 		transform.position = MG_1.Instance.StartingPos;
 		transform.localScale = new Vector3(1, 1, 1);
 	}

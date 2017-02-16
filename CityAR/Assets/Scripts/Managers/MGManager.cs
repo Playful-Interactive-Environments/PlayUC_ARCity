@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,8 @@ public class MGManager : AManager<MGManager> {
     private float _currentTime;
     private float _timeLimit;
     public bool Started;
-    private float _resetTime = 5f;
+    private float _resetTime = 3f;
+    private float timer;
     //MiniGames
     public GameObject MG_1_GO;
     public MG_1 MG_1_Mng;
@@ -51,20 +51,18 @@ public class MGManager : AManager<MGManager> {
         MG_3_Mng = MG_3.Instance;
         MainCanvas = GameObject.Find("Canvas");
         MGCanvas = GameObject.Find("MGCanvas");
-
+        MGCanvas.SetActive(false);
+        MGCam.SetActive(false);
         //adjust play space & cam
         Camera cam = MGCam.GetComponent<Camera>();
         cam.backgroundColor = Color.white;
         cam.orthographicSize = 80f;
         Height = cam.orthographicSize * 2;
         Width = Height*cam.aspect;
-        TriggerMiniGame(MiniGame.None);
         EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
     }
 
     void Update () {
-        if(Input.GetKeyDown(KeyCode.A))
-            DebugButton();
         TrackProgress();
     }
 
@@ -72,7 +70,6 @@ public class MGManager : AManager<MGManager> {
     {
         if (Started)
         {
-
             switch (CurrentMG)
             {
                 case MiniGame.Advertise:
@@ -124,7 +121,7 @@ public class MGManager : AManager<MGManager> {
         }
     }
 
-    void TriggerMiniGame(MiniGame state)
+    void StartMG(MiniGame state)
     {
         //Reset all minigames and get proper text & variables
         CurrentMG = state;
@@ -179,13 +176,17 @@ public class MGManager : AManager<MGManager> {
         }
     }
 
-    public IEnumerator EndMG(string winstate, float time)
+    public IEnumerator EndMG(string state, float time)
     {
-        if(winstate == "win")
-            WinStateText.text = "You made it. Great job!";
-        if(winstate == "lose")
-            WinStateText.text = "You failed. Try again later.";
 
+        if (state == "win")
+        {
+            WinStateText.text = "You made it. Great job! Resuming in " + time + "s";
+        }
+        if (state == "lose")
+        {
+            WinStateText.text = "You failed. Try again later. Resuming in " + time + "s";
+        }
         switch (CurrentMG)
         {
             case MiniGame.Advertise:
@@ -205,33 +206,39 @@ public class MGManager : AManager<MGManager> {
         }
         Started = false;
         yield return new WaitForSeconds(time);
-        //Go back to game
-        if (winstate == "win")
-            UIManager.Instance.ShowPlacementCanvas();
-        if (winstate == "lose")
+        if (state == "reset")
+        {
+            StartMG(MiniGame.None);
             UIManager.Instance.GameUI();
+            yield break;
+        }
+        timer = 0;
+        if (state == "win")
+            UIManager.Instance.ShowPlacementCanvas();
+        if (state == "lose")
+            UIManager.Instance.GameUI();
+        StartMG(MiniGame.None);
     }
 
-    public void StartMG(MiniGame state)
+    public void SwitchState(MiniGame state)
     {
         if (MainCam.gameObject.activeInHierarchy == false)
         {
-            EndMG("lose", _resetTime);
-            TriggerMiniGame(MiniGame.None);
+            StartCoroutine(EndMG("reset", .1f));
         }
         else
         {
-            TriggerMiniGame(state);
+            StartMG(state);
         }
     }
-    
-    public void DebugButton()
+
+    public void BackButton()
     {
-        StartMG(MiniGame.Sort);    
+        SwitchState(MiniGame.None);
     }
 
     void NetworkDisconnect()
     {
-        TriggerMiniGame(MiniGame.None);
+        StartMG(MiniGame.None);
     }
 }
