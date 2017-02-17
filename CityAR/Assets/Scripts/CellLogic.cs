@@ -67,7 +67,7 @@ public class CellLogic : MonoBehaviour {
     public void PlacementMap()
     {
         CurrentState = PreviousState;
-        _interface.CurrentState = CellInterface.InterfaceState.Default;
+        _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
         GetComponent<CellInterface>().ResetCell();
     }
     public void SocialMap()
@@ -94,7 +94,7 @@ public class CellLogic : MonoBehaviour {
     void ActivateMenu()
     {
         Debug.Log("Get here");
-        _interface.CurrentState = CellInterface.InterfaceState.Menu;
+        _interface.ChangeCellDisplay(CellInterface.InterfaceState.Menu);
     }
 
     void Update()
@@ -122,7 +122,8 @@ public class CellLogic : MonoBehaviour {
                 if (SocialRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.CurrentState = CellInterface.InterfaceState.Default;
+                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
+
                 break;
                 //4- high polution; 1 - low polution
             case HeatmapState.EnvironmentMap:
@@ -135,7 +136,7 @@ public class CellLogic : MonoBehaviour {
                 if (EnvironmentRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.CurrentState = CellInterface.InterfaceState.Default;
+                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
                 //4- finance state worst 1 - finance state best
             case HeatmapState.FinanceMap:
@@ -148,7 +149,7 @@ public class CellLogic : MonoBehaviour {
                 if (FinanceRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.CurrentState = CellInterface.InterfaceState.Default;
+                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
         }
     }

@@ -22,7 +22,7 @@ public class MG_1 : AManager<MG_1>
 	private float threshold = 2f;
 	private float spawnTime;
 	public Vector3 StartingPos;
-    public float zLayer = 100f;
+	public float zLayer = 100f;
 
 	//CSV Rows
 	public class Row
@@ -54,28 +54,28 @@ public class MG_1 : AManager<MG_1>
 		TargetFinance.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Finance;
 		TargetFinance.transform.name = "finance";
 		TargetFinance.transform.GetComponentInChildren<TextMesh>().text = "Finance";
-	    TargetFinance.transform.position = finDropPos;
+		TargetFinance.transform.position = finDropPos;
 		TargetFinance.transform.localScale = new Vector3(1, 1, 1);
 
-        Vector3 socDropPos = new Vector3(0, Height / 4, 0);
+		Vector3 socDropPos = new Vector3(0, Height / 4, 0);
 		//TargetSocial = ObjectPool.Spawn(DropPrefab, manager.MG_1_GO.transform, socDropPos, Quaternion.identity);
 		TargetSocial.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Social;
 		TargetSocial.transform.name = "social";
 		TargetSocial.transform.GetComponentInChildren<TextMesh>().text = "Social";
 		TargetSocial.transform.localScale = new Vector3(1, 1, 1);
-        TargetSocial.transform.position = socDropPos;
+		TargetSocial.transform.position = socDropPos;
 
-        Vector3 envDropBos = new Vector3(Width / 3, Height / 4, 0);
+		Vector3 envDropBos = new Vector3(Width / 3, Height / 4, 0);
 		//TargetEnvironment = ObjectPool.Spawn(DropPrefab, manager.MG_1_GO.transform, envDropBos, Quaternion.identity);
 		TargetEnvironment.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Environment;
 		TargetEnvironment.transform.name = "environment";
 		TargetEnvironment.transform.GetComponentInChildren<TextMesh>().text = "Environment";
 		TargetEnvironment.transform.localScale = new Vector3(1, 1, 1);
-        TargetEnvironment.transform.position = envDropBos;
+		TargetEnvironment.transform.position = envDropBos;
 
-        Background.transform.localScale = new Vector3(Width, Height, 0);
-        Background.transform.localPosition = new Vector3(0, 0, zLayer + 10);
-        StartingPos = new Vector3(0, -Height / 4, 0);
+		Background.transform.localScale = new Vector3(Width, Height, 0);
+		Background.transform.localPosition = new Vector3(0, 0, zLayer + 25);
+		StartingPos = new Vector3(0, -Height / 4, 0);
 	}
 
 	void Update()
@@ -87,14 +87,14 @@ public class MG_1 : AManager<MG_1>
 	{
 		GameObject word = ObjectPool.Spawn(WordPrefab, manager.MG_1_GO.transform);
 
-        int random = Utilities.RandomInt(0, rowList.Count - 1);
-	    string title = GetRow(random).title;
+		int random = Utilities.RandomInt(0, rowList.Count - 1);
+		string title = GetRow(random).title;
 
-        word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(random).type);
+		word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(random).type);
 		WordList.Add(word);
-	    word.transform.name = zLayer + " " + title;
-        word.transform.SetAsFirstSibling();
-    }
+		word.transform.name = zLayer + " " + title;
+		word.transform.SetAsFirstSibling();
+	}
 
 	public void InitGame()
 	{
@@ -106,8 +106,8 @@ public class MG_1 : AManager<MG_1>
 		ObjectPool.RecycleAll(WordPrefab);
 		WordList.Clear();
 		CollectedDocs = 0;
-	    zLayer = 100f;
-        CancelInvoke("SpawnWord");
+		zLayer = 100f;
+		CancelInvoke("SpawnWord");
 	}
 
 	#region CSV Commands

@@ -67,7 +67,6 @@ public class LevelManager : MonoBehaviour
 	{
 		float gridHeight = GridGroup.GetComponent<RectTransform>().sizeDelta.y;
 		float cellSpacing = GridGroup.GetComponent<GridLayoutGroup>().cellSize.y + GridGroup.GetComponent<GridLayoutGroup>().spacing.y;
-		Debug.Log(gridHeight + " " + cellSpacing);
 		GridGroup.GetComponent<RectTransform>().localPosition = new Vector3(0, -gridHeight/2 - cellSpacing + CurrentRank * cellSpacing, 0);
 	}
 

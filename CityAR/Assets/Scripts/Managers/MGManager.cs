@@ -51,8 +51,7 @@ public class MGManager : AManager<MGManager> {
         MG_3_Mng = MG_3.Instance;
         MainCanvas = GameObject.Find("Canvas");
         MGCanvas = GameObject.Find("MGCanvas");
-        MGCanvas.SetActive(false);
-        MGCam.SetActive(false);
+
         //adjust play space & cam
         Camera cam = MGCam.GetComponent<Camera>();
         cam.backgroundColor = Color.white;
@@ -60,8 +59,13 @@ public class MGManager : AManager<MGManager> {
         Height = cam.orthographicSize * 2;
         Width = Height*cam.aspect;
         EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+        Invoke("Init", .1f);
     }
 
+    void Init()
+    {
+        StartMG(MiniGame.None);
+    }
     void Update () {
         TrackProgress();
     }
