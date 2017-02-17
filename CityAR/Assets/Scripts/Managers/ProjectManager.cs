@@ -65,13 +65,14 @@ public class ProjectManager : NetworkBehaviour
 			}
 		}
 	}
+
 	//called only on server
 	public void SpawnProject(int cellid, string owner, int id)
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 		Project project = gobj.GetComponent<Project>();
 		project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
-			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, true);
+			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id));
 		project.transform.position = CellGrid.Instance.GetCell(cellid).transform.position;
 		NetworkServer.Spawn(gobj);
 		SaveProject(owner, CurrentProjectId, project);
@@ -102,6 +103,11 @@ public class ProjectManager : NetworkBehaviour
 		return null;
 	}
 
+	public void Remove(int id)
+	{
+		Projects.Remove(FindProject(id));
+	}
+
 	public void ProjectApproved(int num)
 	{
 		FindProject(num).ShowApproved();
@@ -110,8 +116,6 @@ public class ProjectManager : NetworkBehaviour
 	public void ProjectRejected(int num)
 	{
 		FindProject(num).ShowRejected();
-		if (isServer)
-			Projects.Remove(FindProject(num));
 	}
 
 	public void SaveProject(string type, int id, Project project)
@@ -130,7 +134,7 @@ public class ProjectManager : NetworkBehaviour
 				break;
 		}
 	}
-
+	
 	public void RemoveProject(string type, int id)
 	{
 		switch (type)
@@ -210,6 +214,10 @@ public class ProjectManager : NetworkBehaviour
 		int parsedInt = 0;
 		int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
 		return parsedInt;
+	}
+	public int GetRepresentation(int num)
+	{
+		return ConvertToInt(CSVProjects.Find_ID(num).reprid);
 	}
 	private float ConvertToFloat(string input)
 	{

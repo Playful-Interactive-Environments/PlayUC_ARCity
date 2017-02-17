@@ -9,7 +9,6 @@ public class Project : NetworkBehaviour
 	public CellLogic CellLogic;
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
-	private GameObject _projectButton;
 	public GameObject[] PlayerLogos;
 	//Vars set by project manager on server
 	[SyncVar]
@@ -50,17 +49,15 @@ public class Project : NetworkBehaviour
 	public bool LocalVote;
 	private Vector3 CellPos;
 
-	//contextual text
-
 	void Start ()
 	{
 		transform.name = "Project" + ID_Spawn;
 		transform.parent = CellManager.Instance.ImageTarget.transform;
-		RepresentationParent.SetActive(false);
-		GetComponent<BoxCollider>().enabled = false;
+		ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
+		CreateRepresentation();
+		UpdateLogo();
 		if (isServer)
 		{
-			RepresentationId = Random.Range(0, BuildingSets.Length - 1);
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			Choice1 += 1;
 		}
@@ -68,9 +65,19 @@ public class Project : NetworkBehaviour
 		if (LevelManager.Instance.RoleType == ProjectOwner)
 		{
 			LocalVote = true;
-			//CreateProjectButton();
 		}
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		if (isServer)
+			Invoke("RemoveProject", 45f);
+	}
+
+	void OnEnable()
+	{
+		UpdateLogo();
+		if (LevelManager.Instance.RoleType == ProjectOwner)
+		{
+			LocalVote = true;
+		}
 	}
 
 	void Update()
@@ -89,12 +96,6 @@ public class Project : NetworkBehaviour
 				Approved = true;
 			}
 		}
-		if (ProjectCreated && !RepresentationParent.activeInHierarchy)
-		{
-			ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
-			CreateRepresentation();
-			GetComponent<BoxCollider>().enabled = true;
-		}
 	}
 
 	void NetworkDisconnect()
@@ -103,7 +104,7 @@ public class Project : NetworkBehaviour
 	}
 
 	public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
-		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, bool reprCreated )
+		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, int reprID )
 	{
 		ProjectOwner = owner;
 		Id_CSV = idcsv;
@@ -118,7 +119,7 @@ public class Project : NetworkBehaviour
 		Cooldown = cooldown;
 		MiniGame = minigame;
 		SetCell(cellid);
-		ProjectCreated = reprCreated;
+		RepresentationId = reprID;
 	}
 
 	public void CreateRepresentation()
@@ -129,13 +130,20 @@ public class Project : NetworkBehaviour
 		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
 		RepresentationParent.SetActive(true);
+		if (isServer)
+			transform.position += CellLogic.GetPositionOffset();
+		UpdateLogo();
+	}
+
+	void UpdateLogo()
+	{
 		foreach (GameObject logo in PlayerLogos)
 		{
 			logo.GetComponent<Renderer>().enabled = false;
 		}
 		//enable player logo
 		switch (ProjectOwner)
-		{  
+		{
 			case "Finance":
 				PlayerLogos[0].GetComponent<Renderer>().enabled = true;
 				break;
@@ -146,10 +154,6 @@ public class Project : NetworkBehaviour
 				PlayerLogos[2].GetComponent<Renderer>().enabled = true;
 				break;
 		}
-		//remove button
-		Destroy(_projectButton);
-		if (isServer)
-			transform.position += CellLogic.GetPositionOffset();
 	}
 
 	public void SetCell(int cellid)
@@ -206,6 +210,8 @@ public class Project : NetworkBehaviour
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Influence", Influence);
 		}
+		if (isServer)
+			Invoke("RemoveProject", 15f);
 	}
 
 	public void ShowRejected()
@@ -223,6 +229,13 @@ public class Project : NetworkBehaviour
 	public void RemoveProject()
 	{
 		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellLogic.CellId);
+		ProjectManager.Instance.Remove(ID_Spawn);
+		Invoke("DestroyObject", 5f);
+	}
+
+	void DestroyObject()
+	{
 		Destroy(gameObject);
+
 	}
 }

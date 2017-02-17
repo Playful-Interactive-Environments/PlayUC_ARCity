@@ -18,6 +18,8 @@ public class CSVProjects : AManager<CSVProjects>
         public string cost;
         public string cooldown;
         public string minigame;
+        public string reprid;
+
     }
     public TextAsset File;
     public List<Row> rowList = new List<Row>();
@@ -71,6 +73,7 @@ public class CSVProjects : AManager<CSVProjects>
             row.cost = grid[i][7];
             row.cooldown = grid[i][8];
             row.minigame = grid[i][9];
+            row.reprid = grid[i][10];
             rowList.Add(row);
         }
         isLoaded = true;

@@ -242,7 +242,7 @@ public class NetworkingManager : NetworkManager
     public void ReconnectClient()
     {
         StopClient();
-        //StartCoroutine("Reconnect");
+        StartCoroutine("Reconnect");
     }
 
     public override void OnServerError(NetworkConnection conn, int errorCode)
