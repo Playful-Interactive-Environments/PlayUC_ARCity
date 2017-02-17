@@ -36,11 +36,11 @@ public class Quest : MonoBehaviour
 		representation.transform.localScale = new Vector3(50, 50, 50);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
 		transform.position += CellLogic.GetPositionOffset();
-        representation.GetComponentInChildren<Animator>().SetBool("wave", true);
+		representation.GetComponentInChildren<Animator>().SetBool("wave", true);
 
-    }
+	}
 
-    void Update () {
+	void Update () {
 	
 	}
 
@@ -66,7 +66,6 @@ public class Quest : MonoBehaviour
 			splitString = Effect2.Split('/');
 			UIManager.Instance.UpdateResult(Result2);
 			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
-
 		}
 
 		for (int i = 0; i < splitString.Length; i++)
