@@ -98,7 +98,7 @@ public class MG_1 : AManager<MG_1>
 
 	public void InitGame()
 	{
-		InvokeRepeating("SpawnWord", 0f, 2.5f);
+		InvokeRepeating("SpawnWord", 0f, 3.5f);
 	}
 
 	public void ResetGame()
