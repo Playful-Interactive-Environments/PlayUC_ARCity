@@ -48,6 +48,7 @@ public class Project : NetworkBehaviour
 	public bool Approved;
 	public bool LocalVote;
 	private Vector3 CellPos;
+	public Material[] Materials;
 
 	void Start ()
 	{
@@ -130,6 +131,28 @@ public class Project : NetworkBehaviour
 		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
 		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
 		RepresentationParent.SetActive(true);
+		Renderer[] allChildren = representation.GetComponentsInChildren<Renderer>();
+		switch (ProjectOwner)
+		{
+			case "Finance":
+				foreach (Renderer child in allChildren)
+				{
+					child.material = Materials[0];
+				}
+				break;
+			case "Social":
+				foreach (Renderer child in allChildren)
+				{
+					child.material = Materials[1];
+				}
+				break;
+			case "Environment":
+				foreach (Renderer child in allChildren)
+				{
+					child.material = Materials[2];
+				}
+				break;
+		}
 		if (isServer)
 			transform.position += CellLogic.GetPositionOffset();
 		UpdateLogo();

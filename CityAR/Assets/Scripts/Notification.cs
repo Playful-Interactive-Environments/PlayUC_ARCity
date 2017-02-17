@@ -13,21 +13,21 @@ public class Notification : MonoBehaviour
 
 	void Start ()
 	{
-        EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 
-    }
+	}
 
-    void Update ()
+	void Update ()
 	{
 
 	}
-    void NetworkDisconnect()
-    {
-        if (transform.name != "NotificationTemplate")
-            Destroy(gameObject);
-    }
+	void NetworkDisconnect()
+	{
+		if (transform.name != "NotificationTemplate")
+			Destroy(gameObject);
+	}
 
-    public void AccessNotification()
+	public void AccessNotification()
 	{
 		NotificationManager.Instance.CurrentNotification = this.gameObject;
 		switch (NotificationType)
