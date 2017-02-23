@@ -248,7 +248,6 @@ public class UIManager : AManager<UIManager>
 		GlobalStateCanvas.enabled = false;
 		GlobalStateButton.gameObject.SetActive(false);
 		GlobalStateButton.enabled = false;
-		CurrentState = state;
 		PlayerVariables.SetActive(true);
 		EventDisplay.gameObject.SetActive(true);
 		EventDisplay.enabled = false;
@@ -258,8 +257,7 @@ public class UIManager : AManager<UIManager>
 		//ProjectInfo.SetActive(false);
 		ButtonVote1.gameObject.SetActive(false);
 		ButtonVote2.gameObject.SetActive(false);
-
-
+		CurrentState = state;
 		switch (CurrentState)
 		{
 			case UiState.Network:
@@ -392,8 +390,8 @@ public class UIManager : AManager<UIManager>
 		CurrentQuest = quest;
 		Title.text = CurrentQuest.Title;
 		Content.text = CurrentQuest.Content;
-		Choice1.text = "1. " + CurrentQuest.Choice1;
-		Choice2.text = "2. " + CurrentQuest.Choice2;
+		Choice1.text = "" + CurrentQuest.Choice1;
+		Choice2.text = "" + CurrentQuest.Choice2;
 	}
 
 	public void Choose_1()
@@ -426,8 +424,8 @@ public class UIManager : AManager<UIManager>
 
 	public void UpdateResult(string value)
 	{
-		ResultText[6].GetComponent<RectTransform>().localPosition = textPositions[6];
-		ResultText[6].text = "" + value;
+		ResultText[5].GetComponent<RectTransform>().localPosition = textPositions[3];
+		ResultText[5].text = "" + value;
 	}
 
 	public void UpdateResult(string type, string value)
@@ -441,17 +439,14 @@ public class UIManager : AManager<UIManager>
 			case "Budget":
 				num = 1;
 				break;
-			case "Project":
+			case "Environment":
 				num = 2;
 				break;
-			case "Environment":
+			case "Social":
 				num = 3;
 				break;
-			case "Social":
-				num = 4;
-				break;
 			case "Finance":
-				num = 5;
+				num = 4;
 				break;
 		}
 		ResultIcons[num].GetComponent<RectTransform>().localPosition = iconPositions[currentIcon];
@@ -478,9 +473,24 @@ public class UIManager : AManager<UIManager>
 	{
 		if (CameraControl.Instance.LastTouchedCell != null)
 		{
-			CellManager.Instance.NetworkCommunicator.ActivateProject("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId, LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedCSV);
-			GameUI();
+			CellManager.Instance.NetworkCommunicator.ActivateProject
+				("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId,
+				ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CurrentPos, 
+				ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CurrentRot, 
+				LevelManager.Instance.RoleType, 
+				ProjectManager.Instance.SelectedCSV);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, 
+				"Influence",
+				ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedCSV));
+			CancelPlacement();
 		}
+	}
+
+	public void CancelPlacement()
+	{
+		if(ProjectManager.Instance.CurrentDummy.activeInHierarchy)
+			ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().DestroySelf();
+		GameUI();
 	}
 
 	public void ShowPlacementCanvas()
@@ -496,14 +506,14 @@ public class UIManager : AManager<UIManager>
 	public void Vote_Choice1()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedId);
-		ProjectManager.Instance.SelectedProject.LocalVote = true;
+		ProjectManager.Instance.SelectedProject.GetComponent<Project>().AddLocalVote();
 		GameUI();
 	}
 
 	public void Vote_Choice2()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedId);
-		ProjectManager.Instance.SelectedProject.LocalVote = true;
+		ProjectManager.Instance.SelectedProject.GetComponent<Project>().AddLocalVote();
 		GameUI();
 	}
 
@@ -625,15 +635,15 @@ public class UIManager : AManager<UIManager>
 
 	public void Debug_2()
 	{
-		MGManager.Instance.SwitchState(MGManager.MiniGame.Advertise);
+		MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
 	}
 	public void Debug_3()
 	{
-		MGManager.Instance.SwitchState(MGManager.MiniGame.Area);
+		MGManager.Instance.SwitchState(MGManager.MGState.Area);
 	}
 	public void Debug_1()
 	{
-		MGManager.Instance.SwitchState(MGManager.MiniGame.Sort);
+		MGManager.Instance.SwitchState(MGManager.MGState.Sort);
 	}
 
 	public void Debug()

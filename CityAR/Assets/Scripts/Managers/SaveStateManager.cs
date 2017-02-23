@@ -25,7 +25,6 @@ public class SaveStateManager : NetworkBehaviour
 	private int defaultConnId = -1;
 	public float TimeStamp;
 	//rec events & occupied cells
-	public SyncListInt OccupiedList = new SyncListInt();
 	public class PlayerData : SyncListStruct<PlayerDataSave> { }
 	public PlayerData Players = new PlayerData();
 	public EventSave GlobalSave;
@@ -49,7 +48,6 @@ public class SaveStateManager : NetworkBehaviour
 			//init event logging
 			GlobalSave = new EventSave();
 			//init occupied cell save
-			InitOccupiedList();
 		}
 		//create new json file
 		savestatepath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
@@ -326,23 +324,5 @@ public class SaveStateManager : NetworkBehaviour
 			returnval += playerdata.Quests;
 		}
 		return returnval;
-	}
-
-	public void AddOccupied(int id)
-	{
-		OccupiedList[id] += 1;
-	}
-
-	public void RemoveOccupied(int id)
-	{
-		OccupiedList[id] -= 1;
-	}
-
-	public void InitOccupiedList()
-	{
-		foreach (GameObject cell in CellGrid.Instance.GridCells)
-		{
-			OccupiedList.Add(0);
-		}
 	}
 }

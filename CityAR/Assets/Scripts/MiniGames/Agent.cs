@@ -55,7 +55,7 @@ public class Agent : MonoBehaviour {
         {
             child.gameObject.layer = LayerMask.NameToLayer("MG_3");
         }
-        representation.GetComponentInChildren<Animator>().SetBool("wave", false);
+        //representation.GetComponentInChildren<Animator>().SetBool("wave", false);
     }
 
     public void SetWaypoints(float xE, float xW, float yN, float yS)

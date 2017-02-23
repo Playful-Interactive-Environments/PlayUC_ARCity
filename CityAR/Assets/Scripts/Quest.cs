@@ -48,7 +48,6 @@ public class Quest : MonoBehaviour
 	{
 		Cell = cell;
 		CellLogic = Cell.GetComponent<CellLogic>();
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", CellLogic.CellId);
 
 	}
 	public void Choose(int effect)
@@ -58,7 +57,6 @@ public class Quest : MonoBehaviour
 			splitString = Effect1.Split('/');
 			UIManager.Instance.UpdateResult(Result1);
 			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
-
 		}
 
 		if (effect == 2)
@@ -89,10 +87,6 @@ public class Quest : MonoBehaviour
 					CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", parsedValue);
 					UIManager.Instance.UpdateResult("Budget", splitString[i]);
 				}
-				if (savestring == "Project")
-				{
-					UIManager.Instance.UpdateResult("Project", "new");
-				}
 				if (savestring == "Environment")
 				{
 					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
@@ -117,7 +111,6 @@ public class Quest : MonoBehaviour
 	{
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellLogic.CellId);
 		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Quest", 1);
 	}
 }

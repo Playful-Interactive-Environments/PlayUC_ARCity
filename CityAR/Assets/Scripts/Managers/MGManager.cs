@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class MGManager : AManager<MGManager> {
 
-    public MiniGame CurrentMG = MiniGame.None;
-    public enum MiniGame
+    public MGState CurrentMG = MGState.None;
+    public enum MGState
     {
         None, Advertise, Pointer, Sort, Area
     }
@@ -40,7 +40,7 @@ public class MGManager : AManager<MGManager> {
 
 
     void Start () {
-        //Find Cameras & Canvas
+        /*Find Cameras & Canvas
         MGCam = GameObject.Find("MGCam");
         MainCam = Camera.main;
         MG_1_GO = GameObject.Find("MG_1");
@@ -50,7 +50,7 @@ public class MGManager : AManager<MGManager> {
         MG_3_GO = GameObject.Find("MG_3");
         MG_3_Mng = MG_3.Instance;
         MainCanvas = GameObject.Find("Canvas");
-        MGCanvas = GameObject.Find("MGCanvas");
+        MGCanvas = GameObject.Find("MGCanvas");*/
 
         //adjust play space & cam
         Camera cam = MGCam.GetComponent<Camera>();
@@ -64,7 +64,7 @@ public class MGManager : AManager<MGManager> {
 
     void Init()
     {
-        StartMG(MiniGame.None);
+        ChangeState(MGState.None);
     }
     void Update () {
         TrackProgress();
@@ -76,7 +76,7 @@ public class MGManager : AManager<MGManager> {
         {
             switch (CurrentMG)
             {
-                case MiniGame.Advertise:
+                case MGState.Advertise:
                     //update UI
                     _currentTime = MG_2_Mng.TimeSpent;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
@@ -92,7 +92,7 @@ public class MGManager : AManager<MGManager> {
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
-                case MiniGame.Area:
+                case MGState.Area:
                     _currentTime += Time.deltaTime;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Land: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
@@ -107,7 +107,7 @@ public class MGManager : AManager<MGManager> {
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
-                case MiniGame.Sort:
+                case MGState.Sort:
                     _currentTime += Time.deltaTime;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs + "/" + MG_1_Mng.DocsNeeded;
@@ -125,7 +125,7 @@ public class MGManager : AManager<MGManager> {
         }
     }
 
-    void StartMG(MiniGame state)
+    void ChangeState(MGState state)
     {
         //Reset all minigames and get proper text & variables
         CurrentMG = state;
@@ -145,7 +145,7 @@ public class MGManager : AManager<MGManager> {
         Started = true;
         switch (state)
         {
-            case MiniGame.Advertise:
+            case MGState.Advertise:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_2_Mng.TimeLimit;
@@ -153,9 +153,9 @@ public class MGManager : AManager<MGManager> {
                 MG_2_GO.SetActive(true);
                 GameDescription.text = "Drag the megaphone to attract voters to the stage!";
                 break;
-            case MiniGame.Pointer:
+            case MGState.Pointer:
                 break;
-            case MiniGame.Sort:
+            case MGState.Sort:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_1_Mng.TimeLimit;
@@ -163,7 +163,7 @@ public class MGManager : AManager<MGManager> {
                 MG_1_Mng.InitGame();
                 GameDescription.text = "Sort the documents on the correct stack!";
                 break;
-            case MiniGame.Area:
+            case MGState.Area:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_3_Mng.TimeLimit;
@@ -171,7 +171,7 @@ public class MGManager : AManager<MGManager> {
                 MG_3_Mng.InitGame();
                 GameDescription.text = "Draw a straight line to block off land for your project!";
                 break;
-            case MiniGame.None:
+            case MGState.None:
                 Started = false;
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
@@ -193,17 +193,17 @@ public class MGManager : AManager<MGManager> {
         }
         switch (CurrentMG)
         {
-            case MiniGame.Advertise:
+            case MGState.Advertise:
                 _currentTime = 0;
                 MG_2_Mng.ResetGame();
                 break;
-            case MiniGame.Area:
+            case MGState.Area:
                 _currentTime = 0;
                 MG_3_Mng.ResetGame();
                 break;
-            case MiniGame.Pointer:
+            case MGState.Pointer:
                 break;
-            case MiniGame.Sort:
+            case MGState.Sort:
                 _currentTime = 0;
                 MG_1_Mng.ResetGame();
                 break;
@@ -212,19 +212,19 @@ public class MGManager : AManager<MGManager> {
         yield return new WaitForSeconds(time);
         if (state == "reset")
         {
-            StartMG(MiniGame.None);
-            UIManager.Instance.GameUI();
+            ChangeState(MGState.None);
+            UIManager.Instance.CancelPlacement();
             yield break;
         }
         timer = 0;
         if (state == "win")
             UIManager.Instance.ShowPlacementCanvas();
         if (state == "lose")
-            UIManager.Instance.GameUI();
-        StartMG(MiniGame.None);
+            UIManager.Instance.CancelPlacement();
+        ChangeState(MGState.None);
     }
 
-    public void SwitchState(MiniGame state)
+    public void SwitchState(MGState state)
     {
         if (MainCam.gameObject.activeInHierarchy == false)
         {
@@ -232,17 +232,17 @@ public class MGManager : AManager<MGManager> {
         }
         else
         {
-            StartMG(state);
+            ChangeState(state);
         }
     }
 
     public void BackButton()
     {
-        SwitchState(MiniGame.None);
+        SwitchState(MGState.None);
     }
 
     void NetworkDisconnect()
     {
-        StartMG(MiniGame.None);
+        ChangeState(MGState.None);
     }
 }

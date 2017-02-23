@@ -21,7 +21,6 @@ public class LevelDescription : MonoBehaviour {
 	{
 		levelData = CSVLeveling.Instance;
 		GetComponent<Image>().color = Color.grey;
-		GetComponent<Button>().enabled = false;
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
@@ -34,7 +33,6 @@ public class LevelDescription : MonoBehaviour {
 	void Update () {
 		if (ThisLevel <= LevelManager.Instance.CurrentRank  && !levelUnlocked)
 		{
-			GetComponent<Button>().enabled = true;
 			GetComponent<Image>().color = Color.white;
 			if (BonusType == "Event" && !bonusUnlocked)
 			{

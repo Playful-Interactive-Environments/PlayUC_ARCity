@@ -78,26 +78,6 @@ public class NetworkCommunicator : NetworkBehaviour
         SetPlayerState(player, state);
     }
 
-    public void CellOccupiedStatus(string action, int id)
-    {
-        if (isServer)
-        {
-            switch (action)
-            {
-                case "add":
-                    SaveStateManager.Instance.AddOccupied(id);
-                    break;
-                case "remove":
-                    SaveStateManager.Instance.RemoveOccupied(id);
-                    break;
-            }
-        }
-        if (isClient && !isServer)
-        {
-            CmdAddOccupied(action, id);
-        }
-    }
-
     public void CreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
     {
         if (isServer)
@@ -112,21 +92,21 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void ActivateProject(string action, int cellid, string owner, int id)
+    public void ActivateProject(string action, int cellid, Vector3 pos, Vector3 rot, string owner, int id)
     {
         if (isServer)
         {
             switch (action)
             {
                 case "CreateProject":
-                    ProjectManager.Instance.SpawnProject(cellid, owner, id);
+                    ProjectManager.Instance.SpawnProject(cellid, pos, rot, owner, id);
                     break;
 
             }
         }
         if (isClient && !isServer)
         {
-            CmdActivateProject(action, cellid, owner, id);
+            CmdActivateProject(action, cellid, pos, rot, owner, id);
         }
     }
 
@@ -228,12 +208,6 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdAddOccupied(string action, int id)
-    {
-        CellOccupiedStatus(action, id);
-    }
-
-    [Command]
     void CmdUpdateCellValue(string valuetype, int cellid, int amount)
     {
         UpdateCellValue(valuetype, cellid, amount);
@@ -246,9 +220,9 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdActivateProject(string action, int cellid, string owner, int id)
+    void CmdActivateProject(string action, int cellid,Vector3 pos, Vector3 rotation, string owner, int id)
     {
-        ActivateProject(action, cellid, owner, id);
+        ActivateProject(action, cellid, pos, rotation, owner, id);
     }
 
     [Command]

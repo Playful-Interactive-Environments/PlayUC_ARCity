@@ -54,11 +54,13 @@ public class CellManager : NetworkBehaviour
 	
 	}
 
+
+
 	void GenerateValues()
 	{
 		_maxValue = (int)SaveStateManager.Instance.CellMaxValue;
 		maxTotalValue = SaveStateManager.Instance.MaxTotalValue;
-	   cellsleft = _cellGrid.Count; 
+		cellsleft = _cellGrid.Count; 
 		randSum(_cellGrid.Count, maxTotalValue, "Social");
 		randSum(_cellGrid.Count, maxTotalValue, "Environment");
 		randSum(_cellGrid.Count, maxTotalValue, "Finance");

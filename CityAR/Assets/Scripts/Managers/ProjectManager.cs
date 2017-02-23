@@ -9,6 +9,7 @@ public class ProjectManager : NetworkBehaviour
 
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
+	public GameObject CurrentDummy;
 	public CSVProjects CSVProjects;
 	public QuestManager Quests;
 	public int SelectedCSV;
@@ -16,10 +17,6 @@ public class ProjectManager : NetworkBehaviour
 	public Project SelectedProject;
 	public List<Project> Projects;
 	public List<GameObject> ProjectButtons = new List<GameObject>();
-	public SyncListInt ProjectPool = new SyncListInt();
-	public SyncListInt EnvironmentProjects = new SyncListInt();
-	public SyncListInt SocialProjects = new SyncListInt();
-	public SyncListInt FinanceProjects = new SyncListInt();
 	public GameObject ProjectTemplate;
 	public GridLayoutGroup GridGroup;
 	private int CurrentProjectId = 0;
@@ -67,45 +64,45 @@ public class ProjectManager : NetworkBehaviour
 	}
 
 	//called only on server
-	public void SpawnProject(int cellid, string owner, int id)
+	public void SpawnProject(int cellid, Vector3 pos, Vector3 rot, string owner, int id)
 	{
-		GameObject gobj = Instantiate(ProjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+		GameObject gobj = Instantiate(ProjectPrefab);
 		Project project = gobj.GetComponent<Project>();
 		project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
-			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id));
-		project.transform.position = CellGrid.Instance.GetCell(cellid).transform.position;
+			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);
 		NetworkServer.Spawn(gobj);
-		SaveProject(owner, CurrentProjectId, project);
 		CurrentProjectId++;
 	}
 
 	public Project FindProject(int projectnum)
 	{
-		if (isClient && !isServer)
+		foreach (Project project in Projects)
 		{
-			Projects.Clear();
-			if (isClient && !isServer)
+			if (project.ID_Spawn == projectnum)
 			{
-				foreach (Project p in FindObjectsOfType<Project>())
-				{
-					Projects.Add(p);
-				}
+				return project;
 			}
 		}
-
-		foreach (Project p in Projects)
-		{
-			if (p.ID_Spawn == projectnum)
-			{
-				return p;
-			}
-		}
-		return null;
+	    return null;
 	}
 
 	public void Remove(int id)
 	{
-		Projects.Remove(FindProject(id));
+
+	List<Project> newList = new List<Project>();
+		foreach (Project project in Projects)
+		{
+			if (project.ID_Spawn == id)
+			{
+				Projects.Remove(project);
+			}
+			else
+			{
+				newList.Add(project);
+			}
+
+		}
+		Projects = newList;
 	}
 
 	public void ProjectApproved(int num)
@@ -117,39 +114,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		FindProject(num).ShowRejected();
 	}
-
-	public void SaveProject(string type, int id, Project project)
-	{
-		Projects.Add(project);
-		switch (type)
-		{
-			case "Environment":
-				EnvironmentProjects.Add(id);
-				break;
-			case "Social":
-				SocialProjects.Add(id);
-				break;
-			case "Finance":
-				FinanceProjects.Add(id);
-				break;
-		}
-	}
 	
-	public void RemoveProject(string type, int id)
-	{
-		switch (type)
-		{
-			case "Environment":
-				EnvironmentProjects.Remove(id);
-				break;
-			case "Social":
-				SocialProjects.Remove(id);
-				break;
-			case "Finance":
-				FinanceProjects.Remove(id);
-				break;
-		}
-	}
 	#region CSV Handlers
 
 	public string GetTitle(int num)
@@ -238,3 +203,26 @@ public class ProjectManager : NetworkBehaviour
 	}
 	#endregion
 }
+/*	public Project FindProject(int projectnum)
+	{
+		if (isClient && !isServer)
+		{
+			Projects.Clear();
+			if (isClient && !isServer)
+			{
+				foreach (Project p in FindObjectsOfType<Project>())
+				{
+					Projects.Add(p);
+				}
+			}
+		}
+
+		foreach (Project p in Projects)
+		{
+			if (p.ID_Spawn == projectnum)
+			{
+				return p;
+			}
+		}
+		return null;
+	}*/

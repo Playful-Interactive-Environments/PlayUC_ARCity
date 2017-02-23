@@ -43,7 +43,6 @@ public class CellLogic : MonoBehaviour {
     public Vector3 GetPositionOffset()
     {
         Vector3 vector = new Vector3();
-        OccupiedSlots = SaveStateManager.Instance.OccupiedList[CellId];
         if (OccupiedSlots == 1)
             vector = new Vector3(0, 0, 0);
         if (OccupiedSlots == 2)
@@ -67,8 +66,8 @@ public class CellLogic : MonoBehaviour {
     public void PlacementMap()
     {
         CurrentState = PreviousState;
-        _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
-        GetComponent<CellInterface>().ResetCell();
+        //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
+       // GetComponent<CellInterface>().ResetCell();
     }
     public void SocialMap()
     {
@@ -89,12 +88,11 @@ public class CellLogic : MonoBehaviour {
     public void CellSelected()
     {
         CurrentState = HeatmapState.CellSelected;
-        GetComponent<CellInterface>().DisplayCell();
+       // GetComponent<CellInterface>().DisplayCell();
     }
     void ActivateMenu()
     {
-        Debug.Log("Get here");
-        _interface.ChangeCellDisplay(CellInterface.InterfaceState.Menu);
+        //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Menu);
     }
 
     void Update()
@@ -122,7 +120,7 @@ public class CellLogic : MonoBehaviour {
                 if (SocialRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
+                //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
 
                 break;
                 //4- high polution; 1 - low polution
@@ -136,7 +134,7 @@ public class CellLogic : MonoBehaviour {
                 if (EnvironmentRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
+               // _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
                 //4- finance state worst 1 - finance state best
             case HeatmapState.FinanceMap:
@@ -149,7 +147,7 @@ public class CellLogic : MonoBehaviour {
                 if (FinanceRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
+                //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
         }
     }
@@ -162,7 +160,12 @@ public class CellLogic : MonoBehaviour {
 
     public void TouchCell()
     {
-        EventDispatcher.TriggerEvent("PlacementMap");
-        Invoke("CellSelected", .05f);
+        foreach (GameObject cell in CellGrid.Instance.GridCells)
+        {
+            cell.GetComponent<CellLogic>().PlacementMap();
+        }
+        CellSelected();
+        //EventDispatcher.TriggerEvent("PlacementMap");
+        //Invoke("CellSelected", .05f);
     }
 }

@@ -19,6 +19,8 @@ public class ProjectButton : MonoBehaviour {
 	private float cdTime;
 	private float currentTime;
 	private bool cdStarted;
+	public GameObject DummyPrefab;
+
 
 	void Start()
 	{
@@ -73,22 +75,30 @@ public class ProjectButton : MonoBehaviour {
 
 	public void SelectProject()
 	{
-		ProjectManager.Instance.SelectedCSV = ProjectCSVId;
+		SpawnDummy();
 		switch (miniGame)
 		{
 			case "None":
 				UIManager.Instance.ShowPlacementCanvas();
 				break;
 			case "Sort":
-				MGManager.Instance.SwitchState(MGManager.MiniGame.Sort);
+				MGManager.Instance.SwitchState(MGManager.MGState.Sort);
 				break;
 			case "Advertise":
-				MGManager.Instance.SwitchState(MGManager.MiniGame.Advertise);
+				MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
 				break;
 			case "Area":
-				MGManager.Instance.SwitchState(MGManager.MiniGame.Area);
+				MGManager.Instance.SwitchState(MGManager.MGState.Area);
 				break;
 		}
+	}
+
+	void SpawnDummy()
+	{
+		ProjectManager.Instance.SelectedCSV = ProjectCSVId;
+		GameObject gobj = Instantiate(DummyPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+		ProjectManager.Instance.CurrentDummy = gobj;
+
 	}
 
 	public void ActivateCooldown()

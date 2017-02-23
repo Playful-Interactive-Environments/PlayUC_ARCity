@@ -5,7 +5,7 @@ public class CellInterface : MonoBehaviour {
 
 	public enum InterfaceState
 	{
-		Default, Menu, Submenu
+		Hidden, Grey, Details
 	}
 
 	public TextMesh[] StatusText;
@@ -20,12 +20,12 @@ public class CellInterface : MonoBehaviour {
 		//CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
 		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
 		CellName.text = "Area " + cell.CellId;
-		ChangeCellDisplay(InterfaceState.Default);
+		//ChangeCellDisplay(InterfaceState.Default);
 	}
 
 	void ProjectSelected()
 	{
-		ResetCell();
+		//ResetCell();
 	}
 
 	void Update () {
@@ -36,15 +36,24 @@ public class CellInterface : MonoBehaviour {
 
 	public void ChangeCellDisplay(InterfaceState state)
 	{
-
 		switch (state)
 		{
 			//ENABLE TEXT AND ICONS ONLY FOR PLAYER ROLE
-			case InterfaceState.Default:
+			case InterfaceState.Hidden:
+				CellName.gameObject.SetActive(false);
+				Images[0].SetActive(false);
+				Images[1].SetActive(false);
+				Images[2].SetActive(false);
+				StatusText[0].gameObject.SetActive(false);
+				StatusText[1].gameObject.SetActive(false);
+				StatusText[2].gameObject.SetActive(false);
+				break;
+			case InterfaceState.Grey:
 				StatusText[0].gameObject.GetComponent<Renderer>().material = GreyMat;
 				StatusText[1].gameObject.GetComponent<Renderer>().material = GreyMat;
 				StatusText[2].gameObject.GetComponent<Renderer>().material = GreyMat;
 
+				CellName.gameObject.SetActive(true);
 				CellName.gameObject.GetComponent<Renderer>().material = GreyMat;
 				Images[0].GetComponent<SpriteRenderer>().color = Color.grey;
 				Images[1].GetComponent<SpriteRenderer>().color = Color.grey;
@@ -80,8 +89,9 @@ public class CellInterface : MonoBehaviour {
 						break;
 				}
 				break;
-			case InterfaceState.Menu:
+			case InterfaceState.Details:
 				//ENABLE ALL TEXT AND ICONS
+				CellName.gameObject.SetActive(true);
 				CellName.gameObject.GetComponent<Renderer>().material = WhiteMat;
 
 				StatusText[0].gameObject.GetComponent<Renderer>().material = WhiteMat;
@@ -127,12 +137,12 @@ public class CellInterface : MonoBehaviour {
 	}
 	public void ResetCell()
 	{
-		ChangeCellDisplay(InterfaceState.Default);
+		//ChangeCellDisplay(InterfaceState.Default);
 	}
 
 	public void DisplayCell()
 	{
-		ChangeCellDisplay(InterfaceState.Menu);
+		//ChangeCellDisplay(InterfaceState.Menu);
 	}
 }
 

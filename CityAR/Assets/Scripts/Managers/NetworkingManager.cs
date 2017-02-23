@@ -94,7 +94,7 @@ public class NetworkingManager : NetworkManager
         
         if (!System.Net.IPAddress.TryParse(ConnectionIP, out aIP))
         {
-            DebugText.text = "INVALID IP ADDRESS";
+            //DebugText.text = "INVALID IP ADDRESS";
             return;
         }
         else
@@ -112,9 +112,8 @@ public class NetworkingManager : NetworkManager
     public override void OnStartHost()
     {
         base.OnStartServer();
-        Debug.Log("Server IP: " + Network.player.ipAddress);
+        //Debug.Log("Server IP: " + Network.player.ipAddress);
         DebugText.text = "Server IP: " + Network.player.ipAddress;
-
     }
 
     public override void OnStopServer()
@@ -146,7 +145,7 @@ public class NetworkingManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-        DebugText.text = "Server Disconnected" + conn.lastError;
+       // DebugText.text = "Server Disconnected" + conn.lastError;
         SaveStateManager.Instance.SetTaken(conn.connectionId, false);
     }
     #endregion
@@ -199,7 +198,7 @@ public class NetworkingManager : NetworkManager
 
         if (!isServer)
         {
-            DebugText.text = "Connected. IP: " + Network.player.ipAddress;
+            //DebugText.text = "Connected. IP: " + Network.player.ipAddress;
             isClient = true;
             if (listen.listenStarted)
             {

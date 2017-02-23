@@ -45,10 +45,18 @@ public class Project : NetworkBehaviour
 	[SyncVar]
 	public int Choice2;
 	[SyncVar]
-	public bool Approved;
-	public bool LocalVote;
+	public bool VoteFinished;
+	[SyncVar]
+	private Vector3 reprRot;
+	[SyncVar]
+	private Vector3 projectPos;
 	private Vector3 CellPos;
-	public Material[] Materials;
+	private Renderer[] allRenderers;
+	public Material transparentStatic;
+	private Material buildingMat;
+	private GameObject representation;
+	public bool LocalVote;
+
 
 	void Start ()
 	{
@@ -57,45 +65,45 @@ public class Project : NetworkBehaviour
 		ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
 		CreateRepresentation();
 		UpdateLogo();
+		ProjectManager.Instance.Projects.Add(this);
 		if (isServer)
 		{
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			Choice1 += 1;
 		}
 
-		if (LevelManager.Instance.RoleType == ProjectOwner)
-		{
-			LocalVote = true;
-		}
+
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
-		if (isServer)
-			Invoke("RemoveProject", 45f);
 	}
 
 	void OnEnable()
 	{
 		UpdateLogo();
-		if (LevelManager.Instance.RoleType == ProjectOwner)
-		{
-			LocalVote = true;
-		}
 	}
 
 	void Update()
 	{
-		if (isServer && !Approved && Choice1 + Choice2 >= 2)
+		if (isServer && !VoteFinished && Choice1 + Choice2 >= 2)
 		{
 			if (Choice1 > Choice2)
 			{
 				InitiateProject();
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
-				Approved = true;
 			}
 			else if (Choice2 > Choice1)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
-				Approved = true;
 			}
+			VoteFinished = true;
+		}
+		transform.position = projectPos;
+		if (LevelManager.Instance.RoleType == ProjectOwner)
+		{
+			LocalVote = true;
+		}
+		else
+		{
+			LocalVote = false;
 		}
 	}
 
@@ -105,7 +113,7 @@ public class Project : NetworkBehaviour
 	}
 
 	public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
-		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, int reprID )
+		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, int reprID, Vector3 pos, Vector3 rot)
 	{
 		ProjectOwner = owner;
 		Id_CSV = idcsv;
@@ -121,43 +129,46 @@ public class Project : NetworkBehaviour
 		MiniGame = minigame;
 		SetCell(cellid);
 		RepresentationId = reprID;
+		reprRot = rot;
+		projectPos = pos;
 	}
 
 	public void CreateRepresentation()
 	{
 		//create 3d representation
-		GameObject representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
+		representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
-		representation.transform.localEulerAngles += new Vector3(0, 180, 0);
+		representation.transform.localEulerAngles = reprRot;
 		RepresentationParent.SetActive(true);
-		Renderer[] allChildren = representation.GetComponentsInChildren<Renderer>();
-		switch (ProjectOwner)
-		{
-			case "Finance":
-				foreach (Renderer child in allChildren)
-				{
-					child.material = Materials[0];
-				}
-				break;
-			case "Social":
-				foreach (Renderer child in allChildren)
-				{
-					child.material = Materials[1];
-				}
-				break;
-			case "Environment":
-				foreach (Renderer child in allChildren)
-				{
-					child.material = Materials[2];
-				}
-				break;
-		}
+		allRenderers = representation.GetComponentsInChildren<Renderer>();
+		buildingMat = allRenderers[0].GetComponent<Renderer>().material;
 		if (isServer)
 			transform.position += CellLogic.GetPositionOffset();
 		UpdateLogo();
 	}
 
+	public void TransparentOn()
+	{
+		allRenderers = representation.GetComponentsInChildren<Renderer>();
+		foreach (Renderer child in allRenderers)
+		{
+			child.material = transparentStatic;
+		}
+		foreach (GameObject logo in PlayerLogos)
+		{
+			logo.GetComponent<Renderer>().enabled = false;
+		}
+	}
+	public void TransparentOff()
+	{
+		allRenderers = representation.GetComponentsInChildren<Renderer>();
+		foreach (Renderer child in allRenderers)
+		{
+			child.material = buildingMat;
+		}
+		UpdateLogo();
+	}
 	void UpdateLogo()
 	{
 		foreach (GameObject logo in PlayerLogos)
@@ -182,21 +193,25 @@ public class Project : NetworkBehaviour
 	public void SetCell(int cellid)
 	{
 		Cell = CellGrid.Instance.GetCell(cellid);
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("add", cellid);
 		CellLogic = Cell.GetComponent<CellLogic>();
 	}
 
 	public void ShowProjectCanvas()
 	{
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-		if (LocalVote || (!LocalVote && Approved))
+		if (LocalVote || VoteFinished)
 		{
 			Invoke("ShowProjectInfo", .1f);
+			UIManager.Instance.DebugText.text = LocalVote + " " +VoteFinished  ;
 		}
-		if (!LocalVote && !Approved)
+		if (!LocalVote && !VoteFinished)
 		{
 			Invoke("ShowVoteCanvas", .1f);
 		}
+	}
+	public void AddLocalVote()
+	{
+		LocalVote = true;
 	}
 
 	public void ShowVoteCanvas()
@@ -233,8 +248,7 @@ public class Project : NetworkBehaviour
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Influence", Influence);
 		}
-		if (isServer)
-			Invoke("RemoveProject", 15f);
+
 	}
 
 	public void ShowRejected()
@@ -251,7 +265,6 @@ public class Project : NetworkBehaviour
 
 	public void RemoveProject()
 	{
-		CellManager.Instance.NetworkCommunicator.CellOccupiedStatus("remove", CellLogic.CellId);
 		ProjectManager.Instance.Remove(ID_Spawn);
 		Invoke("DestroyObject", 5f);
 	}
