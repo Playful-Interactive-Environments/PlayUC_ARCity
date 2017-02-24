@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine.Networking;
+using Vuforia;
 
 public class QuestManager : MonoBehaviour {
 
@@ -19,8 +20,8 @@ public class QuestManager : MonoBehaviour {
 	public string[] Meanings = {"Disaster", "Very Bad", "Bad", "Moderate", "Good", "Very Good", "Excellent"};
 	private int randomId;
 	private float _questTime;
-
-	void Awake () {
+	private List<Vector3> startPoints = new List<Vector3>();
+	void Start () {
 		if (Instance == null)
 			Instance = this;
 		else if (Instance != this)
@@ -30,7 +31,14 @@ public class QuestManager : MonoBehaviour {
 		UI = UIManager.Instance;
 		Invoke("PopulateIds", .1f);
 		randomId = GetRandomQuest();
-
+		for (int i = 0; i < 5; i++)
+		{
+			startPoints.Add(new Vector3(Utilities.RandomFloat(ValueManager.xEast, ValueManager.xWest), 0, ValueManager.yNorth));
+			startPoints.Add(new Vector3(Utilities.RandomFloat(ValueManager.xEast, ValueManager.xWest), 0, ValueManager.ySouth));
+			startPoints.Add(new Vector3(ValueManager.xEast, 0, Utilities.RandomFloat(ValueManager.ySouth, ValueManager.yNorth)));
+			startPoints.Add(new Vector3(ValueManager.xWest, 0, Utilities.RandomFloat(ValueManager.ySouth, ValueManager.yNorth)));
+		}
+		ObjectPool.CreatePool(QuestPrefab,6);
 	}
 
 	void PopulateIds()
@@ -72,7 +80,7 @@ public class QuestManager : MonoBehaviour {
 			}
 		}
 		QuestList.Remove(questdestroy);
-		Destroy(questdestroy);
+		ObjectPool.Recycle(questdestroy);
 	}
 
 	public string TranslateMeaning(int number)
@@ -109,9 +117,9 @@ public class QuestManager : MonoBehaviour {
 	{
 		if (CurrentQuests < MaxQuests && _questTime > SpawnRate)
 		{
-			//HexCell cell = HexGrid.Instance.GetRandomCell();
-		    GameObject cell = CellGrid.Instance.GetRandomCell();
-			GameObject obj = Instantiate(QuestPrefab, cell.transform.position, Quaternion.identity) as GameObject;
+			//TODO:Fix Random Cell
+			GameObject cell = CellGrid.Instance.GetRandomCell();
+			GameObject obj = ObjectPool.Spawn(QuestPrefab, startPoints[Utilities.RandomInt(0, startPoints.Count)], Quaternion.identity);
 			obj.transform.parent = CellManager.Instance.ImageTarget.transform;
 			obj.transform.name = "Quest";
 			QuestList.Add(obj);

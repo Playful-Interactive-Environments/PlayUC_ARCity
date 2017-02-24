@@ -16,6 +16,7 @@ public class MGManager : AManager<MGManager> {
     public GameObject MGCam;
     public GameObject MainCanvas;
     public GameObject MGCanvas;
+    public GameObject ObjectContainer;
     public Text TimerText;
     public Text ScoreText;
     public Text WinStateText;
@@ -50,7 +51,9 @@ public class MGManager : AManager<MGManager> {
         MG_3_GO = GameObject.Find("MG_3");
         MG_3_Mng = MG_3.Instance;
         MainCanvas = GameObject.Find("Canvas");
-        MGCanvas = GameObject.Find("MGCanvas");*/
+        MGCanvas = GameObject.Find("MGCanvas");
+        ObjectContainer = GameObject.Find("ImageTarget");
+         */
 
         //adjust play space & cam
         Camera cam = MGCam.GetComponent<Camera>();
@@ -130,6 +133,7 @@ public class MGManager : AManager<MGManager> {
         //Reset all minigames and get proper text & variables
         CurrentMG = state;
         MainCam.gameObject.SetActive(false);
+        ObjectContainer.SetActive(false);
         MainCanvas.SetActive(false);
         MGCanvas.SetActive(false);
         MGCam.SetActive(false);
@@ -173,6 +177,7 @@ public class MGManager : AManager<MGManager> {
                 break;
             case MGState.None:
                 Started = false;
+                ObjectContainer.SetActive(true);
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;

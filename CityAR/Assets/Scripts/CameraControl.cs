@@ -40,8 +40,6 @@ public class CameraControl : AManager<CameraControl>
     {
         //animate transparent color
         TrackDistance();
-
-
         if (Input.GetMouseButtonDown(0))
         {
             Ray mouseRay = CurrentCam.ScreenPointToRay(Input.mousePosition);
@@ -82,6 +80,7 @@ public class CameraControl : AManager<CameraControl>
         foreach (Project project in ProjectManager.Instance.Projects)
         {
             project.TransparentOff();
+            project.HideLogo();
         }
     }
 
@@ -106,15 +105,15 @@ public class CameraControl : AManager<CameraControl>
 
         if (tChange > .2f && ProjectManager.Instance != null)
         {
-            if (cameraDistance < 125f)
+            if (cameraDistance < 100f)
             {
                 ShowDetails();
             }
-            if (cameraDistance >= 125f && cameraDistance <= 225f)
+            if (cameraDistance >= 100f && cameraDistance <= 200f)
             {
                 ShowAll();
             }
-            if (cameraDistance > 225)
+            if (cameraDistance > 200f)
             {
                 HideAll();
             }

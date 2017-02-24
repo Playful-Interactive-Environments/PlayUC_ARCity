@@ -66,7 +66,7 @@ public class ProjectManager : NetworkBehaviour
 	//called only on server
 	public void SpawnProject(int cellid, Vector3 pos, Vector3 rot, string owner, int id)
 	{
-		GameObject gobj = Instantiate(ProjectPrefab);
+		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity);
 		Project project = gobj.GetComponent<Project>();
 		project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
 			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);

@@ -66,7 +66,7 @@ public class Agent : MonoBehaviour {
         yNorth = yN;
         ySouth = yS;
         ResetWaypoints();
-        for (int i = 0; i <= 40f; i++)
+        for (int i = 0; i <= 40; i++)
         {
             Vector3 waypoint = new Vector3(Utilities.RandomFloat(xWest, xEast), Utilities.RandomFloat(yNorth, ySouth), 0);
             Waypoints.Add(waypoint);

@@ -74,6 +74,7 @@ public class UIManager : AManager<UIManager>
 	Vector3 hiddenPos = new Vector3(-100, 1000,0);
 	public Quest CurrentQuest;
 	//PROJECT & VOTING CANVAS
+	public Text PlacementText;
 	public Button ProjectButton;
 	public Text EventText;
 	public int CurrentProjectButton;
@@ -96,7 +97,7 @@ public class UIManager : AManager<UIManager>
 
 	void Awake()
 	{
-		Application.targetFrameRate = 30;
+		//Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 	}
 	void Start ()
@@ -471,7 +472,7 @@ public class UIManager : AManager<UIManager>
 
 	public void PlaceProject()
 	{
-		if (CameraControl.Instance.LastTouchedCell != null)
+		if (CameraControl.Instance.LastTouchedCell != null && ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CanPlace)
 		{
 			CellManager.Instance.NetworkCommunicator.ActivateProject
 				("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId,
@@ -488,7 +489,7 @@ public class UIManager : AManager<UIManager>
 
 	public void CancelPlacement()
 	{
-		if(ProjectManager.Instance.CurrentDummy.activeInHierarchy)
+		if(ProjectManager.Instance.CurrentDummy != null)
 			ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().DestroySelf();
 		GameUI();
 	}

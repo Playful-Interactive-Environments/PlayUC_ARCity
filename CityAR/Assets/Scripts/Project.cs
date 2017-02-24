@@ -10,6 +10,7 @@ public class Project : NetworkBehaviour
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
 	public GameObject[] PlayerLogos;
+	public GameObject[] ApprovalLogos;
 	//Vars set by project manager on server
 	[SyncVar]
 	public bool ProjectCreated;
@@ -47,6 +48,8 @@ public class Project : NetworkBehaviour
 	[SyncVar]
 	public bool VoteFinished;
 	[SyncVar]
+	public bool Approved;
+	[SyncVar]
 	private Vector3 reprRot;
 	[SyncVar]
 	private Vector3 projectPos;
@@ -64,7 +67,7 @@ public class Project : NetworkBehaviour
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
 		CreateRepresentation();
-		UpdateLogo();
+		ShowLogo();
 		ProjectManager.Instance.Projects.Add(this);
 		if (isServer)
 		{
@@ -78,7 +81,7 @@ public class Project : NetworkBehaviour
 
 	void OnEnable()
 	{
-		UpdateLogo();
+		ShowLogo();
 	}
 
 	void Update()
@@ -87,24 +90,21 @@ public class Project : NetworkBehaviour
 		{
 			if (Choice1 > Choice2)
 			{
-				InitiateProject();
+				TransferValues();
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
+				Approved = true;
+				VoteFinished = true;
+
 			}
-			else if (Choice2 > Choice1)
+			if (Choice2 > Choice1)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
+				Approved = false;
+				VoteFinished = true;
 			}
-			VoteFinished = true;
 		}
 		transform.position = projectPos;
-		if (LevelManager.Instance.RoleType == ProjectOwner)
-		{
-			LocalVote = true;
-		}
-		else
-		{
-			LocalVote = false;
-		}
+		LocalVote = LevelManager.Instance.RoleType == ProjectOwner;
 	}
 
 	void NetworkDisconnect()
@@ -143,9 +143,7 @@ public class Project : NetworkBehaviour
 		RepresentationParent.SetActive(true);
 		allRenderers = representation.GetComponentsInChildren<Renderer>();
 		buildingMat = allRenderers[0].GetComponent<Renderer>().material;
-		if (isServer)
-			transform.position += CellLogic.GetPositionOffset();
-		UpdateLogo();
+		ShowLogo();
 	}
 
 	public void TransparentOn()
@@ -155,10 +153,8 @@ public class Project : NetworkBehaviour
 		{
 			child.material = transparentStatic;
 		}
-		foreach (GameObject logo in PlayerLogos)
-		{
-			logo.GetComponent<Renderer>().enabled = false;
-		}
+		HideLogo();
+
 	}
 	public void TransparentOff()
 	{
@@ -167,14 +163,19 @@ public class Project : NetworkBehaviour
 		{
 			child.material = buildingMat;
 		}
-		UpdateLogo();
+		ShowLogo();
 	}
-	void UpdateLogo()
+
+	public void HideLogo()
 	{
 		foreach (GameObject logo in PlayerLogos)
-		{
 			logo.GetComponent<Renderer>().enabled = false;
-		}
+		foreach (GameObject logo in ApprovalLogos)
+			logo.GetComponent<Renderer>().enabled = false;
+	}
+	void ShowLogo()
+	{
+		HideLogo();
 		//enable player logo
 		switch (ProjectOwner)
 		{
@@ -188,6 +189,12 @@ public class Project : NetworkBehaviour
 				PlayerLogos[2].GetComponent<Renderer>().enabled = true;
 				break;
 		}
+		if(!VoteFinished)
+			ApprovalLogos[0].GetComponent<Renderer>().enabled = true;
+		if (Approved && VoteFinished)
+			ApprovalLogos[1].GetComponent<Renderer>().enabled = true;
+		if (!Approved && VoteFinished)
+			ApprovalLogos[2].GetComponent<Renderer>().enabled = true;
 	}
 
 	public void SetCell(int cellid)
@@ -228,21 +235,16 @@ public class Project : NetworkBehaviour
 		UIManager.Instance.ProjectInfoUI();
 	}
 
-	public void InitiateProject()
+	public void TransferValues()
 	{
 		CellManager.Instance.UpdateFinance(CellLogic.CellId, Finance);
 		CellManager.Instance.UpdateSocial(CellLogic.CellId, Social);
 		CellManager.Instance.UpdateEnvironment(CellLogic.CellId, Environment);
-		Debug.Log(Finance + " " + " " + Social + " " + Environment);
 	}
 
 	public void ShowApproved()
 	{
-		foreach (GameObject logo in PlayerLogos)
-		{
-			logo.GetComponent<Renderer>().enabled = false;
-		}
-		PlayerLogos[3].GetComponent<Renderer>().enabled = true;
+		ShowLogo();
 		if (LevelManager.Instance.RoleType == ProjectOwner)
 		{
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
@@ -253,25 +255,23 @@ public class Project : NetworkBehaviour
 
 	public void ShowRejected()
 	{
-		foreach (GameObject logo in PlayerLogos)
+		ShowLogo();
+		if (isServer)
 		{
-			logo.GetComponent<Renderer>().enabled = false;
+			Invoke("RemoveProject", 10f);
+			Invoke("DestroyObject", 11);
 		}
-		PlayerLogos[4].GetComponent<Renderer>().enabled = true;
-		Debug.Log("Rejected");
-		if(isServer)
-			Invoke("RemoveProject", 5f);
+
 	}
 
 	public void RemoveProject()
 	{
 		ProjectManager.Instance.Remove(ID_Spawn);
-		Invoke("DestroyObject", 5f);
+	
 	}
 
 	void DestroyObject()
 	{
 		Destroy(gameObject);
-
 	}
 }

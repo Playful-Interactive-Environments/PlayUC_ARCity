@@ -22,9 +22,6 @@ public class CellLogic : MonoBehaviour {
     public HeatmapState CurrentState = HeatmapState.PlacementState;
     private HeatmapState PreviousState = HeatmapState.PlacementState;
     private int state;
-    public int OccupiedSlots;
-    public List<int> Slots = new List<int>();
-    private float offset = 20f;
     private Renderer _renderer;
     public int CellId;
     public Material[] colors;
@@ -40,29 +37,6 @@ public class CellLogic : MonoBehaviour {
         EventDispatcher.StartListening("FinanceMap", FinanceMap);
     }
 
-    public Vector3 GetPositionOffset()
-    {
-        Vector3 vector = new Vector3();
-        if (OccupiedSlots == 1)
-            vector = new Vector3(0, 0, 0);
-        if (OccupiedSlots == 2)
-            vector = new Vector3(offset, 0, 0);
-        if (OccupiedSlots == 3)
-            vector = new Vector3(-offset, 0, 0);
-        if (OccupiedSlots == 4)
-            vector = new Vector3(-offset, 0, offset);
-        if (OccupiedSlots == 5)
-            vector = new Vector3(offset, 0, offset);
-        if (OccupiedSlots == 6)
-            vector = new Vector3(-offset, 0, -offset);
-        if (OccupiedSlots == 7)
-            vector = new Vector3(0, 0, -offset);
-        if (OccupiedSlots == 8)
-            vector = new Vector3(0, 0, offset);
-        if (OccupiedSlots == 9)
-            vector = new Vector3(offset, 0, -offset);
-        return vector;
-    }
     public void PlacementMap()
     {
         CurrentState = PreviousState;
