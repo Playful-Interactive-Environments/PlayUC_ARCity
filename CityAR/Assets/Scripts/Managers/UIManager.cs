@@ -97,7 +97,7 @@ public class UIManager : AManager<UIManager>
 
 	void Awake()
 	{
-		//Application.targetFrameRate = 30;
+		Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 	}
 	void Start ()

@@ -7,7 +7,10 @@ public class CellInterface : MonoBehaviour {
 	{
 		Hidden, Grey, Details
 	}
-
+	public enum TextState
+	{
+		Default, PossibleChanges
+	}
 	public TextMesh[] StatusText;
 	public TextMesh CellName;
 	private CellLogic cell;
@@ -21,6 +24,11 @@ public class CellInterface : MonoBehaviour {
 		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
 		CellName.text = "Area " + cell.CellId;
 		//ChangeCellDisplay(InterfaceState.Default);
+		ChangeCellText(TextState.Default);
+		StatusText[0].richText = true;
+		StatusText[1].richText = true;
+		StatusText[2].richText = true;
+
 	}
 
 	void ProjectSelected()
@@ -29,9 +37,28 @@ public class CellInterface : MonoBehaviour {
 	}
 
 	void Update () {
-		StatusText[0].text = "" + cell.FinanceRate;
-		StatusText[1].text = "" + cell.SocialRate;
-		StatusText[2].text = "" + cell.EnvironmentRate;
+
+	}
+
+	public void ChangeCellText(TextState state)
+	{
+		switch (state)
+		{
+			case TextState.PossibleChanges:
+				int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.SelectedCSV);
+				int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.SelectedCSV);
+				int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.SelectedCSV);
+
+				StatusText[0].text = "" + cell.FinanceRate + "	 <i>" + fin + "</i>";
+				StatusText[1].text = "" + cell.SocialRate + " " + soc;
+				StatusText[2].text = "" + cell.EnvironmentRate + " " + env;
+				break;
+			case TextState.Default:
+				StatusText[0].text = "" + cell.FinanceRate + "<color=green>" + 5 + "</color>";
+				StatusText[1].text = "" + cell.SocialRate + "<b>" + 5 + "</b>";
+				StatusText[2].text = "" + cell.EnvironmentRate + "<i>" + 5 + "</i>";
+				break;
+		}
 	}
 
 	public void ChangeCellDisplay(InterfaceState state)
@@ -49,9 +76,9 @@ public class CellInterface : MonoBehaviour {
 				StatusText[2].gameObject.SetActive(false);
 				break;
 			case InterfaceState.Grey:
-				StatusText[0].gameObject.GetComponent<Renderer>().material = GreyMat;
-				StatusText[1].gameObject.GetComponent<Renderer>().material = GreyMat;
-				StatusText[2].gameObject.GetComponent<Renderer>().material = GreyMat;
+				//StatusText[0].gameObject.GetComponent<Renderer>().material = GreyMat;
+				//StatusText[1].gameObject.GetComponent<Renderer>().material = GreyMat;
+				//StatusText[2].gameObject.GetComponent<Renderer>().material = GreyMat;
 
 				CellName.gameObject.SetActive(true);
 				CellName.gameObject.GetComponent<Renderer>().material = GreyMat;
@@ -94,9 +121,9 @@ public class CellInterface : MonoBehaviour {
 				CellName.gameObject.SetActive(true);
 				CellName.gameObject.GetComponent<Renderer>().material = WhiteMat;
 
-				StatusText[0].gameObject.GetComponent<Renderer>().material = WhiteMat;
-				StatusText[1].gameObject.GetComponent<Renderer>().material = WhiteMat;
-				StatusText[2].gameObject.GetComponent<Renderer>().material = WhiteMat;
+				//StatusText[0].gameObject.GetComponent<Renderer>().material = WhiteMat;
+				//StatusText[1].gameObject.GetComponent<Renderer>().material = WhiteMat;
+				//StatusText[2].gameObject.GetComponent<Renderer>().material = WhiteMat;
 
 
 				Images[0].GetComponent<SpriteRenderer>().color = Color.white;

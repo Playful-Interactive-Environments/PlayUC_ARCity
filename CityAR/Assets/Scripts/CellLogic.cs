@@ -39,9 +39,8 @@ public class CellLogic : MonoBehaviour {
 
     public void PlacementMap()
     {
+        _interface.ChangeCellText(CellInterface.TextState.Default);
         CurrentState = PreviousState;
-        //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
-       // GetComponent<CellInterface>().ResetCell();
     }
     public void SocialMap()
     {
@@ -62,11 +61,7 @@ public class CellLogic : MonoBehaviour {
     public void CellSelected()
     {
         CurrentState = HeatmapState.CellSelected;
-       // GetComponent<CellInterface>().DisplayCell();
-    }
-    void ActivateMenu()
-    {
-        //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Menu);
+        _interface.ChangeCellText(CellInterface.TextState.PossibleChanges);
     }
 
     void Update()
@@ -94,7 +89,6 @@ public class CellLogic : MonoBehaviour {
                 if (SocialRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
 
                 break;
                 //4- high polution; 1 - low polution
@@ -108,7 +102,6 @@ public class CellLogic : MonoBehaviour {
                 if (EnvironmentRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-               // _interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
                 //4- finance state worst 1 - finance state best
             case HeatmapState.FinanceMap:
@@ -121,7 +114,6 @@ public class CellLogic : MonoBehaviour {
                 if (FinanceRate >= _chunkValue * 3)
                     state = 1;
                 _renderer.material = colors[state];
-                //_interface.ChangeCellDisplay(CellInterface.InterfaceState.Default);
                 break;
         }
     }
@@ -139,7 +131,5 @@ public class CellLogic : MonoBehaviour {
             cell.GetComponent<CellLogic>().PlacementMap();
         }
         CellSelected();
-        //EventDispatcher.TriggerEvent("PlacementMap");
-        //Invoke("CellSelected", .05f);
     }
 }

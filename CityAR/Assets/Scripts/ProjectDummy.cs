@@ -84,7 +84,12 @@ public class ProjectDummy : MonoBehaviour {
 	}
 	public void DestroySelf()
 	{
+		//reset placement text & color of cells
 		UIManager.Instance.PlacementText.text = "";
+		foreach (GameObject cell in CellGrid.Instance.GridCells)
+		{
+			cell.GetComponent<CellLogic>().PlacementMap();
+		}
 		Destroy(gameObject);
 	}
 }
