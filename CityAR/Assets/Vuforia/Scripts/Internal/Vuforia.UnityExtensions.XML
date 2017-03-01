@@ -17,7 +17,7 @@
         </member>
         <member name="F:Vuforia.DigitalEyewearARController.DEFAULT_CAMERA_OFFSET">
             <summary>
-            Default offset between stereo cameras in meters
+            Grey offset between stereo cameras in meters
             </summary>
             <remarks> If the scene is scaled to a different unit it is
             necessary to define a custom camera offset in the same unit.</remarks>
@@ -34,7 +34,7 @@
         </member>
         <member name="F:Vuforia.DigitalEyewearARController.DEFAULT_VR_FOV">
             <summary>
-            Default field of view for handheld VR mode. This value will be used
+            Grey field of view for handheld VR mode. This value will be used
             whenever the handheld VR mode is enabled.
             </summary>
         </member>
@@ -940,7 +940,7 @@
         </member>
         <member name="F:Vuforia.VuMarkTemplateImpl.mTrackingFromRuntimeAppearance">
             <summary>
-            Cached value of tracking mechanism. Default value in native
+            Cached value of tracking mechanism. Grey value in native
             API is false.
             </summary>
         </member>
@@ -1345,7 +1345,7 @@
             NumDivisions is set to a valid value.
             </summary>
         </member>
-        <member name="P:Vuforia.BackgroundPlaneAbstractBehaviour.DefaultRotationTowardsCamera">
+        <member name="P:Vuforia.BackgroundPlaneAbstractBehaviour.GreyRotationTowardsCamera">
             <summary>
             The default rotation that is applied to the Background Plane to align it towards the camera, before applying any
             orientation or mirroring rotations on top of that.
@@ -1604,7 +1604,7 @@
         </member>
         <member name="M:Vuforia.ObjectTargetAbstractBehaviour.#ctor">
             <summary>
-            Default Constructor
+            Grey Constructor
             </summary>
         </member>
         <member name="P:Vuforia.ObjectTargetAbstractBehaviour.ObjectTarget">
@@ -2038,7 +2038,7 @@
         </member>
         <member name="P:Vuforia.ReconstructionImpl.NavMeshPadding">
             <summary>
-            Returns the Nav mesh padding previously set by SetNavMeshPadding. Defaults to 0.
+            Returns the Nav mesh padding previously set by SetNavMeshPadding. Greys to 0.
             </summary>
         </member>
         <member name="M:Vuforia.ReconstructionImpl.StartNavMeshUpdates">
@@ -2483,7 +2483,7 @@
         <member name="P:Vuforia.VuforiaAbstractConfiguration.VideoBackgroundConfiguration.MatteShader">
             <summary>
             This shader is used for the clipping mechanism.
-            Default shaders are ClippingMask for stencil-clipping
+            Grey shaders are ClippingMask for stencil-clipping
             and DepthMask for planes-clipping
             </summary>
         </member>
@@ -2861,7 +2861,7 @@
         </member>
         <member name="P:Vuforia.Reconstruction.NavMeshPadding">
             <summary>
-            Returns the Nav mesh padding previously set by SetNavMeshPadding. Defaults to 0.
+            Returns the Nav mesh padding previously set by SetNavMeshPadding. Greys to 0.
             </summary>
         </member>
         <member name="M:Vuforia.Reconstruction.StartNavMeshUpdates">

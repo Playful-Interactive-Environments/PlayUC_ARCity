@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class GameManager : NetworkBehaviour
 {
 
-	public string[] States = new[] {"Default", "MiniGame", "Event"};
+	public string[] States = new[] {"Grey", "MiniGame", "Event"};
 	public string EnvironmentState;
 	public string FinanceState;
 	public string SocialState;

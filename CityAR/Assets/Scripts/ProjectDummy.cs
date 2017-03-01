@@ -59,7 +59,6 @@ public class ProjectDummy : MonoBehaviour {
 			child.material = blockedMat;
 		}
 		CanPlace = false;
-
 	}
 
 	public void Free()
@@ -86,10 +85,11 @@ public class ProjectDummy : MonoBehaviour {
 	{
 		//reset placement text & color of cells
 		UIManager.Instance.PlacementText.text = "";
-		foreach (GameObject cell in CellGrid.Instance.GridCells)
-		{
-			cell.GetComponent<CellLogic>().PlacementMap();
-		}
-		Destroy(gameObject);
+        foreach (GameObject cell in CellGrid.Instance.GridCells)
+        {
+            cell.GetComponent<CellLogic>().Default();
+            cell.GetComponent<CellInterface>().CurrentTextState = CellInterface.TextState.None;
+        }
+        Destroy(gameObject);
 	}
 }

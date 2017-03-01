@@ -7,7 +7,7 @@ public class CellLogic : MonoBehaviour {
 
     public enum HeatmapState
     {
-        PlacementState, SocialMap, EnvironmentMap, FinanceMap, CellSelected
+        Default, SocialMap, EnvironmentMap, FinanceMap, ProjectPlacement
     }
     //HexCell _hexCell;
     //HexGrid _hexGrid;
@@ -19,8 +19,8 @@ public class CellLogic : MonoBehaviour {
     public float Height;
     private bool Topograhic;
     private float _chunkValue; // based on max value, must be dividable by 4 due to 4 heatmap steps
-    public HeatmapState CurrentState = HeatmapState.PlacementState;
-    private HeatmapState PreviousState = HeatmapState.PlacementState;
+    public HeatmapState CurrentState = HeatmapState.Default;
+    private HeatmapState PreviousState = HeatmapState.Default;
     private int state;
     private Renderer _renderer;
     public int CellId;
@@ -31,15 +31,15 @@ public class CellLogic : MonoBehaviour {
         _interface = GetComponent<CellInterface>();
         _renderer = GetComponent<Renderer>();
         _renderer.material = colors[0];
-        EventDispatcher.StartListening("PlacementMap", PlacementMap);
+        EventDispatcher.StartListening("Grey", Default);
         EventDispatcher.StartListening("SocialMap", SocialMap);
         EventDispatcher.StartListening("EnvironmentMap", EnvironmentMap);
         EventDispatcher.StartListening("FinanceMap", FinanceMap);
     }
 
-    public void PlacementMap()
+    public void Default()
     {
-        _interface.ChangeCellText(CellInterface.TextState.Default);
+        _interface.CurrentTextState = CellInterface.TextState.None;
         CurrentState = PreviousState;
     }
     public void SocialMap()
@@ -58,10 +58,11 @@ public class CellLogic : MonoBehaviour {
         PreviousState = CurrentState;
     }
 
-    public void CellSelected()
+    public void ProjectPlacement()
     {
-        CurrentState = HeatmapState.CellSelected;
-        _interface.ChangeCellText(CellInterface.TextState.PossibleChanges);
+        CurrentState = HeatmapState.ProjectPlacement;
+        _interface.CurrentTextState = CellInterface.TextState.Changes;
+        _interface.ChangeCellDisplay(CellInterface.InterfaceState.White);
     }
 
     void Update()
@@ -70,11 +71,11 @@ public class CellLogic : MonoBehaviour {
             _chunkValue = SaveStateManager.Instance.CellMaxValue / 4;
         switch (CurrentState)
         {
-            case HeatmapState.PlacementState:
+            case HeatmapState.Default:
                 state = 0;
                 _renderer.material = colors[state];
                 break;
-            case HeatmapState.CellSelected:
+            case HeatmapState.ProjectPlacement:
                 state = 5;
                 _renderer.material = colors[state];
                 break;
@@ -126,10 +127,7 @@ public class CellLogic : MonoBehaviour {
 
     public void TouchCell()
     {
-        foreach (GameObject cell in CellGrid.Instance.GridCells)
-        {
-            cell.GetComponent<CellLogic>().PlacementMap();
-        }
-        CellSelected();
+        CellGrid.Instance.DefaultState();
+        ProjectPlacement();
     }
 }

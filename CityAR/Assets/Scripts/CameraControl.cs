@@ -63,8 +63,12 @@ public class CameraControl : AManager<CameraControl>
     {
         foreach (GameObject cell in CellGrid.Instance.GridCells)
         {
-            cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Grey);
-
+            CellInterface _interface = cell.GetComponent<CellInterface>();
+            if (_interface.CurrentTextState != CellInterface.TextState.Changes)
+            {
+                _interface.ChangeCellDisplay(CellInterface.InterfaceState.Grey);
+                _interface.CurrentTextState = CellInterface.TextState.Grey;
+            }
         }
         foreach (Project project in ProjectManager.Instance.Projects)
         {
@@ -75,7 +79,11 @@ public class CameraControl : AManager<CameraControl>
     {
         foreach (GameObject cell in CellGrid.Instance.GridCells)
         {
-            cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Hidden);
+            CellInterface _interface = cell.GetComponent<CellInterface>();
+            if (_interface.CurrentTextState != CellInterface.TextState.Changes)
+            {
+                cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Hide);
+            }
         }
         foreach (Project project in ProjectManager.Instance.Projects)
         {
@@ -88,7 +96,12 @@ public class CameraControl : AManager<CameraControl>
     {
         foreach (GameObject cell in CellGrid.Instance.GridCells)
         {
-            cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Details);
+            CellInterface _interface = cell.GetComponent<CellInterface>();
+            if (_interface.CurrentTextState != CellInterface.TextState.Changes)
+            {
+                _interface.ChangeCellDisplay(CellInterface.InterfaceState.White);
+                _interface.CurrentTextState = CellInterface.TextState.White;
+            }
         }
         foreach (Project project in ProjectManager.Instance.Projects)
         {

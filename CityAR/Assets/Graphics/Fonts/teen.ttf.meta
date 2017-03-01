@@ -9,9 +9,11 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
+  fontName: Teen
   fontNames:
   - Teen
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d5432afe48740834b8d2f66991c9490c, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

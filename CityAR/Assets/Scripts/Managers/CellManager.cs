@@ -24,7 +24,6 @@ public class CellManager : NetworkBehaviour
 	public int CurrentEnvironmentGlobal;
 	[SyncVar]
 	public int CurrentFinanceGlobal;
-
 	private CellGrid _cellGrid;
 
 	void Awake()
@@ -36,7 +35,6 @@ public class CellManager : NetworkBehaviour
 		DontDestroyOnLoad(gameObject);
 		_cellGrid = CellGrid.Instance;
 	}
-
 
 	void Start ()
 	{
@@ -53,9 +51,7 @@ public class CellManager : NetworkBehaviour
 	{
 	
 	}
-
-
-
+    
 	void GenerateValues()
 	{
 		_maxValue = (int)SaveStateManager.Instance.CellMaxValue;
@@ -64,9 +60,9 @@ public class CellManager : NetworkBehaviour
 		randSum(_cellGrid.Count, maxTotalValue, "Social");
 		randSum(_cellGrid.Count, maxTotalValue, "Environment");
 		randSum(_cellGrid.Count, maxTotalValue, "Finance");
-	}
+    }
 
-	private float[] randSum(int n, int m, string type)
+    private float[] randSum(int n, int m, string type)
 	{
 		float sum = 0;
 		float[] randNums = new float[n];
@@ -114,9 +110,9 @@ public class CellManager : NetworkBehaviour
 			CurrentSocialGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().SocialRate;
 			CurrentFinanceGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().FinanceRate;
 		}
-	}
+    }
 
-	void UpdateGridVariables()
+    void UpdateGridVariables()
 	{
 		UpdateCellVars(SocialRates, EnvironmentRates, FinanceRates);
 	}

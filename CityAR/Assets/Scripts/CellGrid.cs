@@ -54,4 +54,12 @@ public class CellGrid : AManager<CellGrid>
 	{
 		return GridCells[Random.Range(0, Count)];
 	}
+
+    public void DefaultState()
+    {
+        foreach (GameObject cell in GridCells)
+        {
+            cell.GetComponent<CellLogic>().Default();
+        }
+    }
 }

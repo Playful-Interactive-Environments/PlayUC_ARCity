@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class CellInterface : MonoBehaviour {
 
 	public enum InterfaceState
 	{
-		Hidden, Grey, Details
+		Hide, Grey, White
 	}
 	public enum TextState
 	{
-		Default, PossibleChanges
-	}
-	public TextMesh[] StatusText;
-	public TextMesh CellName;
+		Grey, White, Changes, None
+    }
+     
+    public TextState CurrentTextState;
+	public TextMeshPro[] StatusText;
+	public TextMeshPro CellName;
 	private CellLogic cell;
 	public GameObject[] Images;
 	public Material WhiteMat;
@@ -21,44 +24,54 @@ public class CellInterface : MonoBehaviour {
 	{
 		cell = GetComponent<CellLogic>();
 		//CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
-		EventDispatcher.StartListening("ProjectSelected", ProjectSelected);
-		CellName.text = "Area " + cell.CellId;
-		//ChangeCellDisplay(InterfaceState.Default);
-		ChangeCellText(TextState.Default);
+		//ChangeCellDisplay(InterfaceState.Grey);
 		StatusText[0].richText = true;
 		StatusText[1].richText = true;
 		StatusText[2].richText = true;
-
 	}
 
-	void ProjectSelected()
+	void Update ()
 	{
-		//ResetCell();
-	}
-
-	void Update () {
-
+	    ChangeCellText(CurrentTextState);
 	}
 
 	public void ChangeCellText(TextState state)
-	{
-		switch (state)
+    {
+        switch (state)
 		{
-			case TextState.PossibleChanges:
-				int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.SelectedCSV);
-				int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.SelectedCSV);
-				int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.SelectedCSV);
-
-				StatusText[0].text = "" + cell.FinanceRate + "	 <i>" + fin + "</i>";
-				StatusText[1].text = "" + cell.SocialRate + " " + soc;
-				StatusText[2].text = "" + cell.EnvironmentRate + " " + env;
+            case TextState.None:
+		        break;
+			case TextState.Changes:
+                int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.SelectedCSV);
+                int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.SelectedCSV);
+                int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.SelectedCSV);
+                CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+                if (fin >= 0)
+                    StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=green><b><size=2>+" + fin + "</color></b></size>";
+                if(soc >= 0)
+                    StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=green><b><size=2>+" + soc + "</color></b></size>";
+                if(env >=0)
+				    StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=green><b><size=2>+" + env + "</color></b></size>";
+                if (fin < 0)
+                    StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=red><b><size=2>" + fin + "</color>";
+                if (soc < 0)
+                    StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=red><b><size=2>" + soc + "</color>";
+                if (env < 0)
+                    StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=red><b><size=2>" + env + "</color>";
+                break;
+			case TextState.Grey:
+                CellName.text = "<color=#c0c0c0ff>Area " + cell.CellId + "</color>";
+                StatusText[0].text = "<color=#c0c0c0ff>" + cell.FinanceRate + "</color>";
+				StatusText[1].text = "<color=#c0c0c0ff>" + cell.SocialRate + "</color>";
+				StatusText[2].text = "<color=#c0c0c0ff>" + cell.EnvironmentRate + "</color>";
 				break;
-			case TextState.Default:
-				StatusText[0].text = "" + cell.FinanceRate + "<color=green>" + 5 + "</color>";
-				StatusText[1].text = "" + cell.SocialRate + "<b>" + 5 + "</b>";
-				StatusText[2].text = "" + cell.EnvironmentRate + "<i>" + 5 + "</i>";
-				break;
-		}
+            case TextState.White:
+                CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+                StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>";
+                StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>";
+                StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>";
+                break;
+        }
 	}
 
 	public void ChangeCellDisplay(InterfaceState state)
@@ -66,7 +79,7 @@ public class CellInterface : MonoBehaviour {
 		switch (state)
 		{
 			//ENABLE TEXT AND ICONS ONLY FOR PLAYER ROLE
-			case InterfaceState.Hidden:
+			case InterfaceState.Hide:
 				CellName.gameObject.SetActive(false);
 				Images[0].SetActive(false);
 				Images[1].SetActive(false);
@@ -76,12 +89,7 @@ public class CellInterface : MonoBehaviour {
 				StatusText[2].gameObject.SetActive(false);
 				break;
 			case InterfaceState.Grey:
-				//StatusText[0].gameObject.GetComponent<Renderer>().material = GreyMat;
-				//StatusText[1].gameObject.GetComponent<Renderer>().material = GreyMat;
-				//StatusText[2].gameObject.GetComponent<Renderer>().material = GreyMat;
-
 				CellName.gameObject.SetActive(true);
-				CellName.gameObject.GetComponent<Renderer>().material = GreyMat;
 				Images[0].GetComponent<SpriteRenderer>().color = Color.grey;
 				Images[1].GetComponent<SpriteRenderer>().color = Color.grey;
 				Images[2].GetComponent<SpriteRenderer>().color = Color.grey;
@@ -98,7 +106,6 @@ public class CellInterface : MonoBehaviour {
 
 						break;
 					case "Social":
-
 						Images[0].SetActive(false);
 						Images[1].SetActive(true);
 						Images[2].SetActive(false);
@@ -116,16 +123,9 @@ public class CellInterface : MonoBehaviour {
 						break;
 				}
 				break;
-			case InterfaceState.Details:
+			case InterfaceState.White:
 				//ENABLE ALL TEXT AND ICONS
 				CellName.gameObject.SetActive(true);
-				CellName.gameObject.GetComponent<Renderer>().material = WhiteMat;
-
-				//StatusText[0].gameObject.GetComponent<Renderer>().material = WhiteMat;
-				//StatusText[1].gameObject.GetComponent<Renderer>().material = WhiteMat;
-				//StatusText[2].gameObject.GetComponent<Renderer>().material = WhiteMat;
-
-
 				Images[0].GetComponent<SpriteRenderer>().color = Color.white;
 				Images[1].GetComponent<SpriteRenderer>().color = Color.white;
 				Images[2].GetComponent<SpriteRenderer>().color = Color.white;
@@ -162,40 +162,4 @@ public class CellInterface : MonoBehaviour {
 				break;
 		}
 	}
-	public void ResetCell()
-	{
-		//ChangeCellDisplay(InterfaceState.Default);
-	}
-
-	public void DisplayCell()
-	{
-		//ChangeCellDisplay(InterfaceState.Menu);
-	}
 }
-
-/*		foreach(GameObject buttonObject in ButtonObjects)
-		{
-			buttonObject.transform.localScale /= 297;
-			buttonObject.transform.position = new Vector3(transform.position.x, buttonObject.transform.position.y / 297, transform.position.z);
-
-		}
-		ButtonObjects[0].transform.LookAt(Camera.main.transform);
-		ButtonObjects[1].transform.LookAt(Camera.main.transform);
-		switch (CurrentState)
-		{
-			case InterfaceState.Default:
-				foreach (GameObject buttonObject in ButtonObjects)
-				{
-					buttonObject.SetActive(true);
-				}
-				break;
-			case InterfaceState.Menu:
-				foreach (GameObject buttonObject in ButtonObjects)
-				{
-					buttonObject.SetActive(true);
-				}
-				break;
-			case InterfaceState.Submenu:
-				break;
-		}
-*/
