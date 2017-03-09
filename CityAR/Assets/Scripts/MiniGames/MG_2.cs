@@ -22,7 +22,6 @@ public class MG_2 : AManager<MG_2> {
 	{
 		ObjectPool.CreatePool(VoterPrefab, VotersNeeded);
 		manager = MGManager.Instance;
-
 	}
 
 	public void SetVars(int agents, int needed, float time)
@@ -41,7 +40,6 @@ public class MG_2 : AManager<MG_2> {
 	{
 		Advertisement.transform.position = new Vector3(0, Height / 4, 0);
 		TargetStage.transform.position = new Vector3(0, -Height / 4, 0);
-
 		for (int i = 0; i < 10; i++)
 		{
 			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);

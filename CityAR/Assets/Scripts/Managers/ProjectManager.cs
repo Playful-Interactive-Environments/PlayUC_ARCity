@@ -5,15 +5,13 @@ using System.Globalization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 public class ProjectManager : NetworkBehaviour
-{
+{   
 
 	public static ProjectManager Instance = null;
 	public GameObject ProjectPrefab;
-	public GameObject CurrentDummy;
+	public ProjectDummy CurrentDummy;
 	public CSVProjects CSVProjects;
 	public QuestManager Quests;
-	public int SelectedCSV;
-	public int SelectedId;
 	public Project SelectedProject;
 	public List<Project> Projects;
 	public List<GameObject> ProjectButtons = new List<GameObject>();
@@ -68,7 +66,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity);
 		Project project = gobj.GetComponent<Project>();
-		project.SetProject(owner, id, CurrentProjectId, GetTitle(id), GetContent(id), GetInfluenceInt(id),
+		project.SetProject(owner, id, CurrentProjectId, GetCSVTitle(id), GetCSVContent(id), GetInfluenceInt(id),
 			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);
 		NetworkServer.Spawn(gobj);
 		CurrentProjectId++;
@@ -83,7 +81,7 @@ public class ProjectManager : NetworkBehaviour
 				return project;
 			}
 		}
-	    return null;
+		return null;
 	}
 
 	public void Remove(int id)
@@ -117,11 +115,11 @@ public class ProjectManager : NetworkBehaviour
 	
 	#region CSV Handlers
 
-	public string GetTitle(int num)
+	public string GetCSVTitle(int num)
 	{
 		return CSVProjects.Find_ID(num).title;
 	}
-	public string GetContent(int num)
+	public string GetCSVContent(int num)
 	{
 		return CSVProjects.Find_ID(num).content;
 	}
@@ -130,7 +128,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return ConvertToInt(CSVProjects.Find_ID(num).social);
 	}
-	public string GetSocialString(int num)
+	public string GetCSVSocialString(int num)
 	{
 		return CSVProjects.Find_ID(num).social;
 	}
@@ -138,7 +136,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return ConvertToInt(CSVProjects.Find_ID(num).finance);
 	}
-	public string GetFinanceString(int num)
+	public string GetCSVFinanceString(int num)
 	{
 		return CSVProjects.Find_ID(num).finance;
 	}
@@ -146,7 +144,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return ConvertToInt(CSVProjects.Find_ID(num).influence);
 	}
-	public string GetInfluenceString(int num)
+	public string GetCSVInfluenceString(int num)
 	{
 		return CSVProjects.Find_ID(num).influence;
 	}
@@ -154,7 +152,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return ConvertToInt(CSVProjects.Find_ID(num).environment);
 	}
-	public string GetEnvironmentString(int num)
+	public string GetCSVEnvironmentString(int num)
 	{
 		return CSVProjects.Find_ID(num).environment;
 	}
@@ -162,7 +160,7 @@ public class ProjectManager : NetworkBehaviour
 	{
 		return ConvertToInt(CSVProjects.Find_ID(num).cost);
 	}
-	public string GetBudgetString(int num)
+	public string GetCSVBudgetString(int num)
 	{
 		return CSVProjects.Find_ID(num).cost;
 	}

@@ -46,7 +46,7 @@ public class Agent : MonoBehaviour {
     {
         GameObject representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
         representation.transform.parent = this.transform;
-        representation.transform.localScale = new Vector3(75, 75, 75);
+        representation.transform.localScale = new Vector3(100, 100, 100);
         representation.transform.localEulerAngles += new Vector3(0, 90, -90);
         representation.transform.localPosition = new Vector3(0,0, 20f);
         representation.layer = LayerMask.NameToLayer("MG_3");
@@ -134,6 +134,7 @@ public class Agent : MonoBehaviour {
         }
         GetNextPoint();
         transform.position = _nextWayPointPosition;
+        GetComponent<SphereCollider>().enabled = true;
     }
 
     public void ResetWaypoints()
@@ -220,5 +221,6 @@ public class Agent : MonoBehaviour {
         _nextWayPointPosition = MG_2.Instance.TargetStage.transform.position;
         _startingPos = transform.position;
         currentState = VoterState.Captured;
+        GetComponent<SphereCollider>().enabled = false;
     }
 }

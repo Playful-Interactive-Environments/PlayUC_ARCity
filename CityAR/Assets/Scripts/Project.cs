@@ -11,6 +11,7 @@ public class Project : NetworkBehaviour
 	public GameObject RepresentationParent;
 	public GameObject[] PlayerLogos;
 	public GameObject[] ApprovalLogos;
+	public ParticleSystem ParticlesApproval;
 	//Vars set by project manager on server
 	[SyncVar]
 	public bool ProjectCreated;
@@ -53,13 +54,12 @@ public class Project : NetworkBehaviour
 	private Vector3 reprRot;
 	[SyncVar]
 	private Vector3 projectPos;
+	[SyncVar]
 	private Vector3 CellPos;
 	private Renderer[] allRenderers;
 	public Material transparentStatic;
 	private Material buildingMat;
 	private GameObject representation;
-	public bool LocalVote;
-
 
 	void Start ()
 	{
@@ -72,10 +72,9 @@ public class Project : NetworkBehaviour
 		if (isServer)
 		{
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
-			Choice1 += 1;
+			//Choice1 += 1;
 		}
-
-
+		ProjectManager.Instance.SelectedProject = this;
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
@@ -86,7 +85,7 @@ public class Project : NetworkBehaviour
 
 	void Update()
 	{
-		if (isServer && !VoteFinished && Choice1 + Choice2 >= 2)
+		if (isServer && !VoteFinished && Choice1 + Choice2 == 3)
 		{
 			if (Choice1 > Choice2)
 			{
@@ -94,7 +93,6 @@ public class Project : NetworkBehaviour
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
 				Approved = true;
 				VoteFinished = true;
-
 			}
 			if (Choice2 > Choice1)
 			{
@@ -102,9 +100,10 @@ public class Project : NetworkBehaviour
 				Approved = false;
 				VoteFinished = true;
 			}
+			CellManager.Instance.NetworkCommunicator.SetPlayerState(ProjectOwner, "DiscussionEnd");
+
 		}
 		transform.position = projectPos;
-		LocalVote = LevelManager.Instance.RoleType == ProjectOwner;
 	}
 
 	void NetworkDisconnect()
@@ -113,7 +112,8 @@ public class Project : NetworkBehaviour
 	}
 
 	public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
-		int influence, int social, int finance, int environment, int budget, float cooldown, string minigame, int cellid, int reprID, Vector3 pos, Vector3 rot)
+		int influence, int social, int finance, int environment, int budget, float cooldown, 
+		string minigame, int cellid, int reprID, Vector3 pos, Vector3 rot)
 	{
 		ProjectOwner = owner;
 		Id_CSV = idcsv;
@@ -173,6 +173,7 @@ public class Project : NetworkBehaviour
 		foreach (GameObject logo in ApprovalLogos)
 			logo.GetComponent<Renderer>().enabled = false;
 	}
+
 	void ShowLogo()
 	{
 		HideLogo();
@@ -206,33 +207,13 @@ public class Project : NetworkBehaviour
 	public void ShowProjectCanvas()
 	{
 		ProjectManager.Instance.SelectedProject = GetComponent<Project>();
-		if (LocalVote || VoteFinished)
-		{
-			Invoke("ShowProjectInfo", .1f);
-			UIManager.Instance.DebugText.text = LocalVote + " " +VoteFinished  ;
-		}
-		if (!LocalVote && !VoteFinished)
-		{
-			Invoke("ShowVoteCanvas", .1f);
-		}
-	}
-	public void AddLocalVote()
-	{
-		LocalVote = true;
+		Invoke("ShowProject", .1f);
 	}
 
-	public void ShowVoteCanvas()
+	public void ShowProject()
 	{
-		ProjectManager.Instance.SelectedCSV = Id_CSV;
-		ProjectManager.Instance.SelectedId = ID_Spawn;
-		UIManager.Instance.EnableVoteUI();
-	}
-
-	public void ShowProjectInfo()
-	{
-		ProjectManager.Instance.SelectedCSV = Id_CSV;
-		ProjectManager.Instance.SelectedId = ID_Spawn;
-		UIManager.Instance.ProjectInfoUI();
+		ProjectManager.Instance.SelectedProject = this;
+		UIManager.Instance.ShowProjectInfo();
 	}
 
 	public void TransferValues()
@@ -244,30 +225,47 @@ public class Project : NetworkBehaviour
 
 	public void ShowApproved()
 	{
+		var mainModule = ParticlesApproval.main;
+		switch (ProjectOwner)
+		{
+			case "Finance":
+				mainModule.startColor = Color.blue;
+
+				break;
+			case "Social":
+				mainModule.startColor = new Color(1f, 0.64f, 0f);
+
+				break;
+			case "Environment":
+				mainModule.startColor = Color.green;
+				break;
+		}
+		ParticlesApproval.Play();
 		ShowLogo();
 		if (LevelManager.Instance.RoleType == ProjectOwner)
 		{
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
 			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Influence", Influence);
 		}
-
 	}
 
 	public void ShowRejected()
 	{
+		var mainModule = ParticlesApproval.main;
+		mainModule.startColor = Color.red;
+
+		ParticlesApproval.Play();
 		ShowLogo();
 		if (isServer)
 		{
 			Invoke("RemoveProject", 10f);
 			Invoke("DestroyObject", 11);
 		}
-
 	}
 
 	public void RemoveProject()
 	{
 		ProjectManager.Instance.Remove(ID_Spawn);
-	
 	}
 
 	void DestroyObject()

@@ -1,9 +1,12 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using UnityEngine.Networking;
+using Debug = UnityEngine.Debug;
+
 [NetworkSettings(channel = 1, sendInterval = 0.2f)]
 public class NetworkCommunicator : NetworkBehaviour
 {
@@ -31,6 +34,26 @@ public class NetworkCommunicator : NetworkBehaviour
             CellManager.Instance.NetworkCommunicator = this;
     }
 
+    public void UpdateProjectVars(int fin, int soc, int env)
+    {
+        if (isServer)
+        {
+            ProjectManager.Instance.SelectedProject.Finance += fin;
+            ProjectManager.Instance.SelectedProject.Social += soc;
+            ProjectManager.Instance.SelectedProject.Environment += env;
+        }
+        if (isClient && !isServer)
+        {
+            CmdUpdateProjectVars(fin, soc, env);
+        }
+    }
+
+    [Command]
+    void CmdUpdateProjectVars(int fin, int soc, int env)
+    {
+        UpdateProjectVars(fin, soc, env);
+    }
+
     public void HandleEvent(string action, int id)
     {
         if (isServer)
@@ -52,30 +75,13 @@ public class NetworkCommunicator : NetworkBehaviour
     {
         if (isServer)
         {
-            switch (player)
-            {
-                case "Finance":
-                    GameManager.Instance.FinanceState = state;
-                    break;
-                case "Social":
-                    GameManager.Instance.SocialState = state;
-                    break;
-                case "Environment":
-                    GameManager.Instance.EnvironmentState = state;
-                    break;
-            }
+            GameManager.Instance.SetState(player, state);
         }
         
         if (isClient && !isServer)
         {
             CmdSetPlayerState(player, state);
         }
-    }
-
-    [Command]
-    void CmdSetPlayerState(string player, string state)
-    {
-        SetPlayerState(player, state);
     }
 
     public void CreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
@@ -168,27 +174,31 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void Vote(string vote, string owner, int projectnum)
+    public void Vote(string vote, string voter, int projectnum)
     {
         if (isServer)
         {
             switch (vote)
             {
                 case "Choice1":
-                    ProjectManager.Instance.FindProject(projectnum).Choice1 += 1;
+                    ProjectManager.Instance.SelectedProject.Choice1 += 1;
+                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Approved");
+                    RpcVote(vote, voter, projectnum);
                     break;
                 case "Choice2":
-                    ProjectManager.Instance.FindProject(projectnum).Choice2 += 1;
+                    ProjectManager.Instance.SelectedProject.Choice2 += 1;
+                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Denied");
+                    RpcVote(vote, voter, projectnum);
                     break;
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
-                    RpcVote(vote, owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice1", voter, projectnum);
+                    RpcVote(vote, voter, projectnum);
                     break;
                 case "Result_Choice2":
                     ProjectManager.Instance.ProjectRejected(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
-                    RpcVote(vote, owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice2", voter, projectnum);
+                    RpcVote(vote, voter, projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");
@@ -197,7 +207,7 @@ public class NetworkCommunicator : NetworkBehaviour
         }
         if (isClient && !isServer)
         {
-            CmdVote(vote, owner, projectnum);
+            CmdVote(vote, voter, projectnum);
         }
     }
 
@@ -238,6 +248,12 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
+    void CmdSetPlayerState(string player, string state)
+    {
+        SetPlayerState(player, state);
+    }
+
+    [Command]
     void CmdCreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
     {
         CreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
@@ -250,19 +266,25 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcVote(string vote, string owner, int projectnum)
+    public void RpcVote(string vote, string voter, int projectnum)
     {
         if (!isServer)
         {
             switch (vote)
             {
+                case "Choice1":
+                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Approved");
+                    break;
+                case "Choice2":
+                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Denied");
+                    break;
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice1", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice1", voter, projectnum);
                     break;
                 case "Result_Choice2":
                     ProjectManager.Instance.ProjectRejected(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice2", owner, projectnum);
+                    NotificationManager.Instance.AddNotification("Choice2", voter, projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");

@@ -33,13 +33,11 @@ public class Notification : MonoBehaviour
 		switch (NotificationType)
 		{
 			case "Choice1":
-				ProjectManager.Instance.SelectedCSV = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " passed!";
 				UIManager.Instance.DisplayNotificationResult();
 				NotificationManager.Instance.RemoveNotification(NotificationID);
 				break;
 			case "Choice2":
-				ProjectManager.Instance.SelectedCSV = NotificationID;
 				UIManager.Instance.EventText.text = "Project " + NotificationTitle + " failed!";
 				UIManager.Instance.DisplayNotificationResult();
 				NotificationManager.Instance.RemoveNotification(NotificationID);

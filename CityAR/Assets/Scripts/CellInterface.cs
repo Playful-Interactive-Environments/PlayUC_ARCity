@@ -11,9 +11,9 @@ public class CellInterface : MonoBehaviour {
 	public enum TextState
 	{
 		Grey, White, Changes, None
-    }
-     
-    public TextState CurrentTextState;
+	}
+	 
+	public TextState CurrentTextState;
 	public TextMeshPro[] StatusText;
 	public TextMeshPro CellName;
 	private CellLogic cell;
@@ -32,46 +32,46 @@ public class CellInterface : MonoBehaviour {
 
 	void Update ()
 	{
-	    ChangeCellText(CurrentTextState);
+		ChangeCellText(CurrentTextState);
 	}
 
 	public void ChangeCellText(TextState state)
-    {
-        switch (state)
+	{
+		switch (state)
 		{
-            case TextState.None:
-		        break;
+			case TextState.None:
+				break;
 			case TextState.Changes:
-                int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.SelectedCSV);
-                int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.SelectedCSV);
-                int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.SelectedCSV);
-                CellName.text = "<color=white>Area " + cell.CellId + "</color>";
-                if (fin >= 0)
-                    StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=green><b><size=2>+" + fin + "</color></b></size>";
-                if(soc >= 0)
-                    StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=green><b><size=2>+" + soc + "</color></b></size>";
-                if(env >=0)
-				    StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=green><b><size=2>+" + env + "</color></b></size>";
-                if (fin < 0)
-                    StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=red><b><size=2>" + fin + "</color>";
-                if (soc < 0)
-                    StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=red><b><size=2>" + soc + "</color>";
-                if (env < 0)
-                    StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=red><b><size=2>" + env + "</color>";
-                break;
+				int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
+				int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
+				int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
+				CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+				if (fin >= 0)
+					StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=green><b><size=2>+" + fin + "</color></b></size>";
+				if(soc >= 0)
+					StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=green><b><size=2>+" + soc + "</color></b></size>";
+				if(env >=0)
+					StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=green><b><size=2>+" + env + "</color></b></size>";
+				if (fin < 0)
+					StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=red><b><size=2>" + fin + "</color>";
+				if (soc < 0)
+					StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>" + " <color=red><b><size=2>" + soc + "</color>";
+				if (env < 0)
+					StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=red><b><size=2>" + env + "</color>";
+				break;
 			case TextState.Grey:
-                CellName.text = "<color=#c0c0c0ff>Area " + cell.CellId + "</color>";
-                StatusText[0].text = "<color=#c0c0c0ff>" + cell.FinanceRate + "</color>";
+				CellName.text = "<color=#c0c0c0ff>Area " + cell.CellId + "</color>";
+				StatusText[0].text = "<color=#c0c0c0ff>" + cell.FinanceRate + "</color>";
 				StatusText[1].text = "<color=#c0c0c0ff>" + cell.SocialRate + "</color>";
 				StatusText[2].text = "<color=#c0c0c0ff>" + cell.EnvironmentRate + "</color>";
 				break;
-            case TextState.White:
-                CellName.text = "<color=white>Area " + cell.CellId + "</color>";
-                StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>";
-                StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>";
-                StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>";
-                break;
-        }
+			case TextState.White:
+				CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+				StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>";
+				StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>";
+				StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>";
+				break;
+		}
 	}
 
 	public void ChangeCellDisplay(InterfaceState state)

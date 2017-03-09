@@ -41,14 +41,14 @@ public class Advertisement : MonoBehaviour
 		{
 			if (distanceSum >= maxDistance)
 			{
-				Release();
+				//Release();
 			}
 		}
 		if (_released)
 		{
 			Radius.transform.Rotate(Vector3.forward, 40 * Time.deltaTime, 0);
 			Vector3 nextWayPoint = points.ElementAt(followIndex);
-		    MG_2.Instance.TimeSpent += Time.deltaTime;
+			MG_2.Instance.TimeSpent += Time.deltaTime;
 			_lastPointPos = points[points.Count - 1];
 
 			if (transform.position != nextWayPoint)
@@ -73,8 +73,10 @@ public class Advertisement : MonoBehaviour
 		{
 			other.gameObject.GetComponent<Agent>().Capture();
 			MG_2.Instance.VotersCollected += 1;
+			//StartCoroutine(AdvertisementAnimation());
 		}
 	}
+
 	private void AddCurrentPosition()
 	{
 		if(points.Count > 0)
@@ -94,7 +96,6 @@ public class Advertisement : MonoBehaviour
 	{
 		transform.position = points[0];
 		CancelInvoke("AddCurrentPosition");
-		StartCoroutine("AdvertisementAnimation");
 		GetComponent<Draggable>().enabled = false;
 		_dragging = false;
 		_released = true;
@@ -119,8 +120,11 @@ public class Advertisement : MonoBehaviour
 
 	IEnumerator AdvertisementAnimation()
 	{
-		iTween.ScaleTo(Icon, iTween.Hash("scale", new Vector3(0.5f, 0.5f, 0.5f), "looptype", "pingpong"));
+		iTween.ScaleTo(Icon, iTween.Hash("scale", new Vector3(0.5f, 0.5f, 0.5f)));
+		iTween.ScaleTo(Radius, iTween.Hash("scale", new Vector3(0.5f, 0.5f, 0.5f)));
 		yield return new WaitForSeconds(0.1f);
+		iTween.ScaleTo(Icon, iTween.Hash("scale", new Vector3(2f, 2f, 1f)));
+		iTween.ScaleTo(Radius, iTween.Hash("scale", new Vector3(1.5f, 1.5f, 1.5f)));
 	}
 }
 

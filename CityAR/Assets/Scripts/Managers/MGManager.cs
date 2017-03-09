@@ -71,6 +71,10 @@ public class MGManager : AManager<MGManager> {
     }
     void Update () {
         TrackProgress();
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            ChangeState(MGState.Advertise);
+        }
     }
 
     void TrackProgress()
@@ -156,6 +160,7 @@ public class MGManager : AManager<MGManager> {
                 MG_2_Mng.StartCoroutine("InitGame");
                 MG_2_GO.SetActive(true);
                 GameDescription.text = "Drag the megaphone to attract voters to the stage!";
+                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.Pointer:
                 break;
@@ -166,6 +171,7 @@ public class MGManager : AManager<MGManager> {
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
                 GameDescription.text = "Sort the documents on the correct stack!";
+                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.Area:
                 MGCanvas.SetActive(true);
@@ -174,6 +180,7 @@ public class MGManager : AManager<MGManager> {
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
                 GameDescription.text = "Draw a straight line to block off land for your project!";
+                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.None:
                 Started = false;

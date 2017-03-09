@@ -16,10 +16,11 @@ public class ProjectDummy : MonoBehaviour {
 	public Vector3 CurrentPos;
 	private float yRot;
 	public bool CanPlace;
+	public int Id_CSV;
 
 	void Start () {
 		transform.parent = CellManager.Instance.ImageTarget.transform;
-		RepresentationId = ProjectManager.Instance.GetRepresentation(ProjectManager.Instance.SelectedCSV);
+		ProjectManager.Instance.CurrentDummy = this;
 		CreateRepresentation();
 	}
 
@@ -85,11 +86,11 @@ public class ProjectDummy : MonoBehaviour {
 	{
 		//reset placement text & color of cells
 		UIManager.Instance.PlacementText.text = "";
-        foreach (GameObject cell in CellGrid.Instance.GridCells)
-        {
-            cell.GetComponent<CellLogic>().Default();
-            cell.GetComponent<CellInterface>().CurrentTextState = CellInterface.TextState.None;
-        }
-        Destroy(gameObject);
+		foreach (GameObject cell in CellGrid.Instance.GridCells)
+		{
+			cell.GetComponent<CellLogic>().Default();
+			cell.GetComponent<CellInterface>().CurrentTextState = CellInterface.TextState.None;
+		}
+		Destroy(gameObject);
 	}
 }

@@ -41,7 +41,7 @@ public class NotificationManager : MonoBehaviour
 		button.gameObject.SetActive(true);
 		NotificationButtons.Add(button);
 		//create notification
-		string title = ProjectManager.Instance.GetTitle(projectnum);
+		string title = ProjectManager.Instance.GetCSVTitle(projectnum);
 		Notification notification = button.GetComponent<Notification>();
 		notification.NotificationType = type;
 		notification.NotificationTitle = title;

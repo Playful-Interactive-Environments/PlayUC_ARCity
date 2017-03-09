@@ -44,7 +44,7 @@ public class CameraControl : AManager<CameraControl>
         {
             Ray mouseRay = CurrentCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit mouseHit;
-            if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-1))
+            if (Physics.Raycast(mouseRay, out mouseHit, Mathf.Infinity) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
             {
                 if (mouseHit.transform.tag.Equals("Quest"))
                 {

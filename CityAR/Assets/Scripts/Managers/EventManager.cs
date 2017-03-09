@@ -21,6 +21,7 @@ public class EventManager : NetworkBehaviour
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
     }
+
     void Start()
     {
         CSVEvents = CSVEvents.Instance;
@@ -32,9 +33,9 @@ public class EventManager : NetworkBehaviour
             EventDispatcher.StartListening("EnvironmentEvent", FinanceEvent);
             EventDispatcher.StartListening("EnvironmentEvent", SocialEvent);
             EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
-
         }
     }
+
     void NetworkDisconnect()
     {
         Events.Clear();
@@ -139,13 +140,17 @@ public class EventManager : NetworkBehaviour
         float parsedInt = 0;
         float.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
         return parsedInt;
-
     }
+
     private int ConvertToInt(string input)
     {
         int parsedInt = 0;
         int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
         return parsedInt;
+    }
 
+    public int RandomEvent()
+    {
+        return Utilities.RandomInt(0, CSVEvents.rowList.Count);
     }
 }

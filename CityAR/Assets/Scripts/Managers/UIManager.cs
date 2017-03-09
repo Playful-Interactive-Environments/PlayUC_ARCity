@@ -44,7 +44,6 @@ public class UIManager : AManager<UIManager>
 	public GameObject PlayerVariables;
 	public Button MenuButton;
 	public Button NotificationButton;
-	public Button LevelButton;
 	public Text RatingText;
 	public Text BudgetText;
 	public Text TimeText;
@@ -56,9 +55,6 @@ public class UIManager : AManager<UIManager>
 	public GameObject SocialImage;
 	public GameObject RatingImage;
 	public GameObject BudgetImage;
-	public GameObject ProjectInfo;
-	public Button ButtonVote1;
-	public Button ButtonVote2;
 	//QUEST & RESULT CANVAS
 	public Text Title;
 	public Text Content;
@@ -73,7 +69,9 @@ public class UIManager : AManager<UIManager>
 	private int currentText;
 	Vector3 hiddenPos = new Vector3(-100, 1000,0);
 	public Quest CurrentQuest;
-	//PROJECT & VOTING CANVAS
+	//PROJECT & DISCUSSION CANVAS
+	public GameObject ProjectInfo;
+	public GameObject Discussion;
 	public Text PlacementText;
 	public Button ProjectButton;
 	public Text EventText;
@@ -235,8 +233,6 @@ public class UIManager : AManager<UIManager>
 		ProjectCanvas.enabled = false;
 		LevelCanvas.enabled = false;
 		LevelCanvas.gameObject.SetActive(true);
-		LevelButton.gameObject.SetActive(false);
-		LevelButton.enabled = false;
 		ProjectDesignCanvas.gameObject.SetActive(true);
 		ProjectDesignCanvas.enabled = false;
 		MenuButton.gameObject.SetActive(true);
@@ -254,10 +250,9 @@ public class UIManager : AManager<UIManager>
 		EventDisplay.enabled = false;
 		EventResult.gameObject.SetActive(true);
 		EventResult.enabled = false;
-		ProjectInfo.GetComponent<Animator>().SetBool("Show", false);
+		HideProjectInfo();
+		HideDiscussionPanel();
 		//ProjectInfo.SetActive(false);
-		ButtonVote1.gameObject.SetActive(false);
-		ButtonVote2.gameObject.SetActive(false);
 		CurrentState = state;
 		switch (CurrentState)
 		{
@@ -280,16 +275,13 @@ public class UIManager : AManager<UIManager>
 				ProjectButton.gameObject.SetActive(true);
 				NotificationButton.enabled = true;
 				NotificationButton.gameObject.SetActive(true);
-				LevelButton.gameObject.SetActive(true);
-				LevelButton.enabled = true;
 				MenuButton.enabled = true;
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
+				CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "Game");
 				break;
 			case UiState.Level:
 				LevelCanvas.enabled = true;
-				LevelButton.gameObject.SetActive(true);
-				LevelButton.enabled = true;
 				break;
 			case UiState.Projects:
 				ProjectCanvas.enabled = true;
@@ -460,7 +452,6 @@ public class UIManager : AManager<UIManager>
 	#endregion
 
 	#region Project & Vote UI
-
 	public void ProjectUI()
 	{
 		ProjectButton.image.color = Color.white;
@@ -472,25 +463,24 @@ public class UIManager : AManager<UIManager>
 
 	public void PlaceProject()
 	{
-		if (CameraControl.Instance.LastTouchedCell != null && ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CanPlace)
+		if (CameraControl.Instance.LastTouchedCell != null && ProjectManager.Instance.CurrentDummy.CanPlace)
 		{
 			CellManager.Instance.NetworkCommunicator.ActivateProject
 				("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId,
-				ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CurrentPos, 
-				ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().CurrentRot, 
+				ProjectManager.Instance.CurrentDummy.CurrentPos, 
+				ProjectManager.Instance.CurrentDummy.CurrentRot, 
 				LevelManager.Instance.RoleType, 
-				ProjectManager.Instance.SelectedCSV);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, 
-				"Influence",
-				ProjectManager.Instance.GetInfluenceInt(ProjectManager.Instance.SelectedCSV));
+				ProjectManager.Instance.CurrentDummy.Id_CSV);
 			CancelPlacement();
+
+			CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "DiscussionStart");
 		}
 	}
 
 	public void CancelPlacement()
 	{
 		if(ProjectManager.Instance.CurrentDummy != null)
-			ProjectManager.Instance.CurrentDummy.GetComponent<ProjectDummy>().DestroySelf();
+			ProjectManager.Instance.CurrentDummy.DestroySelf();
 		GameUI();
 	}
 
@@ -502,20 +492,6 @@ public class UIManager : AManager<UIManager>
 	public void ShowProjectDesignCanvas()
 	{
 		Change(UiState.DesignProject);
-	}
-
-	public void Vote_Choice1()
-	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice1","", ProjectManager.Instance.SelectedId);
-		ProjectManager.Instance.SelectedProject.GetComponent<Project>().AddLocalVote();
-		GameUI();
-	}
-
-	public void Vote_Choice2()
-	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice2", "", ProjectManager.Instance.SelectedId);
-		ProjectManager.Instance.SelectedProject.GetComponent<Project>().AddLocalVote();
-		GameUI();
 	}
 
 	public void DisplayNotificationResult()
@@ -537,23 +513,32 @@ public class UIManager : AManager<UIManager>
 		}
 	}
 
-	public void ProjectInfoUI()
+	public void ShowProjectInfo()
 	{
-		ProjectInfo.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedCSV);
+		ProjectInfo.GetComponent<ProjectInfo>().SetProjectInfo(ProjectManager.Instance.SelectedProject.ID_Spawn);
 		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
 	}
 
-	public void EnableVoteUI()
+	public void HideProjectInfo()
 	{
-		ProjectInfo.GetComponent<ProjectButton>().SetupProjectButton(ProjectManager.Instance.SelectedCSV);
-		ButtonVote1.gameObject.SetActive(true);
-		ButtonVote2.gameObject.SetActive(true);
-		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
+		ProjectInfo.GetComponent<Animator>().SetBool("Show", false);
+	}
+
+	public void ShowDiscussionPanel()
+	{
+		Discussion.GetComponent<DiscussionPanel>().SetupDiscussion(ProjectManager.Instance.SelectedProject.ID_Spawn);
+		Discussion.GetComponent<Animator>().SetBool("Show", true);
+	}
+
+	public void HideDiscussionPanel()
+	{
+		Discussion.GetComponent<Animator>().SetBool("Show", false);
+		Discussion.GetComponent<DiscussionPanel>().Reset();
+
 	}
 	#endregion
 
 	#region Choose Roles
-
 	public void ChooseEnvironment()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
