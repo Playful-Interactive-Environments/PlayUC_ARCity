@@ -181,9 +181,10 @@ public class UIManager : AManager<UIManager>
 		{
 			Projects = ProjectManager.Instance;
 		}
-	}
 
-	void RefreshPlayerVars()
+    }
+
+    void RefreshPlayerVars()
 	{
 		if (SaveStateManager.Instance != null)
 		{
@@ -515,7 +516,7 @@ public class UIManager : AManager<UIManager>
 
 	public void ShowProjectInfo()
 	{
-		ProjectInfo.GetComponent<ProjectInfo>().SetProjectInfo(ProjectManager.Instance.SelectedProject.ID_Spawn);
+		ProjectInfo.GetComponent<ProjectInfo>().ProjectCSVId = ProjectManager.Instance.SelectedProject.ID_Spawn;
 		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
 	}
 

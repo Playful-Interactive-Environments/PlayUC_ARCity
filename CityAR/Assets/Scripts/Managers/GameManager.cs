@@ -6,13 +6,13 @@ using UnityEngine.Networking;
 public class GameManager : NetworkBehaviour
 {
 
-	//states: "Game", "MiniGame", "Event", "DiscussionStart", "Occupied"} ;
-	[SyncVar]
-	public string EnvironmentState;
+    //states: "Game", "MiniGame", "Event", "DiscussionStart", "Occupied"} ;
+    [SyncVar]
+    public string EnvironmentState;
 	[SyncVar]
 	public string FinanceState;
-	[SyncVar]
-	public string SocialState;
+    [SyncVar]
+    public string SocialState;
 
 	private int currentEvent;
 	public static GameManager Instance;
@@ -33,34 +33,8 @@ public class GameManager : NetworkBehaviour
 		currentEvent = EventManager.Instance.RandomEvent();
 	}
 
-	public void SetState(string player, string state)
+    void Update ()
 	{
-		switch (player)
-		{
-			case "Finance":
-				FinanceState = state;
-				break;
-			case "Social":
-				SocialState = state;
-				break;
-			case "Environment":
-				EnvironmentState = state;
-				break;
-		}
-		switch (state)
-		{
-			case "DiscussionStart":
-				StartCoroutine(StartDiscussion());
-				break;
-			case "DiscussionEnd":
-				StartCoroutine(EndDiscussion());
-				break;
-		}
-	}
-
-	void Update ()
-	{
-
 
 	}
 
@@ -78,7 +52,6 @@ public class GameManager : NetworkBehaviour
 		UIManager.Instance.HideDiscussionPanel();
 		yield return new WaitForSeconds(1f);
 		UIManager.Instance.GameUI();
-
 	}
 
 	public void StartEvent()
@@ -92,4 +65,29 @@ public class GameManager : NetworkBehaviour
 			eventTime = Utilities.RandomFloat(5, 15);
 		}
 	}
+
+    public void SetState(string player, string state)
+    {
+        switch (player)
+        {
+            case "Finance":
+                FinanceState = state;
+                break;
+            case "Social":
+                SocialState = state;
+                break;
+            case "Environment":
+                EnvironmentState = state;
+                break;
+        }
+        switch (state)
+        {
+            case "DiscussionStart":
+                StartCoroutine(StartDiscussion());
+                break;
+            case "DiscussionEnd":
+                StartCoroutine(EndDiscussion());
+                break;
+        }
+    }   
 }

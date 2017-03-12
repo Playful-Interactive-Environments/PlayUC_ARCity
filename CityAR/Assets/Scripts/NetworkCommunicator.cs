@@ -10,7 +10,6 @@ using Debug = UnityEngine.Debug;
 [NetworkSettings(channel = 1, sendInterval = 0.2f)]
 public class NetworkCommunicator : NetworkBehaviour
 {
-
     public int ConnectionId;
 
     public override void OnStartLocalPlayer()
@@ -76,25 +75,12 @@ public class NetworkCommunicator : NetworkBehaviour
         if (isServer)
         {
             GameManager.Instance.SetState(player, state);
+            RpcSetPlayerState(player, state);
         }
-        
+
         if (isClient && !isServer)
         {
             CmdSetPlayerState(player, state);
-        }
-    }
-
-    public void CreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
-    {
-        if (isServer)
-        {
-            ProjectManager.Instance.CSVProjects.AddNew(id, title, content, rating, social, environment, finance, budget);
-            RpcCreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
-
-        }
-        if (isClient && !isServer)
-        {
-            CmdCreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
         }
     }
 
@@ -253,16 +239,11 @@ public class NetworkCommunicator : NetworkBehaviour
         SetPlayerState(player, state);
     }
 
-    [Command]
-    void CmdCreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
-    {
-        CreatePlayerProject(id, title, content, environment, social, finance, budget, rating);
-    }
-
     [ClientRpc]
-    void RpcCreatePlayerProject(int id, string title, string content, int environment, int social, int finance, int budget, int rating)
+    void RpcSetPlayerState(string player, string state)
     {
-        ProjectManager.Instance.CSVProjects.AddNew(id, title, content, rating, social, environment, finance, budget);
+        if (!isServer)
+            GameManager.Instance.SetState(player, state);
     }
 
     [ClientRpc]

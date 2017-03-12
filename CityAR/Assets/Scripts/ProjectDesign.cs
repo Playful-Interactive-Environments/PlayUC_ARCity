@@ -185,7 +185,7 @@ public class ProjectDesign : MonoBehaviour {
 	{
 		Id = ProjectManager.Instance.CSVProjects.rowList.Count + 1;
 		Debug.Log(Id);
-		CellManager.Instance.NetworkCommunicator.CreatePlayerProject(Id, Title, Content, Environment, Social, Finance, Budget, Influence);
+		//CellManager.Instance.NetworkCommunicator.CreatePlayerProject(Id, Title, Content, Environment, Social, Finance, Budget, Influence);
 		Invoke("SpawnProject", 1f);
 	}
 

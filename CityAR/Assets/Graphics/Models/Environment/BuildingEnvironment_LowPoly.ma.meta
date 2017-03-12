@@ -1,0 +1,133 @@
+fileFormatVersion: 2
+guid: b30efa027a6594b47a5a399d0c8e939b
+timeCreated: 1488990668
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: first_floor
+    100004: first_floor_building
+    100006: floor
+    100008: floor_building
+    100010: green_house
+    100012: last_floor
+    100014: last_floor_building
+    100016: top1
+    100018: trees
+    100020: trees 1
+    100022: trees 2
+    100024: trees_first_floor
+    100026: trees_floor
+    100028: trees_last_floor
+    400000: //RootNode
+    400002: first_floor
+    400004: first_floor_building
+    400006: floor
+    400008: floor_building
+    400010: green_house
+    400012: last_floor
+    400014: last_floor_building
+    400016: top1
+    400018: trees
+    400020: trees 1
+    400022: trees 2
+    400024: trees_first_floor
+    400026: trees_floor
+    400028: trees_last_floor
+    2300000: first_floor_building
+    2300002: floor_building
+    2300004: last_floor_building
+    2300006: trees
+    2300008: trees 1
+    2300010: trees 2
+    2300012: trees_first_floor
+    2300014: trees_floor
+    2300016: trees_last_floor
+    3300000: first_floor_building
+    3300002: floor_building
+    3300004: last_floor_building
+    3300006: trees
+    3300008: trees 1
+    3300010: trees 2
+    3300012: trees_first_floor
+    3300014: trees_floor
+    3300016: trees_last_floor
+    4300000: trees
+    4300002: first_floor_building
+    4300004: trees
+    4300006: last_floor_building
+    4300008: trees
+    4300010: floor_building
+    4300012: trees_first_floor
+    4300014: trees_last_floor
+    4300016: trees_floor
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

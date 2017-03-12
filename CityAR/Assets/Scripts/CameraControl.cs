@@ -70,7 +70,7 @@ public class CameraControl : AManager<CameraControl>
                 _interface.CurrentTextState = CellInterface.TextState.Grey;
             }
         }
-        foreach (Project project in ProjectManager.Instance.Projects)
+        foreach (Project project in FindObjectsOfType<Project>())
         {
             project.TransparentOff();
         }
@@ -85,10 +85,10 @@ public class CameraControl : AManager<CameraControl>
                 cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Hide);
             }
         }
-        foreach (Project project in ProjectManager.Instance.Projects)
+        foreach (Project project in FindObjectsOfType<Project>())
         {
-            project.TransparentOff();
-            project.HideLogo();
+                project.TransparentOff();
+                project.HideLogo();
         }
     }
 
@@ -103,9 +103,9 @@ public class CameraControl : AManager<CameraControl>
                 _interface.CurrentTextState = CellInterface.TextState.White;
             }
         }
-        foreach (Project project in ProjectManager.Instance.Projects)
+        foreach (Project project in FindObjectsOfType<Project>())
         {
-            project.TransparentOn();
+            //project.TransparentOn();
         }
     }
 

@@ -33,7 +33,7 @@ public class ProjectManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
-	void NetworkDisconnect()
+    void NetworkDisconnect()
 	{
 		ProjectButtons.Clear();
 	}
@@ -86,21 +86,7 @@ public class ProjectManager : NetworkBehaviour
 
 	public void Remove(int id)
 	{
-
-	List<Project> newList = new List<Project>();
-		foreach (Project project in Projects)
-		{
-			if (project.ID_Spawn == id)
-			{
-				Projects.Remove(project);
-			}
-			else
-			{
-				newList.Add(project);
-			}
-
-		}
-		Projects = newList;
+	    Projects.RemoveAll(x => x.ID_Spawn == id);
 	}
 
 	public void ProjectApproved(int num)

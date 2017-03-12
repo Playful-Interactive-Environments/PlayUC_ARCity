@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class Agent : MonoBehaviour {
@@ -55,7 +54,6 @@ public class Agent : MonoBehaviour {
         {
             child.gameObject.layer = LayerMask.NameToLayer("MG_3");
         }
-        //representation.GetComponentInChildren<Animator>().SetBool("wave", false);
     }
 
     public void SetWaypoints(float xE, float xW, float yN, float yS)
@@ -152,6 +150,12 @@ public class Agent : MonoBehaviour {
                 break;
             case VoterState.Captured:
                 Walk();
+                if (transform.position == _nextWayPointPosition)
+                {
+                    GetComponentInChildren<Animator>().SetBool("wave", true);
+
+                }
+
                 break;
         }
     }
@@ -218,7 +222,8 @@ public class Agent : MonoBehaviour {
 
     public void Capture()
     {
-        _nextWayPointPosition = MG_2.Instance.TargetStage.transform.position;
+        _nextWayPointPosition = new Vector3(MG_2.Instance.TargetStage.transform.position.x + Utilities.RandomFloat(-15,15),
+            MG_2.Instance.TargetStage.transform.position.y + Utilities.RandomFloat(5, 25),0);
         _startingPos = transform.position;
         currentState = VoterState.Captured;
         GetComponent<SphereCollider>().enabled = false;

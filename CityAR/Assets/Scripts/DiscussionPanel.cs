@@ -62,20 +62,29 @@ public class DiscussionPanel : MonoBehaviour {
 				break;
 			case "Finance":
 				if (state == "Approved")
-					EnvironmentVote.GetComponent<Image>().sprite = ApproveSprite;
+					FinanceVote.GetComponent<Image>().sprite = ApproveSprite;
 				if (state == "Denied")
-					EnvironmentVote.GetComponent<Image>().sprite = DenySprite;
+                    FinanceVote.GetComponent<Image>().sprite = DenySprite;
 				break;
 		}
-		UIManager.Instance.ProjectInfo.GetComponent<ProjectInfo>().UpdateText(ProjectId);
 	}
 
 	void Update()
 	{
 		UpdateVars();
-	}
+	    if (Input.GetKeyDown(KeyCode.B))
+	    {
+            CellManager.Instance.NetworkCommunicator.Vote("Choice1", "Environment", ProjectManager.Instance.SelectedProject.ID_Spawn);
+            CellManager.Instance.NetworkCommunicator.Vote("Choice1", "Social", ProjectManager.Instance.SelectedProject.ID_Spawn);
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            CellManager.Instance.NetworkCommunicator.Vote("Choice2", "Environment", ProjectManager.Instance.SelectedProject.ID_Spawn);
+            CellManager.Instance.NetworkCommunicator.Vote("Choice2", "Social", ProjectManager.Instance.SelectedProject.ID_Spawn);
+        }
+    }
 
-	public void SetupDiscussion(int id)
+    public void SetupDiscussion(int id)
 	{
 		ProjectId = id;
 		Proposer = ProjectManager.Instance.SelectedProject.ProjectOwner;
@@ -91,7 +100,7 @@ public class DiscussionPanel : MonoBehaviour {
 		VoteStateSprites.SetActive(false);
 		ApproveButton.gameObject.SetActive(true);
 		DenyButton.gameObject.SetActive(true);
-		BlockInteraction.SetActive(true);
+		//BlockInteraction.SetActive(true);
 	}
 
 	void UpdateVars()
@@ -100,20 +109,21 @@ public class DiscussionPanel : MonoBehaviour {
 		SocialText.text = "" + Social + " + <color=#FBB03BFF><b>" + SocialSlider.value + "</color></b>";
 		EnvironmentText.text = "" + Environment + " + <color=#A6C738><b>" + EnvironmentSlider.value + "</color></b>";
 		ExtraInfluence = (int) (FinanceSlider.value + SocialSlider.value + EnvironmentSlider.value);
-		InfluenceText.text = "" + Influence + " + <color=#F8D40097><b>" + ExtraInfluence+ "</color></b>";
-		ExtraCost = (int) (FinanceSlider.value + SocialSlider.value + EnvironmentSlider.value)*100;
+		InfluenceText.text = "" + Influence + " + <color=#F8D40097><b>" + ExtraInfluence + "</color></b>";
+		ExtraCost = (int) (FinanceSlider.value + SocialSlider.value + EnvironmentSlider.value) * -100;
 		CostText.text = "" + ExtraCost;
 	}
 
 	public void VoteApprove()
 	{
-		CellManager.Instance.NetworkCommunicator.Vote("Choice1", LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
-		CellManager.Instance.NetworkCommunicator.UpdateProjectVars(Finance, Social, Environment);
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", Influence + ExtraInfluence);
+		CellManager.Instance.NetworkCommunicator.UpdateProjectVars((int)FinanceSlider.value, (int)SocialSlider.value, (int)EnvironmentSlider.value);
+        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", Influence + ExtraInfluence);
+        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ExtraCost);
+        CellManager.Instance.NetworkCommunicator.Vote("Choice1", LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
 		HideButtons();
-	}
+    }
 
-	public void VoteDeny()
+    public void VoteDeny()
 	{
 		CellManager.Instance.NetworkCommunicator.Vote("Choice2", LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
 		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", Influence);
@@ -127,14 +137,16 @@ public class DiscussionPanel : MonoBehaviour {
 		DenyButton.gameObject.SetActive(false);
 	}
 
-
 	public void Reset()
 	{
-		BlockInteraction.SetActive(false);
+		//BlockInteraction.SetActive(false);
 		Finance = 0;
 		Social = 0;
 		Environment = 0;
 		ExtraCost = 0;
 		Influence = 0;
+	    FinanceSlider.value = 0;
+	    SocialSlider.value = 0;
+	    EnvironmentSlider.value = 0;
 	}
 }

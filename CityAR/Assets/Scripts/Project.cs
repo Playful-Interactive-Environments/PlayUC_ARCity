@@ -68,13 +68,14 @@ public class Project : NetworkBehaviour
 		ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
 		CreateRepresentation();
 		ShowLogo();
-		ProjectManager.Instance.Projects.Add(this);
 		if (isServer)
 		{
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			//Choice1 += 1;
 		}
-		ProjectManager.Instance.SelectedProject = this;
+        ProjectManager.Instance.Projects.Add(this);
+
+        ProjectManager.Instance.SelectedProject = this;
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
@@ -85,7 +86,7 @@ public class Project : NetworkBehaviour
 
 	void Update()
 	{
-		if (isServer && !VoteFinished && Choice1 + Choice2 == 3)
+		if (isServer && !VoteFinished && Choice1 + Choice2 >= 3)
 		{
 			if (Choice1 > Choice2)
 			{
@@ -138,7 +139,7 @@ public class Project : NetworkBehaviour
 		//create 3d representation
 		representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
 		representation.transform.parent = RepresentationParent.transform;
-		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
+		representation.transform.localScale = new Vector3(1f, 1f, 1f);
 		representation.transform.localEulerAngles = reprRot;
 		RepresentationParent.SetActive(true);
 		allRenderers = representation.GetComponentsInChildren<Renderer>();
@@ -147,8 +148,8 @@ public class Project : NetworkBehaviour
 	}
 
 	public void TransparentOn()
-	{
-		allRenderers = representation.GetComponentsInChildren<Renderer>();
+    {
+            allRenderers = representation.GetComponentsInChildren<Renderer>();
 		foreach (Renderer child in allRenderers)
 		{
 			child.material = transparentStatic;
@@ -158,7 +159,7 @@ public class Project : NetworkBehaviour
 	}
 	public void TransparentOff()
 	{
-		allRenderers = representation.GetComponentsInChildren<Renderer>();
+        allRenderers = representation.GetComponentsInChildren<Renderer>();
 		foreach (Renderer child in allRenderers)
 		{
 			child.material = buildingMat;

@@ -14,6 +14,7 @@ public class ProjectInfo : MonoBehaviour {
 	public Text MGText;
 	public int ProjectCSVId;
 	private string miniGame;
+    private Project selectedProject;
 
 	void Start()
 	{
@@ -21,61 +22,41 @@ public class ProjectInfo : MonoBehaviour {
 
 	void Update()
 	{
-
-	}
-
-    public void UpdateText(int id)
-    {
-        ProjectCSVId = id;
-        TitleText.text = ProjectManager.Instance.SelectedProject.Title;
-        DescriptionText.text = ProjectManager.Instance.SelectedProject.Description;
-        FinanceText.text = "" + ProjectManager.Instance.SelectedProject.Finance;
-        SocialText.text = "" + ProjectManager.Instance.SelectedProject.Social;
-        EnvironmentText.text = "" + ProjectManager.Instance.SelectedProject.Environment;
-        InfluenceText.text = "+" + ProjectManager.Instance.SelectedProject.Influence;
-        BudgetText.text = "" + ProjectManager.Instance.SelectedProject.Budget;
+	    if (ProjectManager.Instance != null)
+	    {
+	        if(ProjectManager.Instance.SelectedProject !=null)
+                UpdateText();
+        }
     }
 
-	public void SetProjectInfo(int id)
-	{
-        UpdateText(id);
-	    miniGame = ProjectManager.Instance.SelectedProject.MiniGame;
-		switch (miniGame)
-		{
-			case "None":
-				MGText.text = "No Tasks.";
-				break;
-			case "Sort":
-				MGText.text = "Task: Bureucracy";
-				break;
-			case "Advertise":
-				MGText.text = "Task: Campaigning";
-				break;
-			case "Area":
-				MGText.text = "Task: Planning";
-				break;
-			default:
-				MGText.text = "No Tasks.";
-				break;
-		}	}
-
-	public void SelectProject()
-	{
-		switch (miniGame)
-		{
-			case "None":
-				UIManager.Instance.ShowPlacementCanvas();
-				break;
-			case "Sort":
-				MGManager.Instance.SwitchState(MGManager.MGState.Sort);
-				break;
-			case "Advertise":
-				MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
-				break;
-			case "Area":
-				MGManager.Instance.SwitchState(MGManager.MGState.Area);
-				break;
-		}
-	}
-
+    public void UpdateText()
+    {
+        selectedProject = ProjectManager.Instance.SelectedProject;
+        TitleText.text = selectedProject.Title;
+        DescriptionText.text = selectedProject.Description;
+        FinanceText.text = "" + selectedProject.Finance;
+        SocialText.text = "" + selectedProject.Social;
+        EnvironmentText.text = "" + selectedProject.Environment;
+        InfluenceText.text = "+" + selectedProject.Influence;
+        BudgetText.text = "" + selectedProject.Budget;
+        miniGame = selectedProject.MiniGame;
+        switch (miniGame)
+        {
+            case "None":
+                MGText.text = "No Tasks.";
+                break;
+            case "Sort":
+                MGText.text = "Task: Bureucracy";
+                break;
+            case "Advertise":
+                MGText.text = "Task: Campaigning";
+                break;
+            case "Area":
+                MGText.text = "Task: Planning";
+                break;
+            default:
+                MGText.text = "No Tasks.";
+                break;
+        }
+    }
 }
