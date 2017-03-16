@@ -14,11 +14,12 @@ public class CameraControl : AManager<CameraControl>
     private RaycastHit cameraHit;
     private float cameraDistance;
     public LayerMask cameraLayer;
-    private float tChange;
-
+    private int viewNum = 1;
+    public bool CanTouch;
     void Start()
     {
         CurrentCam = MainCamera;
+        CanTouch = true;
     }
 
     public Vector3 GetLastCell()
@@ -36,11 +37,12 @@ public class CameraControl : AManager<CameraControl>
         }
         return LastTouchedVector;
     }
+
     void Update()
     {
         //animate transparent color
         TrackDistance();
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && CanTouch)
         {
             Ray mouseRay = CurrentCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit mouseHit;
@@ -56,8 +58,8 @@ public class CameraControl : AManager<CameraControl>
                 }
             }
         }
-     
     }
+
     #region Distance Tracking
     public void ShowAll()
     {
@@ -67,14 +69,11 @@ public class CameraControl : AManager<CameraControl>
             if (_interface.CurrentTextState != CellInterface.TextState.Changes)
             {
                 _interface.ChangeCellDisplay(CellInterface.InterfaceState.Grey);
-                _interface.CurrentTextState = CellInterface.TextState.Grey;
+                _interface.ChangeCellText(CellInterface.TextState.Grey);
             }
         }
-        foreach (Project project in FindObjectsOfType<Project>())
-        {
-            project.TransparentOff();
-        }
     }
+
     public void HideAll()
     {
         foreach (GameObject cell in CellGrid.Instance.GridCells)
@@ -87,7 +86,6 @@ public class CameraControl : AManager<CameraControl>
         }
         foreach (Project project in FindObjectsOfType<Project>())
         {
-                project.TransparentOff();
                 project.HideLogo();
         }
     }
@@ -100,12 +98,8 @@ public class CameraControl : AManager<CameraControl>
             if (_interface.CurrentTextState != CellInterface.TextState.Changes)
             {
                 _interface.ChangeCellDisplay(CellInterface.InterfaceState.White);
-                _interface.CurrentTextState = CellInterface.TextState.White;
+                _interface.ChangeCellText(CellInterface.TextState.White);
             }
-        }
-        foreach (Project project in FindObjectsOfType<Project>())
-        {
-            //project.TransparentOn();
         }
     }
 
@@ -113,24 +107,24 @@ public class CameraControl : AManager<CameraControl>
     {
         cameraDistance = Vector3.Distance(ARCamera.transform.position,
                 new Vector3(ARCamera.transform.position.x, 0, ARCamera.transform.position.z));
-        UIManager.Instance.DebugText.text = cameraDistance + "";
-        tChange += Time.deltaTime;
-
-        if (tChange > .2f && ProjectManager.Instance != null)
+        //blend view 0 1 and 2
+        if (ProjectManager.Instance != null)
         {
-            if (cameraDistance < 100f)
+            if (cameraDistance < 100f && viewNum == 1)
             {
                 ShowDetails();
+                viewNum = 0;
             }
-            if (cameraDistance >= 100f && cameraDistance <= 200f)
+            if (cameraDistance >= 100f && cameraDistance <= 200f && (viewNum == 0) || (viewNum == 2))
             {
+                viewNum = 1;
                 ShowAll();
             }
-            if (cameraDistance > 200f)
+            if (cameraDistance > 200f && viewNum == 1)
             {
+                viewNum = 2;
                 HideAll();
             }
-            tChange = 0;
         }
     }
 #endregion

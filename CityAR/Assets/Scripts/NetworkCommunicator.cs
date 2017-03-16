@@ -47,29 +47,6 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    [Command]
-    void CmdUpdateProjectVars(int fin, int soc, int env)
-    {
-        UpdateProjectVars(fin, soc, env);
-    }
-
-    public void HandleEvent(string action, int id)
-    {
-        if (isServer)
-        {
-            switch (action)
-            {
-                case "StartEvent":
-                    EventManager.Instance.CreateEvent(id);
-                    break;
-            }
-        }
-        if (isClient && !isServer)
-        {
-            CmdHandleEvent(action, id);
-        }
-    }
-
     public void SetPlayerState(string player, string state)
     {
         if (isServer)
@@ -168,23 +145,24 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "Choice1":
                     ProjectManager.Instance.SelectedProject.Choice1 += 1;
-                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Approved");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Approved");
                     RpcVote(vote, voter, projectnum);
                     break;
                 case "Choice2":
                     ProjectManager.Instance.SelectedProject.Choice2 += 1;
-                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Denied");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Denied");
                     RpcVote(vote, voter, projectnum);
                     break;
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice1", voter, projectnum);
                     RpcVote(vote, voter, projectnum);
                     break;
                 case "Result_Choice2":
                     ProjectManager.Instance.ProjectRejected(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice2", voter, projectnum);
                     RpcVote(vote, voter, projectnum);
+                    break;
+                case "Cancel":
+                    ProjectManager.Instance.ProjectCanceled(projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");
@@ -198,9 +176,9 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdHandleEvent(string action, int id)
+    void CmdUpdateProjectVars(int fin, int soc, int env)
     {
-        HandleEvent(action, id);
+        UpdateProjectVars(fin, soc, env);
     }
 
     [Command]
@@ -254,18 +232,16 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (vote)
             {
                 case "Choice1":
-                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Approved");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Approved");
                     break;
                 case "Choice2":
-                    UIManager.Instance.Discussion.GetComponent<DiscussionPanel>().ChangeVoterState(voter, "Denied");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Denied");
                     break;
                 case "Result_Choice1":
                     ProjectManager.Instance.ProjectApproved(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice1", voter, projectnum);
                     break;
                 case "Result_Choice2":
                     ProjectManager.Instance.ProjectRejected(projectnum);
-                    NotificationManager.Instance.AddNotification("Choice2", voter, projectnum);
                     break;
                 default:
                     Debug.Log("something wrong in Vote switch");

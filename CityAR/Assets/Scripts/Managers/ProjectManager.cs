@@ -33,7 +33,7 @@ public class ProjectManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
-    void NetworkDisconnect()
+	void NetworkDisconnect()
 	{
 		ProjectButtons.Clear();
 	}
@@ -49,18 +49,6 @@ public class ProjectManager : NetworkBehaviour
 		ProjectButtons.Add(projectButton);
 		UIManager.Instance.ProjectButton.image.color = Color.red;
 	}
-
-	public void ActivateButtonCooldown(int id)
-	{
-		foreach (GameObject button in ProjectButtons)
-		{
-			if (button.GetComponent<ProjectButton>().ProjectCSVId == id)
-			{
-				button.GetComponent<ProjectButton>().ActivateCooldown();
-			}
-		}
-	}
-
 	//called only on server
 	public void SpawnProject(int cellid, Vector3 pos, Vector3 rot, string owner, int id)
 	{
@@ -70,6 +58,28 @@ public class ProjectManager : NetworkBehaviour
 			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);
 		NetworkServer.Spawn(gobj);
 		CurrentProjectId++;
+	}
+
+	public void LockButton(int id)
+	{
+		foreach (GameObject button in ProjectButtons)
+		{
+			if (button.GetComponent<ProjectButton>().ProjectCSVId == id)
+			{
+				button.GetComponent<ProjectButton>().LockProject();
+			}
+		}
+	}
+
+	public void UnlockButton(int id)
+	{
+		foreach (GameObject button in ProjectButtons)
+		{
+			if (button.GetComponent<ProjectButton>().ProjectCSVId == id)
+			{
+				button.GetComponent<ProjectButton>().UnlockProject();
+			}
+		}
 	}
 
 	public Project FindProject(int projectnum)
@@ -86,19 +96,23 @@ public class ProjectManager : NetworkBehaviour
 
 	public void Remove(int id)
 	{
-	    Projects.RemoveAll(x => x.ID_Spawn == id);
+		Projects.RemoveAll(x => x.ID_Spawn == id);
 	}
 
 	public void ProjectApproved(int num)
 	{
-		FindProject(num).ShowApproved();
+		FindProject(num).TriggerApproved();
 	}
 
 	public void ProjectRejected(int num)
 	{
-		FindProject(num).ShowRejected();
+		FindProject(num).TriggerRejected();
 	}
-	
+	public void ProjectCanceled(int num)
+	{
+		FindProject(num).TriggerCanceled();
+	}
+
 	#region CSV Handlers
 
 	public string GetCSVTitle(int num)

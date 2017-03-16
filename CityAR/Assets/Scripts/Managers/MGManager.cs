@@ -21,6 +21,7 @@ public class MGManager : AManager<MGManager> {
     public Text ScoreText;
     public Text WinStateText;
     public Text GameDescription;
+    public int ProjectCsvId;
     //vars
     public float targetAspect = 9f/16f;
     private float scaleFactor = 32f;
@@ -62,8 +63,10 @@ public class MGManager : AManager<MGManager> {
         Height = cam.orthographicSize * 2;
         Width = Height*cam.aspect;
         EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+
         Invoke("Init", .1f);
     }
+
 
     void Init()
     {
@@ -85,7 +88,7 @@ public class MGManager : AManager<MGManager> {
             {
                 case MGState.Advertise:
                     //update UI
-                    _currentTime = MG_2_Mng.TimeSpent;
+                    _currentTime += Time.deltaTime;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
                     ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected + "/" + MG_2_Mng.VotersNeeded;
                     //check win/lose state
@@ -188,6 +191,8 @@ public class MGManager : AManager<MGManager> {
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;
+                if(CellManager.Instance!=null)
+                    CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "Game");
                 break;
         }
     }
@@ -225,14 +230,13 @@ public class MGManager : AManager<MGManager> {
         if (state == "reset")
         {
             ChangeState(MGState.None);
-            UIManager.Instance.CancelPlacement();
             yield break;
         }
         timer = 0;
         if (state == "win")
-            UIManager.Instance.ShowPlacementCanvas();
-        if (state == "lose")
-            UIManager.Instance.CancelPlacement();
+        {
+            ProjectManager.Instance.UnlockButton(ProjectCsvId);
+        }
         ChangeState(MGState.None);
     }
 

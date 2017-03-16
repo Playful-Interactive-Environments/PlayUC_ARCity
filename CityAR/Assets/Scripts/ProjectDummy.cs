@@ -22,6 +22,13 @@ public class ProjectDummy : MonoBehaviour {
 		transform.parent = CellManager.Instance.ImageTarget.transform;
 		ProjectManager.Instance.CurrentDummy = this;
 		CreateRepresentation();
+		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
+
+	}
+
+	void StartDiscussion()
+	{
+	   DestroySelf();
 	}
 
 	void Update () {
@@ -50,6 +57,7 @@ public class ProjectDummy : MonoBehaviour {
 		allRenderers = representation.GetComponentsInChildren<Renderer>();
 		Arrow.transform.parent = representation.transform;
 		Free();
+	    CameraControl.Instance.CanTouch = false;
 
 	}
 
@@ -86,10 +94,11 @@ public class ProjectDummy : MonoBehaviour {
 	{
 		//reset placement text & color of cells
 		UIManager.Instance.PlacementText.text = "";
+	    CameraControl.Instance.CanTouch = true;
 		foreach (GameObject cell in CellGrid.Instance.GridCells)
 		{
 			cell.GetComponent<CellLogic>().Default();
-			cell.GetComponent<CellInterface>().CurrentTextState = CellInterface.TextState.None;
+			cell.GetComponent<CellInterface>().ChangeCellText(CellInterface.TextState.Grey);
 		}
 		Destroy(gameObject);
 	}

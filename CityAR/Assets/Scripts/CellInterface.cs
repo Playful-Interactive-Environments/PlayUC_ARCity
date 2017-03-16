@@ -10,7 +10,7 @@ public class CellInterface : MonoBehaviour {
 	}
 	public enum TextState
 	{
-		Grey, White, Changes, None
+		Grey, White, Changes
 	}
 	 
 	public TextState CurrentTextState;
@@ -32,15 +32,13 @@ public class CellInterface : MonoBehaviour {
 
 	void Update ()
 	{
-		ChangeCellText(CurrentTextState);
 	}
 
 	public void ChangeCellText(TextState state)
 	{
+	    CurrentTextState = state;
 		switch (state)
 		{
-			case TextState.None:
-				break;
 			case TextState.Changes:
 				int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
 				int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.CurrentDummy.Id_CSV);

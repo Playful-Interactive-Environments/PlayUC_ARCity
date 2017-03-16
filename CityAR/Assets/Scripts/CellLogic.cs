@@ -39,7 +39,7 @@ public class CellLogic : MonoBehaviour {
 
     public void Default()
     {
-        _interface.CurrentTextState = CellInterface.TextState.None;
+        _interface.ChangeCellText(CellInterface.TextState.Grey);
         CurrentState = PreviousState;
     }
     public void SocialMap()
@@ -61,7 +61,7 @@ public class CellLogic : MonoBehaviour {
     public void ProjectPlacement()
     {
         CurrentState = HeatmapState.ProjectPlacement;
-        _interface.CurrentTextState = CellInterface.TextState.Changes;
+        _interface.ChangeCellText(CellInterface.TextState.Changes);
         _interface.ChangeCellDisplay(CellInterface.InterfaceState.White);
     }
 

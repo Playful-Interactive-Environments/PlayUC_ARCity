@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 using Vuforia;
 
 public class ValueManager : AManager<ValueManager>
@@ -13,6 +14,8 @@ public class ValueManager : AManager<ValueManager>
 	public static float xWest;
 	public static float yNorth;
 	public static float ySouth;
+	public Canvas MainCanvas;
+	public EventSystem EventSystem;
 
 	void Awake ()
 	{
@@ -22,6 +25,7 @@ public class ValueManager : AManager<ValueManager>
 		xWest = 0 - Instance.MapWidth / 2;
 		yNorth = 0 + Instance.MapHeight / 2;
 		ySouth = 0 - Instance.MapHeight / 2;
+		EventSystem.pixelDragThreshold = Mathf.RoundToInt(20 * MainCanvas.scaleFactor);
 	}
 	
 	// Update is called once per frame

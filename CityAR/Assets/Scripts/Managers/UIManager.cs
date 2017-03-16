@@ -15,8 +15,7 @@ public class UIManager : AManager<UIManager>
 	//Switch UI ELEMENTS
 	public enum UiState
 	{
-		Network, Role, Game, Projects, DesignProject, Placement, Notifications,
-		NotificationResult, Vote, Quest, Result, GlobalState, EventDisplay, EventResult, Level
+		Network, Role, Game, Projects, Placement, Quest, Result, GlobalState, Level
 	}
 
 	public UiState CurrentState;
@@ -26,14 +25,9 @@ public class UIManager : AManager<UIManager>
 	public Canvas RoleCanvas;
 	public Canvas QuestCanvas;
 	public Canvas ResultCanvas;
-	public Canvas NotificationResult;
 	public Canvas ProjectCanvas;
-	public Canvas ProjectDesignCanvas;
-	public Canvas NotificationCanvas;
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
-	public Canvas EventDisplay;
-	public Canvas EventResult;
 	public Canvas LevelCanvas;
 	public Text DebugText;
 	//CHOOSE ROLE
@@ -43,7 +37,6 @@ public class UIManager : AManager<UIManager>
 	//GAME CANVAS
 	public GameObject PlayerVariables;
 	public Button MenuButton;
-	public Button NotificationButton;
 	public Text RatingText;
 	public Text BudgetText;
 	public Text TimeText;
@@ -74,24 +67,11 @@ public class UIManager : AManager<UIManager>
 	public GameObject Discussion;
 	public Text PlacementText;
 	public Button ProjectButton;
-	public Text EventText;
-	public int CurrentProjectButton;
 	//GLOBAL STATE CANVAS
 	public Button GlobalStateButton;
 	public Text RoleDescriptionText;
 	private int[] savevalues = new int[5]; //array that stores values from previous update
-	//EVENT DISPLAY CANVAS
-	public Text EventTitle;
-	public Text EventContent;
-	public Button Event_Choice1;
-	public Button Event_Choice2;
-	public GameObject EventVars;
-	//EVENT RESULT CANVAS
-	public Text EventResultText;
-	//current event progress text in GameUI
-	public Text Event_CurrentProgress;
-	public Text Event_TimeLeft;
-	public bool EventProgressEnabled;
+
 
 	void Awake()
 	{
@@ -102,89 +82,23 @@ public class UIManager : AManager<UIManager>
 	{
 		ResetMenus();
 		InvokeRepeating("RefreshPlayerVars", .2f, .5f);
-		EventDispatcher.StartListening("HelpMayor", HelpMayor);
-		EventDispatcher.StartListening("Crisis", Crisis);
-		EventDispatcher.StartListening("DesignProject", DesignProject);
-
+		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
 	}
 
-	#region Event UI
-	public void ShowEventResult()
-	{
-		Change(UiState.EventResult);
-	}
-
-	public void SetEventText(string title, string content, string button1, string button2)
-	{
-		EventVars.SetActive(false);
-
-		EventTitle.text = title;
-		EventContent.text = content;
-		Event_Choice1.GetComponentInChildren<Text>().text = button1;
-		Event_Choice2.GetComponentInChildren<Text>().text = button2;
-
-		Event_Choice1.gameObject.SetActive(button1 != "");
-		Event_Choice2.gameObject.SetActive(button2 != "");
-
-		Change(UiState.EventDisplay);
-	}
-	//Help Mayor Event & Button
-	void HelpMayor()
-	{
-		Event_Choice1.onClick.AddListener(() => AcceptEvent());
-		EventVars.SetActive(true);
-	}
-
-	void AcceptEvent()
-	{
-		EventProgressEnabled = true;
-		EventManager.Instance.CurrentEventScript.HelpMayorEvent = true;
-		GameUI();
-	}
-	//Crisis Event & Button
-	void Crisis()
-	{
-		Event_Choice1.onClick.AddListener(() => Crisis_Choice1());
-		Event_Choice2.onClick.AddListener(() => Crisis_Choice2());
-	}
-	void Crisis_Choice1()
+	void StartDiscussion()
 	{
 		GameUI();
 	}
 
-	void Crisis_Choice2()
-	{
-		GameUI();
-	}
-
-	public void ShowEvent()
-	{   
-		if(EventDisplay.enabled == false)
-			Change(UiState.EventDisplay);
-	}
-	//Design project Event & Button
-	void DesignProject()
-	{
-		Event_Choice1.onClick.AddListener(() => AcceptDesignProject());
-	}
-
-	void AcceptDesignProject()
-	{
-		Change(UiState.DesignProject);
-	}
-	#endregion
 
 	void Update ()
 	{
 		UpdateRoleButtons();
 		if (ProjectManager.Instance != null)
-		{
 			Projects = ProjectManager.Instance;
-		}
+	}
 
-    }
-
-    void RefreshPlayerVars()
+	void RefreshPlayerVars()
 	{
 		if (SaveStateManager.Instance != null)
 		{
@@ -225,21 +139,13 @@ public class UIManager : AManager<UIManager>
 		ResultCanvas.gameObject.SetActive(true);
 		ResultCanvas.enabled = false;
 		PlacementCanvas.gameObject.SetActive(true);
-		PlacementCanvas.enabled = false;
-		NotificationCanvas.gameObject.SetActive(true);
-		NotificationCanvas.enabled = false;
-		NotificationResult.gameObject.SetActive(true);
-		NotificationResult.enabled = false;
+		PlacementCanvas.enabled = false;    
 		ProjectCanvas.gameObject.SetActive(true);
 		ProjectCanvas.enabled = false;
 		LevelCanvas.enabled = false;
 		LevelCanvas.gameObject.SetActive(true);
-		ProjectDesignCanvas.gameObject.SetActive(true);
-		ProjectDesignCanvas.enabled = false;
 		MenuButton.gameObject.SetActive(true);
 		MenuButton.enabled = false;
-		NotificationButton.gameObject.SetActive(false);
-		NotificationButton.enabled = false;
 		ProjectButton.gameObject.SetActive(false);
 		ProjectButton.enabled = false;
 		GlobalStateCanvas.gameObject.SetActive(true);
@@ -247,13 +153,6 @@ public class UIManager : AManager<UIManager>
 		GlobalStateButton.gameObject.SetActive(false);
 		GlobalStateButton.enabled = false;
 		PlayerVariables.SetActive(true);
-		EventDisplay.gameObject.SetActive(true);
-		EventDisplay.enabled = false;
-		EventResult.gameObject.SetActive(true);
-		EventResult.enabled = false;
-		HideProjectInfo();
-		HideDiscussionPanel();
-		//ProjectInfo.SetActive(false);
 		CurrentState = state;
 		switch (CurrentState)
 		{
@@ -267,15 +166,9 @@ public class UIManager : AManager<UIManager>
 				PlayerVariables.SetActive(false);
 				break;
 			case UiState.Game:
-				if(EventProgressEnabled)
-					Event_CurrentProgress.gameObject.SetActive(true);
-				if(!EventProgressEnabled)
-					Event_CurrentProgress.gameObject.SetActive(false);
 				GameCanvas.enabled = true;
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
-				NotificationButton.enabled = true;
-				NotificationButton.gameObject.SetActive(true);
 				MenuButton.enabled = true;
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
@@ -289,19 +182,9 @@ public class UIManager : AManager<UIManager>
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
 				break;
-			case UiState.DesignProject:
-				ProjectDesignCanvas.enabled = true;
-				break;
 			case UiState.Placement:
 				PlacementCanvas.enabled = true;
 				break;
-			case UiState.Notifications:
-				NotificationCanvas.enabled = true;
-				NotificationButton.enabled = true;
-				NotificationButton.gameObject.SetActive(true);
-				break;
-			case UiState.NotificationResult:
-				NotificationResult.enabled = true;
 				break;
 			case UiState.Quest:
 				QuestCanvas.enabled = true;
@@ -314,12 +197,6 @@ public class UIManager : AManager<UIManager>
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
 				MenuButton.enabled = true;
-				break;
-			case UiState.EventDisplay:
-				EventDisplay.enabled = true;
-				break;
-			case UiState.EventResult:
-				EventResult.enabled = true;
 				break;
 		}
 	}
@@ -340,14 +217,6 @@ public class UIManager : AManager<UIManager>
 	{
 		if (NetworkCanvas.enabled == false)
 			Change(UiState.Network);
-		else
-			GameUI();
-	}
-
-	public void NotificationUI()
-	{
-		if (NotificationCanvas.enabled == false)
-			Change(UiState.Notifications);
 		else
 			GameUI();
 	}
@@ -490,30 +359,6 @@ public class UIManager : AManager<UIManager>
 		Change(UiState.Placement);
 	}
 
-	public void ShowProjectDesignCanvas()
-	{
-		Change(UiState.DesignProject);
-	}
-
-	public void DisplayNotificationResult()
-	{
-		Change(UiState.NotificationResult);
-	}
-
-	public void SetNotificationState(bool state)
-	{
-		if (state)
-		{
-			NotificationButton.GetComponentInChildren<Text>().text = "!!!";
-			NotificationButton.image.color = Color.red;
-		}
-		else
-		{
-			NotificationButton.GetComponentInChildren<Text>().text = "!";
-			NotificationButton.image.color = Color.white;
-		}
-	}
-
 	public void ShowProjectInfo()
 	{
 		ProjectInfo.GetComponent<ProjectInfo>().ProjectCSVId = ProjectManager.Instance.SelectedProject.ID_Spawn;
@@ -527,14 +372,14 @@ public class UIManager : AManager<UIManager>
 
 	public void ShowDiscussionPanel()
 	{
-		Discussion.GetComponent<DiscussionPanel>().SetupDiscussion(ProjectManager.Instance.SelectedProject.ID_Spawn);
+		DiscussionManager.Instance.SetupDiscussion(ProjectManager.Instance.SelectedProject.ID_Spawn);
 		Discussion.GetComponent<Animator>().SetBool("Show", true);
 	}
 
 	public void HideDiscussionPanel()
 	{
 		Discussion.GetComponent<Animator>().SetBool("Show", false);
-		Discussion.GetComponent<DiscussionPanel>().Reset();
+		DiscussionManager.Instance.Reset();
 
 	}
 	#endregion

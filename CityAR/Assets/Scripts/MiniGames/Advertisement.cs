@@ -48,7 +48,7 @@ public class Advertisement : MonoBehaviour
 		{
 			Radius.transform.Rotate(Vector3.forward, 40 * Time.deltaTime, 0);
 			Vector3 nextWayPoint = points.ElementAt(followIndex);
-			MG_2.Instance.TimeSpent += Time.deltaTime;
+			//MG_2.Instance.TimeSpent += Time.deltaTime;
 			_lastPointPos = points[points.Count - 1];
 
 			if (transform.position != nextWayPoint)
@@ -89,6 +89,7 @@ public class Advertisement : MonoBehaviour
 
 	public void StartDragging()
 	{
+		Reset();
 		_started = true;
 	}
 
@@ -96,7 +97,7 @@ public class Advertisement : MonoBehaviour
 	{
 		transform.position = points[0];
 		CancelInvoke("AddCurrentPosition");
-		GetComponent<Draggable>().enabled = false;
+		//GetComponent<Draggable>().enabled = false;
 		_dragging = false;
 		_released = true;
 		linerenderer.enabled = false;
@@ -110,7 +111,7 @@ public class Advertisement : MonoBehaviour
 		if (points.Count > 0)
 			transform.position = points[points.Count-1]; // set to last pos
 		_released = false;
-		GetComponent<Draggable>().enabled = true;
+		//GetComponent<Draggable>().enabled = true;
 		linerenderer.enabled = true;
 		linerenderer.numPositions = 0;
 		pointIndex = 0;

@@ -56,16 +56,15 @@ public class Project : NetworkBehaviour
 	private Vector3 projectPos;
 	[SyncVar]
 	private Vector3 CellPos;
-	private Renderer[] allRenderers;
 	public Material transparentStatic;
-	private Material buildingMat;
-	private GameObject representation;
+	private GameObject buildingRep;
+	private GameObject transparentRep;
 
 	void Start ()
 	{
 		transform.name = "Project" + ID_Spawn;
 		transform.parent = CellManager.Instance.ImageTarget.transform;
-		ProjectManager.Instance.ActivateButtonCooldown(Id_CSV);
+		ProjectManager.Instance.LockButton(Id_CSV);
 		CreateRepresentation();
 		ShowLogo();
 		if (isServer)
@@ -73,9 +72,9 @@ public class Project : NetworkBehaviour
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
 			//Choice1 += 1;
 		}
-        ProjectManager.Instance.Projects.Add(this);
+		ProjectManager.Instance.Projects.Add(this);
 
-        ProjectManager.Instance.SelectedProject = this;
+		ProjectManager.Instance.SelectedProject = this;
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
@@ -137,33 +136,33 @@ public class Project : NetworkBehaviour
 	public void CreateRepresentation()
 	{
 		//create 3d representation
-		representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
-		representation.transform.parent = RepresentationParent.transform;
-		representation.transform.localScale = new Vector3(1f, 1f, 1f);
-		representation.transform.localEulerAngles = reprRot;
+		buildingRep = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
+		buildingRep.transform.parent = RepresentationParent.transform;
+		buildingRep.transform.localScale = new Vector3(1f, 1f, 1f);
+		buildingRep.transform.localEulerAngles = reprRot;
+		transparentRep = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
+		transparentRep.transform.parent = RepresentationParent.transform;
+		transparentRep.transform.localScale = new Vector3(1f, 1f, 1f);
+		transparentRep.transform.localEulerAngles = reprRot;
+		foreach (Renderer child in transparentRep.GetComponentsInChildren<Renderer>())
+		{
+			child.material = transparentStatic;
+		}
 		RepresentationParent.SetActive(true);
-		allRenderers = representation.GetComponentsInChildren<Renderer>();
-		buildingMat = allRenderers[0].GetComponent<Renderer>().material;
 		ShowLogo();
 	}
 
 	public void TransparentOn()
-    {
-            allRenderers = representation.GetComponentsInChildren<Renderer>();
-		foreach (Renderer child in allRenderers)
-		{
-			child.material = transparentStatic;
-		}
+	{
+		transparentRep.SetActive(true);
+		buildingRep.SetActive(false);
 		HideLogo();
-
 	}
+
 	public void TransparentOff()
 	{
-        allRenderers = representation.GetComponentsInChildren<Renderer>();
-		foreach (Renderer child in allRenderers)
-		{
-			child.material = buildingMat;
-		}
+		transparentRep.SetActive(false);
+		buildingRep.SetActive(true);
 		ShowLogo();
 	}
 
@@ -224,7 +223,7 @@ public class Project : NetworkBehaviour
 		CellManager.Instance.UpdateEnvironment(CellLogic.CellId, Environment);
 	}
 
-	public void ShowApproved()
+	public void TriggerApproved()
 	{
 		var mainModule = ParticlesApproval.main;
 		switch (ProjectOwner)
@@ -243,14 +242,12 @@ public class Project : NetworkBehaviour
 		}
 		ParticlesApproval.Play();
 		ShowLogo();
-		if (LevelManager.Instance.RoleType == ProjectOwner)
-		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Budget", Budget);
-			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Influence", Influence);
-		}
+	    int toPay = Mathf.RoundToInt(Mathf.Abs(Budget / Choice1) + DiscussionManager.Instance.ExtraCost);
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", -toPay);
+		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", DiscussionManager.Instance.TotalInfluence);
 	}
 
-	public void ShowRejected()
+	public void TriggerRejected()
 	{
 		var mainModule = ParticlesApproval.main;
 		mainModule.startColor = Color.red;
@@ -262,6 +259,12 @@ public class Project : NetworkBehaviour
 			Invoke("RemoveProject", 10f);
 			Invoke("DestroyObject", 11);
 		}
+	}
+
+	public void TriggerCanceled()
+	{
+		Invoke("RemoveProject", 0f);
+		Invoke("DestroyObject", .5f);
 	}
 
 	public void RemoveProject()

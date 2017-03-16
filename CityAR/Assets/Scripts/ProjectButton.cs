@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 using UnityEngine.UI;
 
 public class ProjectButton : MonoBehaviour {
@@ -12,14 +13,16 @@ public class ProjectButton : MonoBehaviour {
 	public Text RatingText;
 	public Text BudgetText;
 	public Text CooldownText;
-	public Text MGText;
-	public Image CooldownCover;
+	public TextMeshProUGUI MGText;
+	public Image BlockedCover;
 	public int ProjectCSVId;
 	private string miniGame;
 	private float cdTime;
 	private float currentTime;
 	private bool cdStarted;
 	public GameObject DummyPrefab;
+	public Button SpawnDummyButton;
+	public Button PlayMgButton;
 
 
 	void Start()
@@ -52,35 +55,52 @@ public class ProjectButton : MonoBehaviour {
 		RatingText.text = "+" + ProjectManager.Instance.GetCSVInfluenceString(id);
 		BudgetText.text = "" + ProjectManager.Instance.GetCSVBudgetString(id);
 		miniGame = ProjectManager.Instance.GetMiniGame(id);
+		cdTime = ProjectManager.Instance.GetCooldown(id);
+		//cdTime = 1f;
+
+		SetupInteractiveArea();
+	}
+
+	void SetupInteractiveArea()
+	{
+		CooldownText.gameObject.SetActive(false);
+		BlockedCover.gameObject.SetActive(false);
 		switch (miniGame)
 		{
 			case "None":
+				MGText.gameObject.SetActive(false);
+				PlayMgButton.gameObject.SetActive(false);
 				MGText.text = "No Tasks.";
 				break;
 			case "Sort":
-				MGText.text = "Task: Bureucracy";
+				PlayMgButton.gameObject.SetActive(true);
+				MGText.gameObject.SetActive(true);
+				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Sorting Documents</color>";
 				break;
 			case "Advertise":
-				MGText.text = "Task: Campaigning";
+				PlayMgButton.gameObject.SetActive(true);
+				MGText.gameObject.SetActive(true);
+				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Gathering Supporters</color>";
 				break;
 			case "Area":
-				MGText.text = "Task: Planning";
+				PlayMgButton.gameObject.SetActive(true);
+				MGText.gameObject.SetActive(true);
+				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Urban Zoning</color>";
 				break;
 			default:
-				MGText.text = "No Tasks.";
+				BlockedCover.gameObject.SetActive(false);
+				PlayMgButton.gameObject.SetActive(false);
+				MGText.gameObject.SetActive(false);
+				MGText.text = "";
 				break;
 		}
-		cdTime = ProjectManager.Instance.GetCooldown(id);
 	}
 
-	public void SelectProject()
+	public void PlayMiniGame()
 	{
-		SpawnDummy();
+		MGManager.Instance.ProjectCsvId = ProjectCSVId;
 		switch (miniGame)
 		{
-			case "None":
-				UIManager.Instance.ShowPlacementCanvas();
-				break;
 			case "Sort":
 				MGManager.Instance.SwitchState(MGManager.MGState.Sort);
 				break;
@@ -93,19 +113,27 @@ public class ProjectButton : MonoBehaviour {
 		}
 	}
 
-	void SpawnDummy()
+	public void UnlockProject()
+	{
+		PlayMgButton.gameObject.SetActive(false);
+		BlockedCover.gameObject.SetActive(false);
+		MGText.gameObject.SetActive(false);
+	}
+
+	public void SpawnDummy()
 	{
 		GameObject gobj = Instantiate(DummyPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 		gobj.GetComponent<ProjectDummy>().Id_CSV = ProjectCSVId;
 		gobj.GetComponent<ProjectDummy>().RepresentationId = ProjectManager.Instance.GetRepresentation(ProjectCSVId); ;
-
+		UIManager.Instance.ShowPlacementCanvas();
 	}
 
-	public void ActivateCooldown()
+	public void LockProject()
 	{
-		GetComponent<Button>().interactable = false;
+		PlayMgButton.gameObject.SetActive(false);
 		CooldownText.gameObject.SetActive(true);
-		CooldownCover.gameObject.SetActive(true);
+		BlockedCover.gameObject.SetActive(true);
+		MGText.gameObject.SetActive(false);
 		cdStarted = true;
 	}
 
@@ -113,11 +141,9 @@ public class ProjectButton : MonoBehaviour {
 	{
 		cdStarted = false;
 		currentTime = 0;
-		GetComponent<Button>().interactable = true;
-		CooldownText.gameObject.SetActive(false);
-		CooldownCover.gameObject.SetActive(false);
-
+		SetupInteractiveArea();
 	}
+
 	void NetworkDisconnect()
 	{
 		if (transform.name != "ProjectTemplate" && transform.name != "ProjectInfo")

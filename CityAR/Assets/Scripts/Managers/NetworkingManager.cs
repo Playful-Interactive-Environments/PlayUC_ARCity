@@ -145,8 +145,9 @@ public class NetworkingManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-       // DebugText.text = "Server Disconnected" + conn.lastError;
+        // DebugText.text = "Server Disconnected" + conn.lastError;
         SaveStateManager.Instance.SetTaken(conn.connectionId, false);
+        EventDispatcher.TriggerEvent("ClientDisconnect");
     }
     #endregion
 
@@ -235,13 +236,7 @@ public class NetworkingManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
         //DebugText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
-        ReconnectClient();
-    }
-
-    public void ReconnectClient()
-    {
-        StopClient();
-        StartCoroutine("Reconnect");
+        StartCoroutine(Reconnect());
     }
 
     public override void OnServerError(NetworkConnection conn, int errorCode)
@@ -253,13 +248,15 @@ public class NetworkingManager : NetworkManager
     public void Reset()
     {
         UIManager.Instance.ResetMenus();
-
     }
     IEnumerator Reconnect()
     {
-        yield return new WaitForSeconds(.2f);
+        StopClient();
+        Reset();
+        yield return new WaitForSeconds(.5f);
         StartClient();
-        yield return new WaitForSeconds(.2f);
+        /*
+        yield return new WaitForSeconds(.5f);
         switch (LevelManager.Instance.RoleType)
         {
             case "Environment":
@@ -271,7 +268,7 @@ public class NetworkingManager : NetworkManager
             case "Social":
                 UIManager.Instance.ChooseSocial();
                 break;
-        }
+        }*/
     }
     #endregion
 }

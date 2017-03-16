@@ -6,14 +6,15 @@ using UnityEngine.Networking;
 public class GameManager : NetworkBehaviour
 {
 
-    //states: "Game", "MiniGame", "Event", "DiscussionStart", "Occupied"} ;
-    [SyncVar]
-    public string EnvironmentState;
+	//states: "Game", "MiniGame", "NewStart", "DiscussionStart", "DiscussionEnd", "Occupied"} ;
+	[SyncVar]
+	public string EnvironmentState;
 	[SyncVar]
 	public string FinanceState;
-    [SyncVar]
-    public string SocialState;
+	[SyncVar]
+	public string SocialState;
 
+	private string MyState;
 	private int currentEvent;
 	public static GameManager Instance;
 	private float currentTime;
@@ -30,64 +31,96 @@ public class GameManager : NetworkBehaviour
 
 	void Start ()
 	{
-		currentEvent = EventManager.Instance.RandomEvent();
+		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
+
+	}
+	void NetworkDisconnect()
+	{
+		StopAllCoroutines();
+		StartCoroutine(EndDiscussion());
 	}
 
-    void Update ()
+	void ClientDisconnect()
+	{
+		StopAllCoroutines();
+		StartCoroutine(EndDiscussion());
+	}
+
+	void Update ()
 	{
 
+	}
+
+	void CheckMyState()
+	{
+		if (LevelManager.Instance.RoleType == "Environment")
+			MyState = EnvironmentState;
+		if (LevelManager.Instance.RoleType == "Social")
+			MyState = SocialState;
+		if (LevelManager.Instance.RoleType == "Finance")
+			MyState = FinanceState;
 	}
 
 	IEnumerator StartDiscussion()
 	{
-		UIManager.Instance.GameUI();
+		//if user is occupied wait until they finish
+		CheckMyState();
+
+		while (MyState == "MiniGame")
+		{
+			CheckMyState();
+			yield return new WaitForSeconds(1f);
+		}
+		EventDispatcher.TriggerEvent("StartDiscussion");
 		yield return new WaitForSeconds(1f);
 		UIManager.Instance.ShowProjectInfo();
 		UIManager.Instance.ShowDiscussionPanel();
+		StopAllCoroutines();
 	}
 
 	IEnumerator EndDiscussion()
 	{
+
 		UIManager.Instance.HideProjectInfo();
 		UIManager.Instance.HideDiscussionPanel();
 		yield return new WaitForSeconds(1f);
 		UIManager.Instance.GameUI();
+		StopAllCoroutines();
 	}
 
-	public void StartEvent()
+	public void SetState(string player, string state)
 	{
-		//TODO: Check all players, use only 1 for debug
-		if (EnvironmentState.Equals("Game"))
+		if (isServer)
 		{
-			//event triggered - send to clients and reset event trigger time
-			CellManager.Instance.NetworkCommunicator.HandleEvent("StartEvent", currentEvent);
-			currentTime = 0;
-			eventTime = Utilities.RandomFloat(5, 15);
+			switch (player)
+			{
+				case "Finance":
+					FinanceState = state;
+					break;
+				case "Social":
+					SocialState = state;
+					break;
+				case "Environment":
+					EnvironmentState = state;
+					break;
+			}
+		}
+		if (isClient)
+		{
+			switch (state)
+			{
+				case "DiscussionStart":
+					StartCoroutine(StartDiscussion());
+					break;
+				case "DiscussionEnd":
+					StartCoroutine(EndDiscussion());
+					break;
+				case "NewStart":
+					if(EnvironmentState == "DiscussionStart" || SocialState == "DiscussionStart" || FinanceState == "DiscussionStart")
+					StartCoroutine(StartDiscussion());
+					break;
+			}
 		}
 	}
-
-    public void SetState(string player, string state)
-    {
-        switch (player)
-        {
-            case "Finance":
-                FinanceState = state;
-                break;
-            case "Social":
-                SocialState = state;
-                break;
-            case "Environment":
-                EnvironmentState = state;
-                break;
-        }
-        switch (state)
-        {
-            case "DiscussionStart":
-                StartCoroutine(StartDiscussion());
-                break;
-            case "DiscussionEnd":
-                StartCoroutine(EndDiscussion());
-                break;
-        }
-    }   
 }
