@@ -196,7 +196,6 @@ public class NetworkingManager : NetworkManager
     {
         base.OnClientConnect(conn);
         UIManager.Instance.RoleUI();
-
         if (!isServer)
         {
             //DebugText.text = "Connected. IP: " + Network.player.ipAddress;

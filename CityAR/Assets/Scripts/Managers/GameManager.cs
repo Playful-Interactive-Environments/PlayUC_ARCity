@@ -34,8 +34,8 @@ public class GameManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
 
-	}
-	void NetworkDisconnect()
+    }
+    void NetworkDisconnect()
 	{
 		StopAllCoroutines();
 		StartCoroutine(EndDiscussion());
@@ -47,7 +47,7 @@ public class GameManager : NetworkBehaviour
 		StartCoroutine(EndDiscussion());
 	}
 
-	void Update ()
+    void Update ()
 	{
 
 	}
@@ -66,7 +66,6 @@ public class GameManager : NetworkBehaviour
 	{
 		//if user is occupied wait until they finish
 		CheckMyState();
-
 		while (MyState == "MiniGame")
 		{
 			CheckMyState();
@@ -74,19 +73,17 @@ public class GameManager : NetworkBehaviour
 		}
 		EventDispatcher.TriggerEvent("StartDiscussion");
 		yield return new WaitForSeconds(1f);
-		UIManager.Instance.ShowProjectInfo();
+		UIManager.Instance.ShowProjectDisplay();
 		UIManager.Instance.ShowDiscussionPanel();
-		StopAllCoroutines();
-	}
+        UIManager.Instance.ShowInfoScreen();
+    }
 
-	IEnumerator EndDiscussion()
+    IEnumerator EndDiscussion()
 	{
-
-		UIManager.Instance.HideProjectInfo();
+		UIManager.Instance.HideProjectDisplay();
 		UIManager.Instance.HideDiscussionPanel();
-		yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f);
 		UIManager.Instance.GameUI();
-		StopAllCoroutines();
 	}
 
 	public void SetState(string player, string state)
@@ -115,10 +112,6 @@ public class GameManager : NetworkBehaviour
 					break;
 				case "DiscussionEnd":
 					StartCoroutine(EndDiscussion());
-					break;
-				case "NewStart":
-					if(EnvironmentState == "DiscussionStart" || SocialState == "DiscussionStart" || FinanceState == "DiscussionStart")
-					StartCoroutine(StartDiscussion());
 					break;
 			}
 		}

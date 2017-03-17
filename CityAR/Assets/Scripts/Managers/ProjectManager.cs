@@ -13,6 +13,7 @@ public class ProjectManager : NetworkBehaviour
 	public CSVProjects CSVProjects;
 	public QuestManager Quests;
 	public Project SelectedProject;
+    [SyncVar] public int SelectedProjectId;
 	public List<Project> Projects;
 	public List<GameObject> ProjectButtons = new List<GameObject>();
 	public GameObject ProjectTemplate;
@@ -33,6 +34,11 @@ public class ProjectManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
+    void Update()
+    {
+        if (isServer && SelectedProject != null)
+            SelectedProjectId = SelectedProject.ID_Spawn;
+    }
 	void NetworkDisconnect()
 	{
 		ProjectButtons.Clear();
@@ -84,7 +90,7 @@ public class ProjectManager : NetworkBehaviour
 
 	public Project FindProject(int projectnum)
 	{
-		foreach (Project project in Projects)
+		foreach (Project project in FindObjectsOfType<Project>())
 		{
 			if (project.ID_Spawn == projectnum)
 			{

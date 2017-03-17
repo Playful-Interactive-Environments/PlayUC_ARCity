@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Vuforia;
@@ -12,15 +13,15 @@ using UnityEngine.SceneManagement;
 public class UIManager : AManager<UIManager>
 {
 	public ProjectManager Projects;
-	//Switch UI ELEMENTS
+    public Quest CurrentQuest;
 	public enum UiState
 	{
 		Network, Role, Game, Projects, Placement, Quest, Result, GlobalState, Level
 	}
 
 	public UiState CurrentState;
-	//CANVAS
-	public Canvas GameCanvas;
+    [Header("CANVAS STATES")]
+    public Canvas GameCanvas;
 	public Canvas NetworkCanvas;
 	public Canvas RoleCanvas;
 	public Canvas QuestCanvas;
@@ -29,27 +30,14 @@ public class UIManager : AManager<UIManager>
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
 	public Canvas LevelCanvas;
-	public Text DebugText;
-	//CHOOSE ROLE
-	public Button Environment;
+
+    [Header("Role Buttons")]
+    public Button Environment;
 	public Button Finance;
 	public Button Social;
-	//GAME CANVAS
-	public GameObject PlayerVariables;
-	public Button MenuButton;
-	public Text RatingText;
-	public Text BudgetText;
-	public Text TimeText;
-	public Text GlobalFinanceText;
-	public Text GlobalEnvironmentText;
-	public Text GlobalSocialText;
-	public GameObject FinanceImage;
-	public GameObject EnvironmentImage;
-	public GameObject SocialImage;
-	public GameObject RatingImage;
-	public GameObject BudgetImage;
-	//QUEST & RESULT CANVAS
-	public Text Title;
+
+    [Header("QUEST UI")]
+    public Text Title;
 	public Text Content;
 	public Text Choice1;
 	public Text Choice2;
@@ -61,19 +49,43 @@ public class UIManager : AManager<UIManager>
 	public Vector3[] textPositions;
 	private int currentText;
 	Vector3 hiddenPos = new Vector3(-100, 1000,0);
-	public Quest CurrentQuest;
-	//PROJECT & DISCUSSION CANVAS
-	public GameObject ProjectInfo;
+
+    [Header("PLAYER VARIABLES")]
+    public GameObject PlayerVariables;
+	public GameObject FinanceImage;
+	public GameObject EnvironmentImage;
+	public GameObject SocialImage;
+	public GameObject RatingImage;
+	public GameObject BudgetImage;
+    public Text RatingText;
+	public Text BudgetText;
+	public Text TimeText;
+	public Text GlobalFinanceText;
+	public Text GlobalEnvironmentText;
+	public Text GlobalSocialText;
+
+    [Header("PROJECTS")]
+    public GameObject ProjectDisplay;
 	public GameObject Discussion;
-	public Text PlacementText;
+    public GameObject InfoScreen;
+    public GameObject InfoIcon;
+    public TextMeshProUGUI InfoText;
+    public Text PlacementText;
 	public Button ProjectButton;
-	//GLOBAL STATE CANVAS
-	public Button GlobalStateButton;
+
+    [Header("OTHER ELEMENTS")]
+    public Button MenuButton;
+    public Button GlobalStateButton;
 	public Text RoleDescriptionText;
-	private int[] savevalues = new int[5]; //array that stores values from previous update
+    public Text DebugText;
+    public Sprite DefaultSprite;
+    public Sprite ApproveSprite;
+    public Sprite DenySprite;
+    public Sprite ExclamationSprite;
+    public Sprite QuestionSprite;
+    private int[] savevalues = new int[5]; //array that stores values from previous update
 
-
-	void Awake()
+    void Awake()
 	{
 		Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -82,14 +94,7 @@ public class UIManager : AManager<UIManager>
 	{
 		ResetMenus();
 		InvokeRepeating("RefreshPlayerVars", .2f, .5f);
-		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
 	}
-
-	void StartDiscussion()
-	{
-		GameUI();
-	}
-
 
 	void Update ()
 	{
@@ -359,15 +364,15 @@ public class UIManager : AManager<UIManager>
 		Change(UiState.Placement);
 	}
 
-	public void ShowProjectInfo()
+	public void ShowProjectDisplay()
 	{
-		ProjectInfo.GetComponent<ProjectInfo>().ProjectCSVId = ProjectManager.Instance.SelectedProject.ID_Spawn;
-		ProjectInfo.GetComponent<Animator>().SetBool("Show", true);
+		ProjectDisplay.GetComponent<ProjectInfo>().ProjectCSVId = ProjectManager.Instance.SelectedProject.ID_Spawn;
+		ProjectDisplay.GetComponent<Animator>().SetBool("Show", true);
 	}
 
-	public void HideProjectInfo()
+	public void HideProjectDisplay()
 	{
-		ProjectInfo.GetComponent<Animator>().SetBool("Show", false);
+		ProjectDisplay.GetComponent<Animator>().SetBool("Show", false);
 	}
 
 	public void ShowDiscussionPanel()
@@ -380,12 +385,23 @@ public class UIManager : AManager<UIManager>
 	{
 		Discussion.GetComponent<Animator>().SetBool("Show", false);
 		DiscussionManager.Instance.Reset();
-
 	}
-	#endregion
 
-	#region Choose Roles
-	public void ChooseEnvironment()
+    public void ShowInfoScreen()
+    {
+        StartCoroutine(AnimateInfoScreen());
+    }
+
+    IEnumerator AnimateInfoScreen()
+    {
+        InfoScreen.GetComponent<Animator>().SetBool("Show", true);
+        yield return new WaitForSeconds(5f);
+        InfoScreen.GetComponent<Animator>().SetBool("Show", false);
+    }
+    #endregion
+
+    #region Choose Roles
+    public void ChooseEnvironment()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
 		LevelManager.Instance.RoleType = "Environment";

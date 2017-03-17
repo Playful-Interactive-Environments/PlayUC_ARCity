@@ -73,9 +73,7 @@ public class Project : NetworkBehaviour
 			//Choice1 += 1;
 		}
 		ProjectManager.Instance.Projects.Add(this);
-
 		ProjectManager.Instance.SelectedProject = this;
-		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 	}
 
 	void OnEnable()
@@ -104,11 +102,6 @@ public class Project : NetworkBehaviour
 
 		}
 		transform.position = projectPos;
-	}
-
-	void NetworkDisconnect()
-	{
-		//Destroy(gameObject);
 	}
 
 	public void SetProject(string owner, int idcsv, int idspawn, string title, string description,
@@ -213,7 +206,7 @@ public class Project : NetworkBehaviour
 	public void ShowProject()
 	{
 		ProjectManager.Instance.SelectedProject = this;
-		UIManager.Instance.ShowProjectInfo();
+		UIManager.Instance.ShowProjectDisplay();
 	}
 
 	public void TransferValues()

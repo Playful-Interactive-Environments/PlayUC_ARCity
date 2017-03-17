@@ -146,7 +146,7 @@ public class ProjectButton : MonoBehaviour {
 
 	void NetworkDisconnect()
 	{
-		if (transform.name != "ProjectTemplate" && transform.name != "ProjectInfo")
+		if (transform.name != "ProjectTemplate" && transform.name != "ProjectDisplay")
 			Destroy(gameObject);
 	}
 }

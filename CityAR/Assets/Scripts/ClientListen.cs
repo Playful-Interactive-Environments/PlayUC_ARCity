@@ -23,12 +23,11 @@ public class ClientListen : MonoBehaviour {
 
         client = new UdpClient(remoteEP);
         client.JoinMulticastGroup(groupIP);
-
         client.BeginReceive(new AsyncCallback(ReceiveServerInfo), null);
         Debug.Log("Starting Client" + remoteEP);
         listenStarted = true;
-
     }
+
     void ReceiveServerInfo(IAsyncResult result)
     {
         byte[] receivedBytes = client.EndReceive(result, ref remoteEP);
@@ -36,6 +35,7 @@ public class ClientListen : MonoBehaviour {
         Debug.Log("Received Server Info" + serverIP);
 
     }
+
     public void StopListenning()
     {
         Debug.Log("Stop Listening");
