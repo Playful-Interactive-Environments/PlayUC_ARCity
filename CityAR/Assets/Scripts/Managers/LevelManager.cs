@@ -102,15 +102,14 @@ public class LevelManager : MonoBehaviour
 			if (_lastRank < CurrentRank)
 				levelUnlocked = false;
 		}
-	    if (CurrentRank == 20)
-	    {
-            ProgressText.text = "WINNER!";
+		if (CurrentRank == 20)
+		{
+			ProgressText.text = "WINNER!";
+			Debug.Log("Trigger Mayor Game Over");
+			CancelInvoke("UpdateProgress");
 
-            Debug.Log("Trigger Mayor Game Over");
-            CancelInvoke("UpdateProgress");
-
-        }
-    }
+		}
+	}
 
 	public void CreateLevelTemplate()
 	{
@@ -119,7 +118,7 @@ public class LevelManager : MonoBehaviour
 		{
 			GridGroup = GameObject.Find("LevelLayout").GetComponent<GridLayoutGroup>();
 			LevelTemplate = GameObject.Find("LevelTemplate");
-			GameObject level = Instantiate(LevelTemplate, transform.position, Quaternion.identity) as GameObject;
+			GameObject level = Instantiate(LevelTemplate, transform.position, Quaternion.identity);
 			level.transform.parent = GridGroup.transform;
 			level.transform.localScale = new Vector3(1, 1, 1);
 			//_projectButton.GetComponent<Button>().onClick.AddListener(() => SelectProject());

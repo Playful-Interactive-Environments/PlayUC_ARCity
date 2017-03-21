@@ -145,12 +145,14 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case "Choice1":
                     ProjectManager.Instance.SelectedProject.Choice1 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Approved");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Approve");
+                    SaveStateManager.Instance.UpdateData(voter, "Approve", 0);
                     RpcVote(vote, voter, projectnum);
                     break;
                 case "Choice2":
                     ProjectManager.Instance.SelectedProject.Choice2 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Denied");
+                    DiscussionManager.Instance.ChangeVoterState(voter, "Deny");
+                    SaveStateManager.Instance.UpdateData(voter, "Deny", 0);
                     RpcVote(vote, voter, projectnum);
                     break;
                 case "Result_Choice1":

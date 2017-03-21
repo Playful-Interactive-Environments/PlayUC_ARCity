@@ -31,7 +31,6 @@ public class MGManager : AManager<MGManager> {
     private float _timeLimit;
     public bool Started;
     private float _resetTime = 3f;
-    private float timer;
     //MiniGames
     public GameObject MG_1_GO;
     public MG_1 MG_1_Mng;
@@ -99,6 +98,7 @@ public class MGManager : AManager<MGManager> {
 
                     if (MG_2_Mng.VotersCollected >= MG_2_Mng.VotersNeeded)
                     {
+                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg2Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -113,7 +113,7 @@ public class MGManager : AManager<MGManager> {
                     }
                     if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
                     {
-                        WinStateText.text = "You made it! Good job!";
+                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg3Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -128,6 +128,7 @@ public class MGManager : AManager<MGManager> {
                     }
                     if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
                     {
+                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg1Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -199,13 +200,15 @@ public class MGManager : AManager<MGManager> {
 
     public IEnumerator EndMG(string state, float time)
     {
-
+        Started = false;
         if (state == "win")
         {
+            CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgTime", Mathf.RoundToInt(_currentTime));
             WinStateText.text = "You made it. Great job! Resuming in " + time + "s";
         }
         if (state == "lose")
         {
+            CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgFail", 0);
             WinStateText.text = "You failed. Try again later. Resuming in " + time + "s";
         }
         switch (CurrentMG)
@@ -225,14 +228,13 @@ public class MGManager : AManager<MGManager> {
                 MG_1_Mng.ResetGame();
                 break;
         }
-        Started = false;
         yield return new WaitForSeconds(time);
         if (state == "reset")
         {
             ChangeState(MGState.None);
             yield break;
         }
-        timer = 0;
+
         if (state == "win")
         {
             ProjectManager.Instance.UnlockButton(ProjectCsvId);

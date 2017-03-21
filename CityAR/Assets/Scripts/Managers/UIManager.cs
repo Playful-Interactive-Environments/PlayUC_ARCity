@@ -6,22 +6,21 @@ using JetBrains.Annotations;
 using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using Vuforia;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class UIManager : AManager<UIManager>
 {
 	public ProjectManager Projects;
-    public Quest CurrentQuest;
+	public Quest CurrentQuest;
 	public enum UiState
 	{
-		Network, Role, Game, Projects, Placement, Quest, Result, GlobalState, Level
+		Network, Role, Game, Projects, Placement, Quest, Result, GlobalState, Level, GameEnd
 	}
 
 	public UiState CurrentState;
-    [Header("CANVAS STATES")]
-    public Canvas GameCanvas;
+	[Header("CANVAS STATES")]
+	public Canvas GameCanvas;
 	public Canvas NetworkCanvas;
 	public Canvas RoleCanvas;
 	public Canvas QuestCanvas;
@@ -30,14 +29,15 @@ public class UIManager : AManager<UIManager>
 	public Canvas PlacementCanvas;
 	public Canvas GlobalStateCanvas;
 	public Canvas LevelCanvas;
+	public Canvas GameEndCanvas;
 
-    [Header("Role Buttons")]
-    public Button Environment;
+	[Header("Role Buttons")]
+	public Button Environment;
 	public Button Finance;
 	public Button Social;
 
-    [Header("QUEST UI")]
-    public Text Title;
+	[Header("QUEST UI")]
+	public Text Title;
 	public Text Content;
 	public Text Choice1;
 	public Text Choice2;
@@ -50,42 +50,107 @@ public class UIManager : AManager<UIManager>
 	private int currentText;
 	Vector3 hiddenPos = new Vector3(-100, 1000,0);
 
-    [Header("PLAYER VARIABLES")]
-    public GameObject PlayerVariables;
+	[Header("PLAYER VARIABLES")]
+	public GameObject PlayerVariables;
 	public GameObject FinanceImage;
 	public GameObject EnvironmentImage;
 	public GameObject SocialImage;
 	public GameObject RatingImage;
 	public GameObject BudgetImage;
-    public Text RatingText;
+	public GameObject RoleHighlight;
+	public Text RatingText;
 	public Text BudgetText;
 	public Text TimeText;
 	public Text GlobalFinanceText;
 	public Text GlobalEnvironmentText;
 	public Text GlobalSocialText;
 
-    [Header("PROJECTS")]
-    public GameObject ProjectDisplay;
+	[Header("PROJECTS")]
+	public GameObject ProjectDisplay;
 	public GameObject Discussion;
-    public GameObject InfoScreen;
-    public GameObject InfoIcon;
-    public TextMeshProUGUI InfoText;
-    public Text PlacementText;
+	public GameObject InfoScreen;
+	public GameObject InfoIcon;
+	public TextMeshProUGUI InfoText;
+	public Text PlacementText;
 	public Button ProjectButton;
+    [Header("Game End Display Groups")]
+    public GameObject EndStateStart;
+    public GameObject GlobalEndState;
+	public GameObject PlayerAchievements1;
+	public GameObject PlayerAchievements2;
+	public GameObject PlayerStats;
 
-    [Header("OTHER ELEMENTS")]
-    public Button MenuButton;
-    public Button GlobalStateButton;
+	public void DisplayEndStates(string state)
+	{
+        EndStateStart.gameObject.SetActive(false);
+		GlobalEndState.gameObject.SetActive(false);
+		PlayerAchievements1.gameObject.SetActive(false);
+		PlayerAchievements2.gameObject.SetActive(false);
+		PlayerStats.gameObject.SetActive(false);
+		switch (state)
+		{
+            case "EndStateStart":
+                EndStateStart.gameObject.SetActive(true);
+		        break;
+            case "GlobalEndState":
+				GlobalEndState.gameObject.SetActive(true);
+				break;
+			case "PlayerAchievements1":
+                PlayerAchievements1.gameObject.SetActive(true);
+				break;
+			case "PlayerAchievements2":
+                PlayerAchievements2.gameObject.SetActive(true);
+				break;
+			case "PlayerStats":
+                PlayerStats.gameObject.SetActive(true);
+				break;
+		}
+	}
+	[Header("Global Achievements")]
+	public TextMeshProUGUI GameEndExtraText;
+	public TextMeshProUGUI GameEndResult;
+	public TextMeshProUGUI TimePlayedN;
+	public TextMeshProUGUI SuccessfulProjectN;
+	public TextMeshProUGUI TotalAddedValueN;
+	public Image GameEndResultImage;
+	public Image MostImprovedFieldN;
+	public Image LeastImprovedFieldN;
+	[Header("Player Achievements 1")]
+	public Image MostSuccessfulProjects;
+	public Image ImprovedFieldMost;
+	public Image MostMoneySpent;
+	public Image MostBudgetLeft;
+	public Image HighestInfluence;
+	[Header("Player Achievements 2")]
+	public Image MostQuests;
+	public Image MostApproved;
+	public Image MostDenied;
+	public Image MostWinMiniGames;
+	public Image LeastTimeMiniGames;
+	[Header("Personal Stats")]
+	public TextMeshProUGUI ProjectsProposed;
+	public TextMeshProUGUI ProjectsSuccessful;
+	public TextMeshProUGUI ProjectsFailed;
+	public TextMeshProUGUI ProjectsVotedApprove;
+	public TextMeshProUGUI ProjectsVotedDeny;
+
+	[Header("OTHER ELEMENTS")]
+	public Button MenuButton;
+	public Button GlobalStateButton;
 	public Text RoleDescriptionText;
-    public Text DebugText;
-    public Sprite DefaultSprite;
-    public Sprite ApproveSprite;
-    public Sprite DenySprite;
-    public Sprite ExclamationSprite;
-    public Sprite QuestionSprite;
-    private int[] savevalues = new int[5]; //array that stores values from previous update
+	public Text DebugText;
+	public Sprite DefaultSprite;
+	public Sprite ApproveSprite;
+	public Sprite DenySprite;
+	public Sprite ExclamationSprite;
+	public Sprite QuestionSprite;
+	public Sprite EnvironmentWin;
+	public Sprite SocialWin;
+	public Sprite FinanceWin;
+	public Sprite YouWin;
+	private int[] savevalues = new int[5]; //array that stores values from previous update
 
-    void Awake()
+	void Awake()
 	{
 		Application.targetFrameRate = 30;
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -94,6 +159,7 @@ public class UIManager : AManager<UIManager>
 	{
 		ResetMenus();
 		InvokeRepeating("RefreshPlayerVars", .2f, .5f);
+		
 	}
 
 	void Update ()
@@ -117,12 +183,10 @@ public class UIManager : AManager<UIManager>
 				StartCoroutine(AnimateIcon(SocialImage, .7f, .5f));
 			if (savevalues[4] != CellManager.Instance.CurrentEnvironmentGlobal)
 				StartCoroutine(AnimateIcon(EnvironmentImage, .7f, .5f));
-
 			BudgetText.text = "" + savevalues[0];
 			GlobalFinanceText.text = "" + savevalues[2];
 			GlobalSocialText.text = "" + savevalues[3];
 			GlobalEnvironmentText.text = "" + savevalues[4];
-
 			savevalues[0] = SaveStateManager.Instance.GetBudget(LevelManager.Instance.RoleType);
 			savevalues[1] = SaveStateManager.Instance.GetInfluence(LevelManager.Instance.RoleType);
 			savevalues[2] = CellManager.Instance.CurrentFinanceGlobal;
@@ -150,31 +214,32 @@ public class UIManager : AManager<UIManager>
 		LevelCanvas.enabled = false;
 		LevelCanvas.gameObject.SetActive(true);
 		MenuButton.gameObject.SetActive(true);
-		MenuButton.enabled = false;
+		MenuButton.enabled = true;
 		ProjectButton.gameObject.SetActive(false);
 		ProjectButton.enabled = false;
 		GlobalStateCanvas.gameObject.SetActive(true);
 		GlobalStateCanvas.enabled = false;
 		GlobalStateButton.gameObject.SetActive(false);
 		GlobalStateButton.enabled = false;
+		GameEndCanvas.gameObject.SetActive(false);
+		GameEndCanvas.enabled = false;
 		PlayerVariables.SetActive(true);
 		CurrentState = state;
 		switch (CurrentState)
 		{
 			case UiState.Network:
 				NetworkCanvas.enabled = true;
-				MenuButton.enabled = true;
 				PlayerVariables.SetActive(false);
 				break;
 			case UiState.Role:
 				RoleCanvas.enabled = true;
 				PlayerVariables.SetActive(false);
+				MenuButton.gameObject.SetActive(false);
 				break;
 			case UiState.Game:
 				GameCanvas.enabled = true;
 				ProjectButton.enabled = true;
 				ProjectButton.gameObject.SetActive(true);
-				MenuButton.enabled = true;
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
 				CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "Game");
@@ -190,7 +255,6 @@ public class UIManager : AManager<UIManager>
 			case UiState.Placement:
 				PlacementCanvas.enabled = true;
 				break;
-				break;
 			case UiState.Quest:
 				QuestCanvas.enabled = true;
 				break;
@@ -201,7 +265,11 @@ public class UIManager : AManager<UIManager>
 				GlobalStateCanvas.enabled = true;
 				GlobalStateButton.gameObject.SetActive(true);
 				GlobalStateButton.enabled = true;
-				MenuButton.enabled = true;
+				break;
+			case UiState.GameEnd:
+				PlayerVariables.gameObject.SetActive(false);
+				GameEndCanvas.gameObject.SetActive(true);
+				GameEndCanvas.enabled = true;
 				break;
 		}
 	}
@@ -222,7 +290,7 @@ public class UIManager : AManager<UIManager>
 	{
 		if (NetworkCanvas.enabled == false)
 			Change(UiState.Network);
-		else
+		else if (GameManager.Instance!=null)
 			GameUI();
 	}
 
@@ -387,29 +455,32 @@ public class UIManager : AManager<UIManager>
 		DiscussionManager.Instance.Reset();
 	}
 
-    public void ShowInfoScreen()
-    {
-        StartCoroutine(AnimateInfoScreen());
-    }
+	public void ShowInfoScreen()
+	{
+		StartCoroutine(AnimateInfoScreen());
+	}
 
-    IEnumerator AnimateInfoScreen()
-    {
-        InfoScreen.GetComponent<Animator>().SetBool("Show", true);
-        yield return new WaitForSeconds(5f);
-        InfoScreen.GetComponent<Animator>().SetBool("Show", false);
-    }
-    #endregion
+	IEnumerator AnimateInfoScreen()
+	{
+		InfoScreen.GetComponent<Animator>().SetBool("Show", true);
+		yield return new WaitForSeconds(5f);
+		InfoScreen.GetComponent<Animator>().SetBool("Show", false);
+	}
+	#endregion
 
-    #region Choose Roles
-    public void ChooseEnvironment()
+	#region Choose Roles
+	public void ChooseEnvironment()
 	{
 		CellManager.Instance.NetworkCommunicator.TakeRole("Environment");
 		LevelManager.Instance.RoleType = "Environment";
 		EventDispatcher.TriggerEvent("EnvironmentMap");
-		RoleDescriptionText.text = "\u2022 You are responsible for environment, green and open space, transportation and mobility.\n\u2022 The value represents the number of open spaces in your city.\n\u2022 The higher the amount, the higher the quality of air becomes.";
-		Invoke("GameUI", .1f);
+		RoleDescriptionText.text = "\u2022 You are responsible for environment, green and open space, " +
+								   "transportation and mobility.\n\u2022 The value represents the number of open" +
+								   " spaces in your city.\n\u2022 The higher the amount, the higher the quality of air becomes.";
 		LevelManager.Instance.CreateLevelTemplate();
-
+		RoleHighlight.GetComponent<RectTransform>().anchoredPosition =
+			EnvironmentImage.GetComponent<RectTransform>().anchoredPosition;
+		Invoke("GameUI", .1f);
 	}
 
 	public void ChooseFinance()
@@ -417,9 +488,13 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Finance");
 		LevelManager.Instance.RoleType = "Finance";
 		EventDispatcher.TriggerEvent("FinanceMap");
-		RoleDescriptionText.text = "\u2022 You are responsible for economy, real estate and industrial development.\n\u2022 The value represents value in Millions of Euros.\n\u2022 More financial projects incrase the wealth of your city.";
-		Invoke("GameUI", .1f);
+		RoleDescriptionText.text = "\u2022 You are responsible for economy, real estate and industrial development." +
+								   "\n\u2022 The value represents value in Millions of Euros.\n\u2022" +
+								   " More financial projects incrase the wealth of your city.";
 		LevelManager.Instance.CreateLevelTemplate();
+		RoleHighlight.GetComponent<RectTransform>().anchoredPosition =
+			FinanceImage.GetComponent<RectTransform>().anchoredPosition;
+		Invoke("GameUI", .1f);
 	}
 
 	public void ChooseSocial()
@@ -427,8 +502,12 @@ public class UIManager : AManager<UIManager>
 		CellManager.Instance.NetworkCommunicator.TakeRole("Social");
 		LevelManager.Instance.RoleType = "Social";
 		EventDispatcher.TriggerEvent("SocialMap");
-		RoleDescriptionText.text = "\u2022 You are responsible for social infrastructure and urban development.\n\u2022 The value represents the amount of employed people.\n\u2022 More social projects increase employment and social stability.";
+		RoleDescriptionText.text = "\u2022 You are responsible for social infrastructure and urban development." +
+								   "\n\u2022 The value represents the amount of employed people.\n\u2022 " +
+								   "More social projects increase employment and social stability.";
 		LevelManager.Instance.CreateLevelTemplate();
+		RoleHighlight.GetComponent<RectTransform>().anchoredPosition =
+			SocialImage.GetComponent<RectTransform>().anchoredPosition;
 		Invoke("GameUI", .1f);
 	}
 	

@@ -49,13 +49,12 @@ public class Project : NetworkBehaviour
 	[SyncVar]
 	public bool VoteFinished;
 	[SyncVar]
-	public bool Approved;
-	[SyncVar]
 	private Vector3 reprRot;
 	[SyncVar]
 	private Vector3 projectPos;
 	[SyncVar]
 	private Vector3 CellPos;
+	public bool Approved;
 	public Material transparentStatic;
 	private GameObject buildingRep;
 	private GameObject transparentRep;
@@ -67,13 +66,15 @@ public class Project : NetworkBehaviour
 		ProjectManager.Instance.LockButton(Id_CSV);
 		CreateRepresentation();
 		ShowLogo();
+
+		ProjectManager.Instance.Projects.Add(this);
+		ProjectManager.Instance.SelectedProject = this;
 		if (isServer)
 		{
 			SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
+			SaveStateManager.Instance.AddProjectAction(ProjectOwner, "Propose");
 			//Choice1 += 1;
 		}
-		ProjectManager.Instance.Projects.Add(this);
-		ProjectManager.Instance.SelectedProject = this;
 	}
 
 	void OnEnable()
@@ -89,13 +90,11 @@ public class Project : NetworkBehaviour
 			{
 				TransferValues();
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
-				Approved = true;
 				VoteFinished = true;
 			}
 			if (Choice2 > Choice1)
 			{
 				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
-				Approved = false;
 				VoteFinished = true;
 			}
 			CellManager.Instance.NetworkCommunicator.SetPlayerState(ProjectOwner, "DiscussionEnd");
@@ -218,16 +217,15 @@ public class Project : NetworkBehaviour
 
 	public void TriggerApproved()
 	{
+
 		var mainModule = ParticlesApproval.main;
 		switch (ProjectOwner)
 		{
 			case "Finance":
 				mainModule.startColor = Color.blue;
-
 				break;
 			case "Social":
 				mainModule.startColor = new Color(1f, 0.64f, 0f);
-
 				break;
 			case "Environment":
 				mainModule.startColor = Color.green;
@@ -235,20 +233,29 @@ public class Project : NetworkBehaviour
 		}
 		ParticlesApproval.Play();
 		ShowLogo();
-	    int toPay = Mathf.RoundToInt(Mathf.Abs(Budget / Choice1) + DiscussionManager.Instance.ExtraCost);
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", -toPay);
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", DiscussionManager.Instance.TotalInfluence);
+		//Only approved pay
+		if (Approved)
+		{
+			int toPay = Mathf.RoundToInt(Mathf.Abs(Budget / Choice1) + DiscussionManager.Instance.ExtraCost);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", -toPay);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", DiscussionManager.Instance.TotalInfluence);
+			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MoneySpent",toPay);
+		}
+		if (isServer)
+		{
+			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Accepted", 0);
+		}
 	}
 
 	public void TriggerRejected()
 	{
 		var mainModule = ParticlesApproval.main;
 		mainModule.startColor = Color.red;
-
 		ParticlesApproval.Play();
 		ShowLogo();
 		if (isServer)
 		{
+			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Failed", 0);
 			Invoke("RemoveProject", 10f);
 			Invoke("DestroyObject", 11);
 		}

@@ -44,11 +44,11 @@ public class DiscussionManager : AManager<DiscussionManager> {
 	{
 		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
-        BlockInteraction.SetActive(false);
+		BlockInteraction.SetActive(false);
 
-    }
+	}
 
-    void ClientDisconnect()
+	void ClientDisconnect()
 	{
 		if(ProjectManager.Instance.SelectedProject  != null)
 			CancelVote();
@@ -59,54 +59,54 @@ public class DiscussionManager : AManager<DiscussionManager> {
 			Reset();
 	}
 	public void ChangeVoterState(string voter, string state)
-    {
-        UIManager.Instance.ShowInfoScreen();
-        switch (voter)
+	{
+		UIManager.Instance.ShowInfoScreen();
+		switch (voter)
 		{
 			case "Environment":
-		        if (state == "Approved")
-                {
-                    EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                }
-                if (state == "Denied")
-		        {
-                    EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                }
-                break;
+				if (state == "Approve")
+				{
+					EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+				}
+				if (state == "Deny")
+				{
+					EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+				}
+				break;
 			case "Social":
-		        if (state == "Approved")
-                {
-                    SocialVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                }
-		        if (state == "Denied")
-                {
-                    SocialVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                }
+				if (state == "Approve")
+				{
+					SocialVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+				}
+				if (state == "Deny")
+				{
+					SocialVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+				}
 				break;
 			case "Finance":
-		        if (state == "Approved")
-                {
-                    FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
-                }
-		        if (state == "Denied")
-                {
-                    FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                    UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
-                    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
-                }
+				if (state == "Approve")
+				{
+					FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+				}
+				if (state == "Deny")
+				{
+					FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+					UIManager.Instance.InfoText.text = "Player <color=red>" + voter + "</color> voted";
+					UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+				}
 				break;
 		}
-    }
+	}
 
 	void Update()
 	{
@@ -155,11 +155,11 @@ public class DiscussionManager : AManager<DiscussionManager> {
 		DenyButton.gameObject.SetActive(true);
 		BlockInteraction.SetActive(true);
 
-        UIManager.Instance.InfoText.text = "Project Started By:\n <color=red>" + Proposer +"</color>";
-	    UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ExclamationSprite;
+		UIManager.Instance.InfoText.text = "Project Started By:\n <color=red>" + Proposer +"</color>";
+		UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ExclamationSprite;
 	}
 
-    void UpdateVars()
+	void UpdateVars()
 	{
 		int finVal = Mathf.RoundToInt(Mathf.Abs(FinanceSlider.value));
 		int socVal = Mathf.RoundToInt(Mathf.Abs(SocialSlider.value));
@@ -196,6 +196,7 @@ public class DiscussionManager : AManager<DiscussionManager> {
 	{
 		ExtraCost = currentExtraCost;
 		TotalInfluence = currentExtraInfluence + Influence;
+		ProjectManager.Instance.SelectedProject.Approved = true;
 		CellManager.Instance.NetworkCommunicator.UpdateProjectVars((int)FinanceSlider.value, (int)SocialSlider.value, (int)EnvironmentSlider.value);
 		CellManager.Instance.NetworkCommunicator.Vote("Choice1", LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
 		HideButtons();
@@ -203,6 +204,7 @@ public class DiscussionManager : AManager<DiscussionManager> {
 
 	public void VoteDeny()
 	{
+		ProjectManager.Instance.SelectedProject.Approved = false;
 		CellManager.Instance.NetworkCommunicator.Vote("Choice2", LevelManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
 		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", Influence);
 		HideButtons();

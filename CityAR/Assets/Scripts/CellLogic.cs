@@ -68,7 +68,7 @@ public class CellLogic : MonoBehaviour {
     void Update()
     {
         if(SaveStateManager.Instance!=null)
-            _chunkValue = SaveStateManager.Instance.CellMaxValue / 4;
+            _chunkValue = Vars.Instance.SingleCellMaxVal / 4;
         switch (CurrentState)
         {
             case HeatmapState.Default:

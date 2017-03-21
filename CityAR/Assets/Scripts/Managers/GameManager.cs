@@ -13,11 +13,11 @@ public class GameManager : NetworkBehaviour
 	public string FinanceState;
 	[SyncVar]
 	public string SocialState;
-
+	[SyncVar]
+	public float CurrentTime;
 	private string MyState;
 	private int currentEvent;
 	public static GameManager Instance;
-	private float currentTime;
 	public float eventTime;
 
 	void Awake()
@@ -33,9 +33,10 @@ public class GameManager : NetworkBehaviour
 	{
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
+		InvokeRepeating("CheckWinState", 0, 1f);
+	}
 
-    }
-    void NetworkDisconnect()
+	void NetworkDisconnect()
 	{
 		StopAllCoroutines();
 		StartCoroutine(EndDiscussion());
@@ -47,12 +48,91 @@ public class GameManager : NetworkBehaviour
 		StartCoroutine(EndDiscussion());
 	}
 
-    void Update ()
+	void Update ()
 	{
+		if (isServer)
+		{
+			CurrentTime += Time.deltaTime;
+		}
+		UIManager.Instance.TimeText.text = Utilities.DisplayTime(CurrentTime);
+	}
+	#region GameEnd
+	void CheckWinState()
+	{
+		if (CurrentTime >= Vars.Instance.GameEndTime)
+		{
+			UIManager.Instance.GameEndResult.text = TextManager.Instance.TimeWinText;
+            UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+            CalculateAchievements();
+		}
+		if (CellManager.Instance.CurrentSocialGlobal >= Vars.Instance.UtopiaRate &&
+			CellManager.Instance.CurrentEnvironmentGlobal >= Vars.Instance.UtopiaRate &&
+			CellManager.Instance.CurrentFinanceGlobal >= Vars.Instance.UtopiaRate)
+		{
+			UIManager.Instance.GameEndResult.text = TextManager.Instance.UtopiaWinText;
+            UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+            CalculateAchievements();
+		}
+
+		foreach (SaveStateManager.PlayerStats player in SaveStateManager.Instance.Players)
+		{
+			if (player.Rank == Vars.Instance.MayorLevel)
+			{
+				UIManager.Instance.GameEndResult.text = TextManager.Instance.MayorWinText;
+				UIManager.Instance.GameEndExtraText.text = TextManager.Instance.MayorAnnounceText;
+
+				if (player.Player == LevelManager.Instance.RoleType)
+				{
+					UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+				}
+				else
+				{
+					switch (player.Player)
+					{
+						case Vars.Player1:
+							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.FinanceWin;
+
+							break;
+						case Vars.Player2:
+							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.SocialWin;
+
+							break;
+						case Vars.Player3:
+							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.EnvironmentWin;
+
+							break;
+					}
+				}
+				CalculateAchievements();
+			}
+		}
+	}
+
+	void CalculateAchievements()
+	{
+		EventDispatcher.TriggerEvent("GameEnd");
+		CancelInvoke("CheckWinState");
+	    StartCoroutine(DisplayGameEndStates());
+		UIManager.Instance.Change(UIManager.UiState.GameEnd);
 
 	}
 
-	void CheckMyState()
+    IEnumerator DisplayGameEndStates()
+    {
+        UIManager.Instance.DisplayEndStates("EndStateStart");
+        yield return new WaitForSeconds(5f);
+        UIManager.Instance.DisplayEndStates("GlobalEndState");
+        yield return new WaitForSeconds(5f);
+        UIManager.Instance.DisplayEndStates("PlayerAchievements1");
+        yield return new WaitForSeconds(5f);
+        UIManager.Instance.DisplayEndStates("PlayerAchievements2");
+        yield return new WaitForSeconds(5f);
+        UIManager.Instance.DisplayEndStates("PlayerStats");
+    }
+    #endregion
+
+    #region Discussion State
+    void CheckMyState()
 	{
 		if (LevelManager.Instance.RoleType == "Environment")
 			MyState = EnvironmentState;
@@ -75,14 +155,14 @@ public class GameManager : NetworkBehaviour
 		yield return new WaitForSeconds(1f);
 		UIManager.Instance.ShowProjectDisplay();
 		UIManager.Instance.ShowDiscussionPanel();
-        UIManager.Instance.ShowInfoScreen();
-    }
+		UIManager.Instance.ShowInfoScreen();
+	}
 
-    IEnumerator EndDiscussion()
+	IEnumerator EndDiscussion()
 	{
 		UIManager.Instance.HideProjectDisplay();
 		UIManager.Instance.HideDiscussionPanel();
-        yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(1f);
 		UIManager.Instance.GameUI();
 	}
 
@@ -116,4 +196,5 @@ public class GameManager : NetworkBehaviour
 			}
 		}
 	}
+	#endregion
 }
