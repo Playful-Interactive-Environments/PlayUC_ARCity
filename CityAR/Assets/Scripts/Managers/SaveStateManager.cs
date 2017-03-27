@@ -23,9 +23,48 @@ public class SaveStateManager : NetworkBehaviour
 	public EventSave GlobalSave;
 	private string _savePath;
 
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
+    }
 
+    void Start()
+    {
+        if (isServer)
+        {
+            //init player save
+            Players.Add(new PlayerStats("Finance", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+            Players.Add(new PlayerStats("Social", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+            Players.Add(new PlayerStats("Environment", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+            //init project data save
+            PlayerProjects.Add(new ProjectStats("Finance", 0, 0, 0, 0, 0, 0));
+            PlayerProjects.Add(new ProjectStats("Social", 0, 0, 0, 0, 0, 0));
+            PlayerProjects.Add(new ProjectStats("Environment", 0, 0, 0, 0, 0, 0));
+            //init mini game data save
+            PlayerMiniGames.Add(new MiniGameStats("Finance", 0, 0, 0, 0, 0));
+            PlayerMiniGames.Add(new MiniGameStats("Social", 0, 0, 0, 0, 0));
+            PlayerMiniGames.Add(new MiniGameStats("Environment", 0, 0, 0, 0, 0));
+            //init event logging
+            GlobalSave = new EventSave();
+        }
+        //create new json file
+        _savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+        File.WriteAllText(_savePath, "New Game");
+    }
 
-	public class EventSave
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            RecordData();
+        }
+    }
+
+    #region Saving Player Data
+    public class EventSave
 	{
 		public string TimeStamp;
 		public string Event;
@@ -59,20 +98,55 @@ public class SaveStateManager : NetworkBehaviour
 		public int Proposed;
 		public int Approved;
 		public int Denied;
-		public int Accepted;
+		public int Successful;
 		public int Failed;
 		public int MoneySpent;
-		public ProjectStats(string player, int proposed, int approved, int denied, int accepted, int failed, int money)
+		public ProjectStats(string player, int proposed, int approved, int denied, int successful, int failed, int money)
 		{
 			Player = player;
 			Proposed = proposed;
 			Approved = approved;
 			Denied = denied;
-			Accepted = accepted;
+			Successful = successful;
 			Failed = failed;
 			MoneySpent = money;
 		}
 	}
+
+    public int GetAllSucessful(string data)
+    {
+        int number = 0;
+        foreach (ProjectStats project in PlayerProjects)
+        {
+            number += project.Successful;
+        }
+        return number;
+    }
+
+    public Sprite GetSuccessfulPlayer()
+    {
+        int val1 = 0;
+        int val2 = 0;
+        int val3 = 0;
+        foreach (ProjectStats project in PlayerProjects)
+        {
+            if (project.Player == Vars.Player1)
+                val1 += 1;
+            if (project.Player == Vars.Player2)
+                val2 += 1;
+            if (project.Player == Vars.Player3)
+                val3 += 1;
+        }
+        int mostProjects = Utilities.GetHighestVal(val1, val2, val3);
+        if (mostProjects == val1)
+            return UIManager.Instance.Player1_winSprite;
+        if (mostProjects == val2)
+            return UIManager.Instance.Player2_winSprite;
+        if (mostProjects == val3)
+            return UIManager.Instance.Player3_winSprite;
+        else return UIManager.Instance.DefaultSprite;
+    }
+
 	public struct MiniGameStats
 	{
 		public string Player;
@@ -92,6 +166,7 @@ public class SaveStateManager : NetworkBehaviour
 			Fails = fails;
 		}
 	}
+
 	public void AddMiniGameStats(string owner, string action)
 	{
 		MiniGameStats dataOld = new MiniGameStats();
@@ -148,19 +223,19 @@ public class SaveStateManager : NetworkBehaviour
 				switch (action)
 				{
 					case "Propose":
-						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed + 1, playerdata.Approved, playerdata.Denied, playerdata.Accepted, playerdata.Failed, playerdata.MoneySpent);
+						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed + 1, playerdata.Approved, playerdata.Denied, playerdata.Successful, playerdata.Failed, playerdata.MoneySpent);
 						break;
 					case "Approve":
-						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved + 1, playerdata.Denied, playerdata.Accepted, playerdata.Failed, playerdata.MoneySpent);
+						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved + 1, playerdata.Denied, playerdata.Successful, playerdata.Failed, playerdata.MoneySpent);
 						break;
 					case "Deny":
-						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied + 1, playerdata.Accepted, playerdata.Failed, playerdata.MoneySpent);
+						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied + 1, playerdata.Successful, playerdata.Failed, playerdata.MoneySpent);
 						break;
-					case "Accepted":
-						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Accepted + 1, playerdata.Failed, playerdata.MoneySpent);
+					case "Successful":
+						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Successful + 1, playerdata.Failed, playerdata.MoneySpent);
 						break;
 					case "Failed":
-						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Accepted, playerdata.Failed + 1, playerdata.MoneySpent);
+						dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Successful, playerdata.Failed + 1, playerdata.MoneySpent);
 						break;
 				}
 				dataOld = playerdata;
@@ -178,56 +253,13 @@ public class SaveStateManager : NetworkBehaviour
 		{
 			if (playerdata.Player == owner)
 			{
-				dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Accepted, playerdata.Failed, playerdata.MoneySpent + amount);
+				dataNew = new ProjectStats(playerdata.Player, playerdata.Proposed, playerdata.Approved, playerdata.Denied, playerdata.Successful, playerdata.Failed, playerdata.MoneySpent + amount);
 				dataOld = playerdata;
 			}
 		}
 		PlayerProjects.Remove(dataOld);
 		PlayerProjects.Add(dataNew);
 	}
-
-	void Awake () {
-		if (Instance == null)
-			Instance = this;
-		else if (Instance != this)
-			Destroy(gameObject);
-	}
-
-	void Start()
-	{
-		if (isServer)
-		{
-			//init player save
-			Players.Add(new PlayerStats("Finance", false, 0, Vars.Instance.StartingBudget, defaultConnId,0,0));
-			Players.Add(new PlayerStats("Social", false, 0, Vars.Instance.StartingBudget, defaultConnId,0,0));
-			Players.Add(new PlayerStats("Environment", false, 0, Vars.Instance.StartingBudget, defaultConnId,0,0));
-			//init project data save
-			PlayerProjects.Add(new ProjectStats("Finance", 0, 0, 0, 0, 0, 0));
-			PlayerProjects.Add(new ProjectStats("Social", 0, 0, 0, 0, 0, 0));
-			PlayerProjects.Add(new ProjectStats("Environment", 0, 0, 0, 0, 0, 0));
-			//init mini game data save
-			PlayerMiniGames.Add(new MiniGameStats("Finance", 0, 0, 0, 0, 0));
-			PlayerMiniGames.Add(new MiniGameStats("Social", 0, 0, 0, 0, 0));
-			PlayerMiniGames.Add(new MiniGameStats("Environment", 0, 0, 0, 0, 0));
-			//init event logging
-			GlobalSave = new EventSave();          
-		}
-		//create new json file
-		_savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
-		File.WriteAllText(_savePath, "New Game");
-	}
-
-	void Update ()
-	{
-		if (Input.GetKeyDown(KeyCode.A))
-		{
-			RecordData();
-		}
-
-
-	}
-
-	#region Saving Player Data
 
 	public void RecordData()
 	{
@@ -455,7 +487,7 @@ public class SaveStateManager : NetworkBehaviour
 			case "Approve":
 				AddProjectAction(roletype, datatype);
 				break;
-			case "Accepted":
+			case "Successful":
 				AddProjectAction(roletype, datatype);
 				break;
 			case "Failed":
@@ -479,6 +511,4 @@ public class SaveStateManager : NetworkBehaviour
 		}
 	}
 	#endregion
-
-
 }

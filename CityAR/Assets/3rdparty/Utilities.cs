@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public static class Utilities
 {
@@ -17,19 +19,19 @@ public static class Utilities
 
 	public static float GetLowerVal(float value1, float value2)
 	{
-		if (value1 < value2)
-			return value1;
-		if (value2 < value1)
-			return value2;
-		else return value1;
-	}
+        return Mathf.Min(value1, value2);
+    }
     public static float GetHigherVal(float value1, float value2)
     {
-        if (value1 > value2)
-            return value1;
-        if (value2 > value1)
-            return value2;
-        else return value1;
+        return Mathf.Max(value1, value2);
+    }
+    public static int GetHighestVal(int value1, int value2, int value3)
+    {
+        return Math.Max(value1, Math.Max(value2, value3));
+    }
+    public static int GetLowestVal(int value1, int value2, int value3)
+    {
+        return Math.Min(value1, Math.Min(value2, value3));
     }
     public static void RotateX(this Vector3 v, float angle)
     {

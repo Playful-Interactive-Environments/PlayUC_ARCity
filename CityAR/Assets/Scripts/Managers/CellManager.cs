@@ -25,7 +25,44 @@ public class CellManager : NetworkBehaviour
 	public int CurrentFinanceGlobal;
 	private CellGrid _cellGrid;
 
-	void Awake()
+    public int GetTotalAddedValue()
+    {
+        return (CurrentEnvironmentGlobal + CurrentFinanceGlobal + CurrentSocialGlobal) -
+               (totalStartingFinance + totalStartingEnvironment + totalStartingSocial);
+    }
+
+    public int GetMostImprovedValue()
+    {
+        return Utilities.GetHighestVal(CurrentSocialGlobal - totalStartingSocial,
+            CurrentEnvironmentGlobal - totalStartingEnvironment, CurrentFinanceGlobal - totalStartingFinance);
+    }
+    public int GetLeastImprovedValue()
+    {
+        return Utilities.GetLowestVal(CurrentSocialGlobal - totalStartingSocial,
+            CurrentEnvironmentGlobal - totalStartingEnvironment, CurrentFinanceGlobal - totalStartingFinance);
+    }
+    public void GetValueImages()
+    {
+        int highestVal = Utilities.GetHighestVal(CurrentSocialGlobal, CurrentEnvironmentGlobal, CurrentFinanceGlobal);
+        if (highestVal == CurrentEnvironmentGlobal)
+            UIManager.Instance.MostImprovedFieldImage.sprite = UIManager.Instance.Player3_winSprite;
+        if(highestVal == CurrentSocialGlobal)
+            UIManager.Instance.MostImprovedFieldImage.sprite = UIManager.Instance.Player2_winSprite;
+        if (highestVal == CurrentFinanceGlobal)
+            UIManager.Instance.MostImprovedFieldImage.sprite = UIManager.Instance.Player1_winSprite;
+
+        int lowestVal = Utilities.GetLowestVal(CurrentSocialGlobal, CurrentEnvironmentGlobal, CurrentFinanceGlobal);
+        if (lowestVal == CurrentEnvironmentGlobal)
+            UIManager.Instance.LeastImprovedFieldImage.sprite = UIManager.Instance.Player3_winSprite;
+        if (lowestVal == CurrentSocialGlobal)
+            UIManager.Instance.LeastImprovedFieldImage.sprite = UIManager.Instance.Player2_winSprite;
+        if (lowestVal == CurrentFinanceGlobal)
+            UIManager.Instance.LeastImprovedFieldImage.sprite = UIManager.Instance.Player1_winSprite;
+    }
+
+
+
+    void Awake()
 	{
 		if (Instance == null)
 			Instance = this;
@@ -58,6 +95,9 @@ public class CellManager : NetworkBehaviour
 		randSum(_cellGrid.Count, maxTotalValue, "Social");
 		randSum(_cellGrid.Count, maxTotalValue, "Environment");
 		randSum(_cellGrid.Count, maxTotalValue, "Finance");
+	    totalStartingSocial = CurrentSocialGlobal;
+	    totalStartingEnvironment = CurrentEnvironmentGlobal;
+	    totalStartingFinance = CurrentFinanceGlobal;
 	}
 
 	private float[] randSum(int n, int m, string type)

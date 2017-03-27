@@ -243,7 +243,7 @@ public class Project : NetworkBehaviour
 		}
 		if (isServer)
 		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Accepted", 0);
+			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Successful", 0);
 		}
 	}
 

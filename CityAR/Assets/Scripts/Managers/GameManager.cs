@@ -17,8 +17,10 @@ public class GameManager : NetworkBehaviour
 	public float CurrentTime;
 	private string MyState;
 	private int currentEvent;
-	public static GameManager Instance;
 	public float eventTime;
+    public static GameManager Instance;
+    private UIManager UiM;
+    private SaveStateManager SaveData;
 
 	void Awake()
 	{
@@ -34,6 +36,8 @@ public class GameManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
 		InvokeRepeating("CheckWinState", 0, 1f);
+	    UiM = UIManager.Instance;
+        SaveData = SaveStateManager.Instance;
 	}
 
 	void NetworkDisconnect()
@@ -54,52 +58,51 @@ public class GameManager : NetworkBehaviour
 		{
 			CurrentTime += Time.deltaTime;
 		}
-		UIManager.Instance.TimeText.text = Utilities.DisplayTime(CurrentTime);
+		UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
 	}
 	#region GameEnd
 	void CheckWinState()
 	{
+        //TIME END
 		if (CurrentTime >= Vars.Instance.GameEndTime)
 		{
-			UIManager.Instance.GameEndResult.text = TextManager.Instance.TimeWinText;
-            UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+            UiM.GameEndResult.text = TextManager.Instance.TimeWinText;
+            UiM.GameEndResultImage.sprite = UiM.YouWin;
             CalculateAchievements();
 		}
-		if (CellManager.Instance.CurrentSocialGlobal >= Vars.Instance.UtopiaRate &&
+        //UTOPIA END
+        if (CellManager.Instance.CurrentSocialGlobal >= Vars.Instance.UtopiaRate &&
 			CellManager.Instance.CurrentEnvironmentGlobal >= Vars.Instance.UtopiaRate &&
 			CellManager.Instance.CurrentFinanceGlobal >= Vars.Instance.UtopiaRate)
 		{
-			UIManager.Instance.GameEndResult.text = TextManager.Instance.UtopiaWinText;
-            UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+            UiM.GameEndResult.text = TextManager.Instance.UtopiaWinText;
+            UiM.GameEndResultImage.sprite = UiM.YouWin;
             CalculateAchievements();
 		}
-
-		foreach (SaveStateManager.PlayerStats player in SaveStateManager.Instance.Players)
+        //MAYOR END
+        foreach (SaveStateManager.PlayerStats player in SaveData.Players)
 		{
 			if (player.Rank == Vars.Instance.MayorLevel)
 			{
-				UIManager.Instance.GameEndResult.text = TextManager.Instance.MayorWinText;
-				UIManager.Instance.GameEndExtraText.text = TextManager.Instance.MayorAnnounceText;
+                UiM.GameEndResult.text = TextManager.Instance.MayorWinText;
+                UiM.GameEndExtraText.text = TextManager.Instance.MayorAnnounceText;
 
 				if (player.Player == LevelManager.Instance.RoleType)
 				{
-					UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.YouWin;
+                    UiM.GameEndResultImage.sprite = UiM.YouWin;
 				}
 				else
 				{
 					switch (player.Player)
 					{
 						case Vars.Player1:
-							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.FinanceWin;
-
+                            UiM.GameEndResultImage.sprite = UiM.Player1_winSprite;
 							break;
 						case Vars.Player2:
-							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.SocialWin;
-
+                            UiM.GameEndResultImage.sprite = UiM.Player2_winSprite;
 							break;
 						case Vars.Player3:
-							UIManager.Instance.GameEndResultImage.sprite = UIManager.Instance.EnvironmentWin;
-
+                            UiM.GameEndResultImage.sprite = UiM.Player3_winSprite;
 							break;
 					}
 				}
@@ -112,22 +115,31 @@ public class GameManager : NetworkBehaviour
 	{
 		EventDispatcher.TriggerEvent("GameEnd");
 		CancelInvoke("CheckWinState");
+        StopAllCoroutines();
 	    StartCoroutine(DisplayGameEndStates());
-		UIManager.Instance.Change(UIManager.UiState.GameEnd);
-
+        UiM.Change(UIManager.UiState.GameEnd);
+        //Calculate Global End State Vars
+	    UiM.TimePlayedN.text = Utilities.DisplayTime(CurrentTime);
+	    UiM.SuccessfulProjectN.text = "" + SaveData.GetAllSucessful("SuccessfulProjectN");
+        UiM.TotalAddedValueN.text = "" + CellManager.Instance.GetTotalAddedValue();
+	    UiM.MostImprovedFieldN.text = "" + CellManager.Instance.GetMostImprovedValue();
+        UiM.LeastImprovedFieldN.text = "" + CellManager.Instance.GetLeastImprovedValue();
+        CellManager.Instance.GetValueImages();
+        //Calculate Player Achievements 1
+	    UiM.MostSuccessfulProjects.sprite = SaveStateManager.Instance.GetSuccessfulPlayer();
 	}
 
     IEnumerator DisplayGameEndStates()
     {
-        UIManager.Instance.DisplayEndStates("EndStateStart");
+        UiM.DisplayEndStates("EndStateStart");
         yield return new WaitForSeconds(5f);
-        UIManager.Instance.DisplayEndStates("GlobalEndState");
+        UiM.DisplayEndStates("GlobalEndState");
         yield return new WaitForSeconds(5f);
-        UIManager.Instance.DisplayEndStates("PlayerAchievements1");
+        UiM.DisplayEndStates("PlayerAchievements1");
         yield return new WaitForSeconds(5f);
-        UIManager.Instance.DisplayEndStates("PlayerAchievements2");
+        UiM.DisplayEndStates("PlayerAchievements2");
         yield return new WaitForSeconds(5f);
-        UIManager.Instance.DisplayEndStates("PlayerStats");
+        UiM.DisplayEndStates("PlayerStats");
     }
     #endregion
 
@@ -153,17 +165,17 @@ public class GameManager : NetworkBehaviour
 		}
 		EventDispatcher.TriggerEvent("StartDiscussion");
 		yield return new WaitForSeconds(1f);
-		UIManager.Instance.ShowProjectDisplay();
-		UIManager.Instance.ShowDiscussionPanel();
-		UIManager.Instance.ShowInfoScreen();
+        UiM.ShowProjectDisplay();
+        UiM.ShowDiscussionPanel();
+        UiM.ShowInfoScreen();
 	}
 
 	IEnumerator EndDiscussion()
 	{
-		UIManager.Instance.HideProjectDisplay();
-		UIManager.Instance.HideDiscussionPanel();
+        UiM.HideProjectDisplay();
+        UiM.HideDiscussionPanel();
 		yield return new WaitForSeconds(1f);
-		UIManager.Instance.GameUI();
+        UiM.GameUI();
 	}
 
 	public void SetState(string player, string state)

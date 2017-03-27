@@ -80,44 +80,20 @@ public class UIManager : AManager<UIManager>
 	public GameObject PlayerAchievements2;
 	public GameObject PlayerStats;
 
-	public void DisplayEndStates(string state)
-	{
-        EndStateStart.gameObject.SetActive(false);
-		GlobalEndState.gameObject.SetActive(false);
-		PlayerAchievements1.gameObject.SetActive(false);
-		PlayerAchievements2.gameObject.SetActive(false);
-		PlayerStats.gameObject.SetActive(false);
-		switch (state)
-		{
-            case "EndStateStart":
-                EndStateStart.gameObject.SetActive(true);
-		        break;
-            case "GlobalEndState":
-				GlobalEndState.gameObject.SetActive(true);
-				break;
-			case "PlayerAchievements1":
-                PlayerAchievements1.gameObject.SetActive(true);
-				break;
-			case "PlayerAchievements2":
-                PlayerAchievements2.gameObject.SetActive(true);
-				break;
-			case "PlayerStats":
-                PlayerStats.gameObject.SetActive(true);
-				break;
-		}
-	}
-	[Header("Global Achievements")]
+
+    [Header("Global Achievements")]
 	public TextMeshProUGUI GameEndExtraText;
 	public TextMeshProUGUI GameEndResult;
 	public TextMeshProUGUI TimePlayedN;
 	public TextMeshProUGUI SuccessfulProjectN;
 	public TextMeshProUGUI TotalAddedValueN;
-	public Image GameEndResultImage;
-	public Image MostImprovedFieldN;
-	public Image LeastImprovedFieldN;
+    public TextMeshProUGUI MostImprovedFieldN;
+    public TextMeshProUGUI LeastImprovedFieldN;
+    public Image GameEndResultImage;
+	public Image MostImprovedFieldImage;
+	public Image LeastImprovedFieldImage;
 	[Header("Player Achievements 1")]
 	public Image MostSuccessfulProjects;
-	public Image ImprovedFieldMost;
 	public Image MostMoneySpent;
 	public Image MostBudgetLeft;
 	public Image HighestInfluence;
@@ -144,9 +120,9 @@ public class UIManager : AManager<UIManager>
 	public Sprite DenySprite;
 	public Sprite ExclamationSprite;
 	public Sprite QuestionSprite;
-	public Sprite EnvironmentWin;
-	public Sprite SocialWin;
-	public Sprite FinanceWin;
+	public Sprite Player3_winSprite;
+	public Sprite Player2_winSprite;
+	public Sprite Player1_winSprite;
 	public Sprite YouWin;
 	private int[] savevalues = new int[5]; //array that stores values from previous update
 
@@ -546,9 +522,39 @@ public class UIManager : AManager<UIManager>
 	{
 		Change(UiState.Role);
 	}
-	#endregion
+    #endregion
 
-	public void ResetMenus()
+
+    #region GameEnd
+    public void DisplayEndStates(string state)
+    {
+        EndStateStart.gameObject.SetActive(false);
+        GlobalEndState.gameObject.SetActive(false);
+        PlayerAchievements1.gameObject.SetActive(false);
+        PlayerAchievements2.gameObject.SetActive(false);
+        PlayerStats.gameObject.SetActive(false);
+        switch (state)
+        {
+            case "EndStateStart":
+                EndStateStart.gameObject.SetActive(true);
+                break;
+            case "GlobalEndState":
+                GlobalEndState.gameObject.SetActive(true);
+                break;
+            case "PlayerAchievements1":
+                PlayerAchievements1.gameObject.SetActive(true);
+                break;
+            case "PlayerAchievements2":
+                PlayerAchievements2.gameObject.SetActive(true);
+                break;
+            case "PlayerStats":
+                PlayerStats.gameObject.SetActive(true);
+                break;
+        }
+    }
+    #endregion
+
+    public void ResetMenus()
 	{
 		Change(UiState.Network);
 	}
@@ -564,10 +570,12 @@ public class UIManager : AManager<UIManager>
 	{
 		MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
 	}
+
 	public void Debug_3()
 	{
 		MGManager.Instance.SwitchState(MGManager.MGState.Area);
 	}
+
 	public void Debug_1()
 	{
 		MGManager.Instance.SwitchState(MGManager.MGState.Sort);
