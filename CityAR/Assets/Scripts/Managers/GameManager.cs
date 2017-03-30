@@ -18,9 +18,9 @@ public class GameManager : NetworkBehaviour
 	private string MyState;
 	private int currentEvent;
 	public float eventTime;
-    public static GameManager Instance;
-    private UIManager UiM;
-    private SaveStateManager SaveData;
+	public static GameManager Instance;
+	private UIManager UiM;
+	private SaveStateManager SaveData;
 
 	void Awake()
 	{
@@ -36,8 +36,8 @@ public class GameManager : NetworkBehaviour
 		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
 		EventDispatcher.StartListening("ClientDisconnect", ClientDisconnect);
 		InvokeRepeating("CheckWinState", 0, 1f);
-	    UiM = UIManager.Instance;
-        SaveData = SaveStateManager.Instance;
+		UiM = UIManager.Instance;
+		SaveData = SaveStateManager.Instance;
 	}
 
 	void NetworkDisconnect()
@@ -60,49 +60,50 @@ public class GameManager : NetworkBehaviour
 		}
 		UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
 	}
+
 	#region GameEnd
 	void CheckWinState()
 	{
-        //TIME END
+		//TIME END
 		if (CurrentTime >= Vars.Instance.GameEndTime)
 		{
-            UiM.GameEndResult.text = TextManager.Instance.TimeWinText;
-            UiM.GameEndResultImage.sprite = UiM.YouWin;
-            CalculateAchievements();
+			UiM.GameEndResult.text = TextManager.Instance.TimeWinText;
+			UiM.GameEndResultImage.sprite = UiM.YouWin;
+			CalculateAchievements();
 		}
-        //UTOPIA END
-        if (CellManager.Instance.CurrentSocialGlobal >= Vars.Instance.UtopiaRate &&
+		//UTOPIA END
+		if (CellManager.Instance.CurrentSocialGlobal >= Vars.Instance.UtopiaRate &&
 			CellManager.Instance.CurrentEnvironmentGlobal >= Vars.Instance.UtopiaRate &&
 			CellManager.Instance.CurrentFinanceGlobal >= Vars.Instance.UtopiaRate)
 		{
-            UiM.GameEndResult.text = TextManager.Instance.UtopiaWinText;
-            UiM.GameEndResultImage.sprite = UiM.YouWin;
-            CalculateAchievements();
+			UiM.GameEndResult.text = TextManager.Instance.UtopiaWinText;
+			UiM.GameEndResultImage.sprite = UiM.YouWin;
+			CalculateAchievements();
 		}
-        //MAYOR END
-        foreach (SaveStateManager.PlayerStats player in SaveData.Players)
+		//MAYOR END
+		foreach (SaveStateManager.PlayerStats player in SaveData.Players)
 		{
 			if (player.Rank == Vars.Instance.MayorLevel)
 			{
-                UiM.GameEndResult.text = TextManager.Instance.MayorWinText;
-                UiM.GameEndExtraText.text = TextManager.Instance.MayorAnnounceText;
+				UiM.GameEndResult.text = TextManager.Instance.MayorWinText;
+				UiM.GameEndExtraText.text = TextManager.Instance.MayorAnnounceText;
 
 				if (player.Player == LevelManager.Instance.RoleType)
 				{
-                    UiM.GameEndResultImage.sprite = UiM.YouWin;
+					UiM.GameEndResultImage.sprite = UiM.YouWin;
 				}
 				else
 				{
 					switch (player.Player)
 					{
 						case Vars.Player1:
-                            UiM.GameEndResultImage.sprite = UiM.Player1_winSprite;
+							UiM.GameEndResultImage.sprite = UiM.Player1_winSprite;
 							break;
 						case Vars.Player2:
-                            UiM.GameEndResultImage.sprite = UiM.Player2_winSprite;
+							UiM.GameEndResultImage.sprite = UiM.Player2_winSprite;
 							break;
 						case Vars.Player3:
-                            UiM.GameEndResultImage.sprite = UiM.Player3_winSprite;
+							UiM.GameEndResultImage.sprite = UiM.Player3_winSprite;
 							break;
 					}
 				}
@@ -113,38 +114,45 @@ public class GameManager : NetworkBehaviour
 
 	void CalculateAchievements()
 	{
+		//End Game 
+		CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "GameEnd");
 		EventDispatcher.TriggerEvent("GameEnd");
 		CancelInvoke("CheckWinState");
-        StopAllCoroutines();
-	    StartCoroutine(DisplayGameEndStates());
-        UiM.Change(UIManager.UiState.GameEnd);
-        //Calculate Global End State Vars
-	    UiM.TimePlayedN.text = Utilities.DisplayTime(CurrentTime);
-	    UiM.SuccessfulProjectN.text = "" + SaveData.GetAllSucessful("SuccessfulProjectN");
-        UiM.TotalAddedValueN.text = "" + CellManager.Instance.GetTotalAddedValue();
-	    UiM.MostImprovedFieldN.text = "" + CellManager.Instance.GetMostImprovedValue();
-        UiM.LeastImprovedFieldN.text = "" + CellManager.Instance.GetLeastImprovedValue();
-        CellManager.Instance.GetValueImages();
-        //Calculate Player Achievements 1
-	    UiM.MostSuccessfulProjects.sprite = SaveStateManager.Instance.GetSuccessfulPlayer();
+		StopAllCoroutines();
+		UiM.DisplayEndStates("EndStateStart");
+		//StartCoroutine(DisplayGameEndStates());
+		UiM.Change(UIManager.UiState.GameEnd);
+		//Calculate Global End State Vars
+		UiM.TimePlayedN.text = Utilities.DisplayTime(CurrentTime);
+		UiM.SuccessfulProjectN.text = "" + SaveData.GetAllSucessful("SuccessfulProjectN");
+		UiM.TotalAddedValueN.text = "" + CellManager.Instance.GetTotalAddedValue();
+		UiM.MostImprovedFieldN.text = "" + CellManager.Instance.GetMostImprovedValue();
+		UiM.LeastImprovedFieldN.text = "" + CellManager.Instance.GetLeastImprovedValue();
+		CellManager.Instance.GetValueImages();
+        //Calculate Player Achievements
+        SaveData.CalculateAchievement("MostSuccessfulProjects");
+        SaveData.CalculateAchievement("MostMoneySpent");
+        SaveData.CalculateAchievement("HighestInfluence");
+        SaveData.CalculateAchievement("MostWinMiniGames");
+        SaveData.CalculateAchievement("LeastTimeMiniGames");
+        //Calculate Personal Stats
+        SaveData.CalculatePersonalStats();
 	}
 
-    IEnumerator DisplayGameEndStates()
-    {
-        UiM.DisplayEndStates("EndStateStart");
-        yield return new WaitForSeconds(5f);
-        UiM.DisplayEndStates("GlobalEndState");
-        yield return new WaitForSeconds(5f);
-        UiM.DisplayEndStates("PlayerAchievements1");
-        yield return new WaitForSeconds(5f);
-        UiM.DisplayEndStates("PlayerAchievements2");
-        yield return new WaitForSeconds(5f);
-        UiM.DisplayEndStates("PlayerStats");
-    }
-    #endregion
+	IEnumerator DisplayGameEndStates()
+	{
+		UiM.DisplayEndStates("EndStateStart");
+		yield return new WaitForSeconds(5f);
+		UiM.DisplayEndStates("GlobalEndState");
+		yield return new WaitForSeconds(5f);
+		UiM.DisplayEndStates("PlayerAchievements");
+		yield return new WaitForSeconds(5f);
+		UiM.DisplayEndStates("PlayerStats");
+	}
+	#endregion
 
-    #region Discussion State
-    void CheckMyState()
+	#region Discussion State
+	void CheckMyState()
 	{
 		if (LevelManager.Instance.RoleType == "Environment")
 			MyState = EnvironmentState;
@@ -158,6 +166,8 @@ public class GameManager : NetworkBehaviour
 	{
 		//if user is occupied wait until they finish
 		CheckMyState();
+		if(MyState == "GameEnd")
+			StopCoroutine(StartDiscussion());
 		while (MyState == "MiniGame")
 		{
 			CheckMyState();
@@ -165,17 +175,17 @@ public class GameManager : NetworkBehaviour
 		}
 		EventDispatcher.TriggerEvent("StartDiscussion");
 		yield return new WaitForSeconds(1f);
-        UiM.ShowProjectDisplay();
-        UiM.ShowDiscussionPanel();
-        UiM.ShowInfoScreen();
+		UiM.ShowProjectDisplay();
+		UiM.ShowDiscussionPanel();
+		UiM.ShowInfoScreen();
 	}
 
 	IEnumerator EndDiscussion()
 	{
-        UiM.HideProjectDisplay();
-        UiM.HideDiscussionPanel();
+		UiM.HideProjectDisplay();
+		UiM.HideDiscussionPanel();
 		yield return new WaitForSeconds(1f);
-        UiM.GameUI();
+		UiM.GameUI();
 	}
 
 	public void SetState(string player, string state)

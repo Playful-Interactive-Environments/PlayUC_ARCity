@@ -64,7 +64,6 @@ public class UIManager : AManager<UIManager>
 	public Text GlobalFinanceText;
 	public Text GlobalEnvironmentText;
 	public Text GlobalSocialText;
-
 	[Header("PROJECTS")]
 	public GameObject ProjectDisplay;
 	public GameObject Discussion;
@@ -73,46 +72,46 @@ public class UIManager : AManager<UIManager>
 	public TextMeshProUGUI InfoText;
 	public Text PlacementText;
 	public Button ProjectButton;
-    [Header("Game End Display Groups")]
-    public GameObject EndStateStart;
-    public GameObject GlobalEndState;
-	public GameObject PlayerAchievements1;
-	public GameObject PlayerAchievements2;
+	[Header("Game End Display Groups")]
+	public GameObject EndStateStart;
+	public GameObject GlobalEndState;
+	public GameObject PlayerAchievements;
 	public GameObject PlayerStats;
-
-
-    [Header("Global Achievements")]
+	[Header("Global Achievements")]
 	public TextMeshProUGUI GameEndExtraText;
 	public TextMeshProUGUI GameEndResult;
 	public TextMeshProUGUI TimePlayedN;
 	public TextMeshProUGUI SuccessfulProjectN;
 	public TextMeshProUGUI TotalAddedValueN;
-    public TextMeshProUGUI MostImprovedFieldN;
-    public TextMeshProUGUI LeastImprovedFieldN;
-    public Image GameEndResultImage;
+	public TextMeshProUGUI MostImprovedFieldN;
+	public TextMeshProUGUI LeastImprovedFieldN;
+	public Image GameEndResultImage;
 	public Image MostImprovedFieldImage;
 	public Image LeastImprovedFieldImage;
-	[Header("Player Achievements 1")]
+	[Header("Player Achievements")]
 	public Image MostSuccessfulProjects;
 	public Image MostMoneySpent;
-	public Image MostBudgetLeft;
 	public Image HighestInfluence;
-	[Header("Player Achievements 2")]
-	public Image MostQuests;
-	public Image MostApproved;
-	public Image MostDenied;
 	public Image MostWinMiniGames;
 	public Image LeastTimeMiniGames;
+	public TextMeshProUGUI MostSuccessfulProjectsN;
+	public TextMeshProUGUI MostMoneySpentN;
+	public TextMeshProUGUI HighestInfluenceN;
+	public TextMeshProUGUI MostWinMiniGamesN;
+	public TextMeshProUGUI LeastTimeMiniGamesN;
 	[Header("Personal Stats")]
 	public TextMeshProUGUI ProjectsProposed;
 	public TextMeshProUGUI ProjectsSuccessful;
 	public TextMeshProUGUI ProjectsFailed;
 	public TextMeshProUGUI ProjectsVotedApprove;
 	public TextMeshProUGUI ProjectsVotedDeny;
+	public TextMeshProUGUI QuestsCompleted;
 
 	[Header("OTHER ELEMENTS")]
 	public Button MenuButton;
 	public Button GlobalStateButton;
+	public Button GameEndPrevButton;
+	public Button GameEndNextButton;
 	public Text RoleDescriptionText;
 	public Text DebugText;
 	public Sprite DefaultSprite;
@@ -522,39 +521,80 @@ public class UIManager : AManager<UIManager>
 	{
 		Change(UiState.Role);
 	}
-    #endregion
+	#endregion
 
 
-    #region GameEnd
-    public void DisplayEndStates(string state)
-    {
-        EndStateStart.gameObject.SetActive(false);
-        GlobalEndState.gameObject.SetActive(false);
-        PlayerAchievements1.gameObject.SetActive(false);
-        PlayerAchievements2.gameObject.SetActive(false);
-        PlayerStats.gameObject.SetActive(false);
-        switch (state)
-        {
-            case "EndStateStart":
-                EndStateStart.gameObject.SetActive(true);
-                break;
-            case "GlobalEndState":
-                GlobalEndState.gameObject.SetActive(true);
-                break;
-            case "PlayerAchievements1":
-                PlayerAchievements1.gameObject.SetActive(true);
-                break;
-            case "PlayerAchievements2":
-                PlayerAchievements2.gameObject.SetActive(true);
-                break;
-            case "PlayerStats":
-                PlayerStats.gameObject.SetActive(true);
-                break;
-        }
-    }
-    #endregion
+	#region GameEnd
+	public void DisplayEndStates(string state)
+	{
+		EndStateStart.gameObject.SetActive(false);
+		GlobalEndState.gameObject.SetActive(false);
+		PlayerAchievements.gameObject.SetActive(false);
+		PlayerStats.gameObject.SetActive(false);
+		switch (state)
+		{
+			case "EndStateStart":
+				EndStateStart.gameObject.SetActive(true);
+				GameEndPrevButton.gameObject.SetActive(false);
+				break;
+			case "GlobalEndState":
+				GameEndPrevButton.gameObject.SetActive(true);
+				GlobalEndState.gameObject.SetActive(true);
+				break;
+			case "PlayerAchievements":
+				GameEndNextButton.gameObject.SetActive(true);
+				PlayerAchievements.gameObject.SetActive(true);
+				break;
+			case "PlayerStats":
+				GameEndNextButton.gameObject.SetActive(false);
+				PlayerStats.gameObject.SetActive(true);
+				break;
+		}
+	}
 
-    public void ResetMenus()
+	public void DisplayNext()
+	{
+		if (EndStateStart.activeInHierarchy)
+		{
+			DisplayEndStates("GlobalEndState");
+			return;
+		}
+
+		if (GlobalEndState.activeInHierarchy)
+		{
+			DisplayEndStates("PlayerAchievements");
+			return;
+		}
+
+		if (PlayerAchievements.activeInHierarchy)
+		{
+			DisplayEndStates("PlayerStats");
+			return;
+		}
+	}
+
+	public void DisplayPrev()
+	{
+		if (PlayerStats.activeInHierarchy)
+		{
+			DisplayEndStates("PlayerAchievements");
+			return;
+		}
+		if (PlayerAchievements.activeInHierarchy)
+		{
+			DisplayEndStates("GlobalEndState");
+			return;
+		}
+		if (GlobalEndState.activeInHierarchy)
+		{
+			DisplayEndStates("EndStateStart");
+			return;
+		}
+	}
+
+	#endregion
+
+	public void ResetMenus()
 	{
 		Change(UiState.Network);
 	}
@@ -575,7 +615,10 @@ public class UIManager : AManager<UIManager>
 	{
 		MGManager.Instance.SwitchState(MGManager.MGState.Area);
 	}
-
+	public void Debug_4()
+	{
+		GameManager.Instance.CurrentTime = Vars.Instance.GameEndTime;
+	}
 	public void Debug_1()
 	{
 		MGManager.Instance.SwitchState(MGManager.MGState.Sort);

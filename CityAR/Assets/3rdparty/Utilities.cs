@@ -19,66 +19,66 @@ public static class Utilities
 
 	public static float GetLowerVal(float value1, float value2)
 	{
-        return Mathf.Min(value1, value2);
-    }
-    public static float GetHigherVal(float value1, float value2)
-    {
-        return Mathf.Max(value1, value2);
-    }
-    public static int GetHighestVal(int value1, int value2, int value3)
-    {
-        return Math.Max(value1, Math.Max(value2, value3));
-    }
-    public static int GetLowestVal(int value1, int value2, int value3)
-    {
-        return Math.Min(value1, Math.Min(value2, value3));
-    }
-    public static void RotateX(this Vector3 v, float angle)
-    {
-        float sin = Mathf.Sin(angle);
-        float cos = Mathf.Cos(angle);
+		return Mathf.Min(value1, value2);
+	}
+	public static float GetHigherVal(float value1, float value2)
+	{
+		return Mathf.Max(value1, value2);
+	}
+	public static int GetHighestVal(int value1, int value2, int value3)
+	{
+		return Math.Max(value1, Math.Max(value2, value3));
+	}
+	public static int GetLowestVal(int value1, int value2, int value3)
+	{
+		return Math.Min(value1, Math.Min(value2, value3));
+	}
+	public static void RotateX(this Vector3 v, float angle)
+	{
+		float sin = Mathf.Sin(angle);
+		float cos = Mathf.Cos(angle);
 
-        float ty = v.y;
-        float tz = v.z;
-        v.y = (cos * ty) - (sin * tz);
-        v.z = (cos * tz) + (sin * ty);
-    }
+		float ty = v.y;
+		float tz = v.z;
+		v.y = (cos * ty) - (sin * tz);
+		v.z = (cos * tz) + (sin * ty);
+	}
 
-    public static void RotateY(this Vector3 v, float angle)
-    {
-        float sin = Mathf.Sin(angle);
-        float cos = Mathf.Cos(angle);
+	public static void RotateY(this Vector3 v, float angle)
+	{
+		float sin = Mathf.Sin(angle);
+		float cos = Mathf.Cos(angle);
 
-        float tx = v.x;
-        float tz = v.z;
-        v.x = (cos * tx) + (sin * tz);
-        v.z = (cos * tz) - (sin * tx);
-    }
+		float tx = v.x;
+		float tz = v.z;
+		v.x = (cos * tx) + (sin * tz);
+		v.z = (cos * tz) - (sin * tx);
+	}
 
-    public static void RotateZ(this Vector3 v, float angle)
-    {
-        float sin = Mathf.Sin(angle);
-        float cos = Mathf.Cos(angle);
+	public static void RotateZ(this Vector3 v, float angle)
+	{
+		float sin = Mathf.Sin(angle);
+		float cos = Mathf.Cos(angle);
 
-        float tx = v.x;
-        float ty = v.y;
-        v.x = (cos * tx) - (sin * ty);
-        v.y = (cos * ty) + (sin * tx);
-    }
-    public static float GetPitch(this Vector3 v)
-    {
-        float len = Mathf.Sqrt((v.x * v.x) + (v.z * v.z));    // Length on xz plane.
-        return (-Mathf.Atan2(v.y, len));
-    }
+		float tx = v.x;
+		float ty = v.y;
+		v.x = (cos * tx) - (sin * ty);
+		v.y = (cos * ty) + (sin * tx);
+	}
+	public static float GetPitch(this Vector3 v)
+	{
+		float len = Mathf.Sqrt((v.x * v.x) + (v.z * v.z));    // Length on xz plane.
+		return (-Mathf.Atan2(v.y, len));
+	}
 
-    public static float GetYaw(this Vector3 v)
-    {
-        return (Mathf.Atan2(v.x, v.z));
-    }
-    #endregion
+	public static float GetYaw(this Vector3 v)
+	{
+		return (Mathf.Atan2(v.x, v.z));
+	}
+	#endregion
 
-    #region extension methods for: Color
-    public static Color SetAlpha(this Color theColor, float theAlpha)
+	#region extension methods for: Color
+	public static Color SetAlpha(this Color theColor, float theAlpha)
 	{
 		theColor.a = theAlpha;
 		return theColor;

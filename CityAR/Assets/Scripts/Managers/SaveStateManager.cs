@@ -22,54 +22,77 @@ public class SaveStateManager : NetworkBehaviour
 
 	public EventSave GlobalSave;
 	private string _savePath;
+	private UIManager UiM;
 
-    void Awake()
-    {
-        if (Instance == null)
-            Instance = this;
-        else if (Instance != this)
-            Destroy(gameObject);
-    }
+	void Awake()
+	{
+		if (Instance == null)
+			Instance = this;
+		else if (Instance != this)
+			Destroy(gameObject);
+	}
 
-    void Start()
-    {
-        if (isServer)
-        {
-            //init player save
-            Players.Add(new PlayerStats("Finance", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
-            Players.Add(new PlayerStats("Social", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
-            Players.Add(new PlayerStats("Environment", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
-            //init project data save
-            PlayerProjects.Add(new ProjectStats("Finance", 0, 0, 0, 0, 0, 0));
-            PlayerProjects.Add(new ProjectStats("Social", 0, 0, 0, 0, 0, 0));
-            PlayerProjects.Add(new ProjectStats("Environment", 0, 0, 0, 0, 0, 0));
-            //init mini game data save
-            PlayerMiniGames.Add(new MiniGameStats("Finance", 0, 0, 0, 0, 0));
-            PlayerMiniGames.Add(new MiniGameStats("Social", 0, 0, 0, 0, 0));
-            PlayerMiniGames.Add(new MiniGameStats("Environment", 0, 0, 0, 0, 0));
-            //init event logging
-            GlobalSave = new EventSave();
-        }
-        //create new json file
-        _savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
-        File.WriteAllText(_savePath, "New Game");
-    }
+	void Start()
+	{
+		if (isServer)
+		{
+			//init player save
+			Players.Add(new PlayerStats("Finance", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			Players.Add(new PlayerStats("Social", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			Players.Add(new PlayerStats("Environment", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			//init project data save
+			PlayerProjects.Add(new ProjectStats("Finance", 0, 0, 0, 0, 0, 0));
+			PlayerProjects.Add(new ProjectStats("Social", 0, 0, 0, 0, 0, 0));
+			PlayerProjects.Add(new ProjectStats("Environment", 0, 0, 0, 0, 0, 0));
+			//init mini game data save
+			PlayerMiniGames.Add(new MiniGameStats("Finance", 0, 0, 0, 0, 0));
+			PlayerMiniGames.Add(new MiniGameStats("Social", 0, 0, 0, 0, 0));
+			PlayerMiniGames.Add(new MiniGameStats("Environment", 0, 0, 0, 0, 0));
+			//init event logging
+			GlobalSave = new EventSave();
+		}
+		//create new json file
+		UiM = UIManager.Instance;
+		_savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+		File.WriteAllText(_savePath, "New Game");
+	}
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            RecordData();
-        }
-    }
+	void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.A))
+		{
+			RecordData();
+		}
+	}
 
-    #region Saving Player Data
-    public class EventSave
+	#region Event Logger
+	public class EventSave
 	{
 		public string TimeStamp;
 		public string Event;
 	}
+	public void RecordData()
+	{
+		_savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
+		File.AppendAllText(_savePath, JsonUtility.ToJson(GlobalSave, true));
+		foreach (PlayerStats player in Players)
+		{
+			File.AppendAllText(_savePath, JsonUtility.ToJson(player, true));
+		}
+	}
 
+	public void LogEvent(string content)
+	{
+		if (NetworkingManager.Instance.isServer)
+		{
+			GlobalSave.TimeStamp = Utilities.DisplayTime(GameManager.Instance.CurrentTime);
+			GlobalSave.Event = content;
+			RecordData();
+		}
+	}
+	#endregion
+
+	#region Player Stats
 	public struct PlayerStats
 	{
 		public string Player;
@@ -112,41 +135,6 @@ public class SaveStateManager : NetworkBehaviour
 			MoneySpent = money;
 		}
 	}
-
-    public int GetAllSucessful(string data)
-    {
-        int number = 0;
-        foreach (ProjectStats project in PlayerProjects)
-        {
-            number += project.Successful;
-        }
-        return number;
-    }
-
-    public Sprite GetSuccessfulPlayer()
-    {
-        int val1 = 0;
-        int val2 = 0;
-        int val3 = 0;
-        foreach (ProjectStats project in PlayerProjects)
-        {
-            if (project.Player == Vars.Player1)
-                val1 += 1;
-            if (project.Player == Vars.Player2)
-                val2 += 1;
-            if (project.Player == Vars.Player3)
-                val3 += 1;
-        }
-        int mostProjects = Utilities.GetHighestVal(val1, val2, val3);
-        if (mostProjects == val1)
-            return UIManager.Instance.Player1_winSprite;
-        if (mostProjects == val2)
-            return UIManager.Instance.Player2_winSprite;
-        if (mostProjects == val3)
-            return UIManager.Instance.Player3_winSprite;
-        else return UIManager.Instance.DefaultSprite;
-    }
-
 	public struct MiniGameStats
 	{
 		public string Player;
@@ -261,26 +249,7 @@ public class SaveStateManager : NetworkBehaviour
 		PlayerProjects.Add(dataNew);
 	}
 
-	public void RecordData()
-	{
-		_savePath = Path.Combine(Application.persistentDataPath, "jsonTest.json");
-		File.AppendAllText(_savePath, JsonUtility.ToJson(GlobalSave, true));
-		foreach (PlayerStats player in Players)
-		{
-			File.AppendAllText(_savePath, JsonUtility.ToJson(player, true));
-		}
-	}
-
-	public void LogEvent(string content)
-	{
-		if (NetworkingManager.Instance.isServer)
-		{
-			GlobalSave.TimeStamp = Utilities.DisplayTime(GameManager.Instance.CurrentTime);
-			GlobalSave.Event = content;
-			RecordData();
-		}
-	}
-
+	
 	public void SetTaken(int connectionId, bool taken)
 	{
 		PlayerStats dataOld = new PlayerStats();
@@ -481,6 +450,9 @@ public class SaveStateManager : NetworkBehaviour
 			case "MoneySpent":
 				AddMoneySpent(roletype, amount);
 				break;
+			case "Propose":
+				AddProjectAction(roletype, datatype);
+				break;
 			case "Deny":
 				AddProjectAction(roletype, datatype);
 				break;
@@ -509,6 +481,183 @@ public class SaveStateManager : NetworkBehaviour
 				AddMiniGameTime(roletype, amount);
 				break;
 		}
+	}
+	#endregion
+
+	#region EndGame Calculations
+
+	public int GetAllSucessful(string data)
+	{
+		int number = 0;
+		foreach (ProjectStats project in PlayerProjects)
+		{
+			number += project.Successful;
+		}
+		return number;
+	}
+
+	public void CalculateAchievement(string type)
+	{
+		int player1 = 0;
+		int player2 = 0;
+		int player3 = 0;
+		int playerMe = 0;
+		int chosenVal;
+
+		switch (type)
+		{
+			case "MostSuccessfulProjects":
+				foreach (ProjectStats project in PlayerProjects)
+				{
+					if (project.Player == LevelManager.Instance.RoleType)
+						playerMe = project.Successful;
+					if (project.Player == Vars.Player1)
+						player1 = project.Successful;
+					if (project.Player == Vars.Player2)
+						player2 = project.Successful;
+					if (project.Player == Vars.Player3)
+						player3 = project.Successful;
+				}
+				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
+				UiM.MostSuccessfulProjectsN.text = "" + chosenVal;
+				if (playerMe == chosenVal)
+					UiM.MostSuccessfulProjects.sprite = UiM.YouWin;
+				if (chosenVal == player1)
+					UiM.MostSuccessfulProjects.sprite = UiM.Player1_winSprite;
+				if (chosenVal == player2)
+					UiM.MostSuccessfulProjects.sprite = UiM.Player2_winSprite;
+				if (chosenVal == player3)
+					UiM.MostSuccessfulProjects.sprite = UiM.Player3_winSprite;
+				break;
+			case "MostMoneySpent":
+				foreach (ProjectStats player in PlayerProjects)
+				{
+					if (player.Player == LevelManager.Instance.RoleType)
+						playerMe = player.MoneySpent;
+					if (player.Player == Vars.Player1)
+						player1 = player.MoneySpent;
+					if (player.Player == Vars.Player2)
+						player2 = player.MoneySpent;
+					if (player.Player == Vars.Player3)
+						player3 = player.MoneySpent;
+
+				}
+				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
+				UiM.MostMoneySpentN.text = "" + chosenVal;
+				if (playerMe == chosenVal)
+					UiM.MostMoneySpent.sprite = UiM.YouWin;
+				if (chosenVal == player1)
+					UiM.MostMoneySpent.sprite = UiM.Player1_winSprite;
+				if (chosenVal == player2)
+					UiM.MostMoneySpent.sprite = UiM.Player2_winSprite;
+				if (chosenVal == player3)
+					UiM.MostMoneySpent.sprite = UiM.Player3_winSprite;
+				break;
+			case "HighestInfluence":
+				foreach (PlayerStats playerStat in Players)
+				{
+					if (playerStat.Player == LevelManager.Instance.RoleType)
+						playerMe = playerStat.Influence;
+					if (playerStat.Player == Vars.Player1)
+						player1 = playerStat.Influence;
+					if (playerStat.Player == Vars.Player2)
+						player2 = playerStat.Influence;
+					if (playerStat.Player == Vars.Player3)
+						player3 = playerStat.Influence;
+
+				}
+				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
+				UiM.HighestInfluenceN.text = "" + chosenVal;
+				if (playerMe == chosenVal)
+					UiM.HighestInfluence.sprite = UiM.YouWin;
+				if (chosenVal == player1)
+					UiM.HighestInfluence.sprite = UiM.Player1_winSprite;
+				if (chosenVal == player2)
+					UiM.HighestInfluence.sprite = UiM.Player2_winSprite;
+				if (chosenVal == player3)
+					UiM.HighestInfluence.sprite = UiM.Player3_winSprite;
+				break;
+			case "MostWinMiniGames":
+				foreach (MiniGameStats miniGameStats in PlayerMiniGames)
+				{
+					if (miniGameStats.Player == LevelManager.Instance.RoleType)
+						playerMe = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
+					if (miniGameStats.Player == Vars.Player1)
+						player1 = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
+					if (miniGameStats.Player == Vars.Player2)
+						player2 = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
+					if (miniGameStats.Player == Vars.Player3)
+						player3 = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
+				}
+				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
+				UiM.MostWinMiniGamesN.text = "" + chosenVal;
+				if (playerMe == chosenVal)
+					UiM.MostWinMiniGames.sprite = UiM.YouWin;
+				if (chosenVal == player1)
+					UiM.MostWinMiniGames.sprite = UiM.Player1_winSprite;
+				if (chosenVal == player2)
+					UiM.MostWinMiniGames.sprite = UiM.Player2_winSprite;
+				if (chosenVal == player3)
+					UiM.MostWinMiniGames.sprite = UiM.Player3_winSprite;
+				break;
+			case "LeastTimeMiniGames":
+				foreach (MiniGameStats miniGameStats in PlayerMiniGames)
+				{
+					if (miniGameStats.Player == LevelManager.Instance.RoleType)
+						playerMe = miniGameStats.TimeSpent;
+					if (miniGameStats.Player == Vars.Player1)
+						player1 = miniGameStats.TimeSpent;
+					if (miniGameStats.Player == Vars.Player2)
+						player2 = miniGameStats.TimeSpent;
+					if (miniGameStats.Player == Vars.Player3)
+						player3 = miniGameStats.TimeSpent;
+				}
+				chosenVal = Utilities.GetLowestVal(player1, player2, player3);
+				UiM.LeastTimeMiniGamesN.text = "" + chosenVal;
+				if (playerMe == chosenVal)
+					UiM.LeastTimeMiniGames.sprite = UiM.YouWin;
+				if (chosenVal == player1)
+					UiM.LeastTimeMiniGames.sprite = UiM.Player1_winSprite;
+				if (chosenVal == player2)
+					UiM.LeastTimeMiniGames.sprite = UiM.Player2_winSprite;
+				if (chosenVal == player3)
+					UiM.LeastTimeMiniGames.sprite = UiM.Player3_winSprite;
+				break;
+		}
+	}
+
+	public void CalculatePersonalStats()
+	{
+		int projectsProposed = 0;
+		int proSuccess = 0;
+		int proFail = 0;
+		int proApprove = 0;
+		int proDeny = 0;
+		int quests = 0;
+		foreach (ProjectStats project in PlayerProjects)
+		{
+			if (project.Player == LevelManager.Instance.RoleType)
+			{
+				projectsProposed = project.Proposed;
+				proSuccess = project.Successful;
+				proFail = project.Failed;
+				proApprove = project.Approved;
+				proDeny = project.Denied;
+			}
+		}
+		foreach (PlayerStats player in Players)
+		{
+			if (player.Player == LevelManager.Instance.RoleType)
+			{
+				quests = player.Quests;
+			}
+		}
+		UiM.ProjectsProposed.text = "" + projectsProposed;
+		UiM.ProjectsSuccessful.text = "" + proSuccess;
+		UiM.ProjectsFailed.text = "" + proFail;
+		UiM.ProjectsVotedApprove.text = "" + proApprove;
+		UiM.ProjectsVotedDeny.text = "" + proDeny;
+		UiM.QuestsCompleted.text = "" + quests;
 	}
 	#endregion
 }
