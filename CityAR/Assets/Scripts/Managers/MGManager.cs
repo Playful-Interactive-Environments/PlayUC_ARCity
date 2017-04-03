@@ -8,7 +8,7 @@ public class MGManager : AManager<MGManager> {
     public MGState CurrentMG = MGState.None;
     public enum MGState
     {
-        None, Advertise, Pointer, Sort, Area
+        None, Mg2, Pointer, Mg1, Mg3
     }
 
     //main objects & vars
@@ -75,7 +75,7 @@ public class MGManager : AManager<MGManager> {
         TrackProgress();
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ChangeState(MGState.Advertise);
+            ChangeState(MGState.Mg2);
         }
     }
 
@@ -85,11 +85,26 @@ public class MGManager : AManager<MGManager> {
         {
             switch (CurrentMG)
             {
-                case MGState.Advertise:
+                case MGState.Mg1:
+                    _currentTime += Time.deltaTime;
+                    TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
+                    ScoreText.text = TextManager.Instance.Mg1_Goal + " " + MG_1_Mng.CollectedDocs + "/" + MG_1_Mng.DocsNeeded;
+
+                    if (_currentTime >= _timeLimit)
+                    {
+                        StartCoroutine(EndMG("lose", _resetTime));
+                    }
+                    if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
+                    {
+                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg1Win", 0);
+                        StartCoroutine(EndMG("win", _resetTime));
+                    }
+                    break;
+                case MGState.Mg2:
                     //update UI
                     _currentTime += Time.deltaTime;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
-                    ScoreText.text = "Audience: " + MG_2_Mng.VotersCollected + "/" + MG_2_Mng.VotersNeeded;
+                    ScoreText.text = TextManager.Instance.Mg2_Goal + " " + MG_2_Mng.VotersCollected + "/" + MG_2_Mng.VotersNeeded;
                     //check win/lose state
                     if (_currentTime >= _timeLimit)
                     {
@@ -102,10 +117,10 @@ public class MGManager : AManager<MGManager> {
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
-                case MGState.Area:
+                case MGState.Mg3:
                     _currentTime += Time.deltaTime;
                     TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
-                    ScoreText.text = "Land: " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
+                    ScoreText.text = TextManager.Instance.Mg3_Goal + " " + MG_3_Mng.CurrentPercent + "/" + MG_3_Mng.PercentNeeded + " %";
 
                     if (_currentTime >= _timeLimit)
                     {
@@ -114,21 +129,6 @@ public class MGManager : AManager<MGManager> {
                     if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
                     {
                         CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg3Win", 0);
-                        StartCoroutine(EndMG("win", _resetTime));
-                    }
-                    break;
-                case MGState.Sort:
-                    _currentTime += Time.deltaTime;
-                    TimerText.text = Mathf.Round(_timeLimit - _currentTime) + "s";
-                    ScoreText.text = "Sorted: " + MG_1_Mng.CollectedDocs + "/" + MG_1_Mng.DocsNeeded;
-
-                    if (_currentTime >= _timeLimit)
-                    {
-                        StartCoroutine(EndMG("lose", _resetTime));
-                    }
-                    if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
-                    {
-                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg1Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -157,33 +157,34 @@ public class MGManager : AManager<MGManager> {
         Started = true;
         switch (state)
         {
-            case MGState.Advertise:
-                MGCanvas.SetActive(true);
-                MGCam.SetActive(true);
-                _timeLimit = MG_2_Mng.TimeLimit;
-                MG_2_Mng.StartCoroutine("InitGame");
-                MG_2_GO.SetActive(true);
-                GameDescription.text = "Drag the megaphone to attract voters to the stage!";
-                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
-                break;
+
             case MGState.Pointer:
                 break;
-            case MGState.Sort:
+            case MGState.Mg1:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_1_Mng.TimeLimit;
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
-                GameDescription.text = "Sort the documents on the correct stack!";
+                GameDescription.text = TextManager.Instance.Mg1_Description;
                 CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
                 break;
-            case MGState.Area:
+            case MGState.Mg2:
+                MGCanvas.SetActive(true);
+                MGCam.SetActive(true);
+                _timeLimit = MG_2_Mng.TimeLimit;
+                MG_2_Mng.StartCoroutine("InitGame");
+                MG_2_GO.SetActive(true);
+                GameDescription.text = TextManager.Instance.Mg2_Description;
+                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
+                break;
+            case MGState.Mg3:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
                 _timeLimit = MG_3_Mng.TimeLimit;
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
-                GameDescription.text = "Draw a straight line to block off land for your project!";
+                GameDescription.text = TextManager.Instance.Mg3_Description;
                 CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.None:
@@ -204,26 +205,26 @@ public class MGManager : AManager<MGManager> {
         if (state == "win")
         {
             CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgTime", Mathf.RoundToInt(_currentTime));
-            WinStateText.text = "You made it. Great job! Resuming in " + time + "s";
+            WinStateText.text = TextManager.Instance.Mg_win + " " + time + "s";
         }
         if (state == "lose")
         {
             CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgFail", 0);
-            WinStateText.text = "You failed. Try again later. Resuming in " + time + "s";
+            WinStateText.text = TextManager.Instance.Mg_lose + " " + time + "s";
         }
         switch (CurrentMG)
         {
-            case MGState.Advertise:
+            case MGState.Mg2:
                 _currentTime = 0;
                 MG_2_Mng.ResetGame();
                 break;
-            case MGState.Area:
+            case MGState.Mg3:
                 _currentTime = 0;
                 MG_3_Mng.ResetGame();
                 break;
             case MGState.Pointer:
                 break;
-            case MGState.Sort:
+            case MGState.Mg1:
                 _currentTime = 0;
                 MG_1_Mng.ResetGame();
                 break;

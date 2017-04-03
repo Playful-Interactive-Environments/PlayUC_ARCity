@@ -43,7 +43,7 @@ public class CellInterface : MonoBehaviour {
 				int fin = ProjectManager.Instance.GetFinanceInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
 				int soc = ProjectManager.Instance.GetSocialInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
 				int env = ProjectManager.Instance.GetEnvironmentInt(ProjectManager.Instance.CurrentDummy.Id_CSV);
-				CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+				CellName.text = "<color=white>Mg3 " + cell.CellId + "</color>";
 				if (fin >= 0)
 					StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>" + " <color=green><b><size=2>+" + fin + "</color></b></size>";
 				if(soc >= 0)
@@ -58,13 +58,13 @@ public class CellInterface : MonoBehaviour {
 					StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>" + " <color=red><b><size=2>" + env + "</color>";
 				break;
 			case TextState.Grey:
-				CellName.text = "<color=#c0c0c0ff>Area " + cell.CellId + "</color>";
+				CellName.text = "<color=#c0c0c0ff>Mg3 " + cell.CellId + "</color>";
 				StatusText[0].text = "<color=#c0c0c0ff>" + cell.FinanceRate + "</color>";
 				StatusText[1].text = "<color=#c0c0c0ff>" + cell.SocialRate + "</color>";
 				StatusText[2].text = "<color=#c0c0c0ff>" + cell.EnvironmentRate + "</color>";
 				break;
 			case TextState.White:
-				CellName.text = "<color=white>Area " + cell.CellId + "</color>";
+				CellName.text = "<color=white>Mg3 " + cell.CellId + "</color>";
 				StatusText[0].text = "<color=white>" + cell.FinanceRate + "</color>";
 				StatusText[1].text = "<color=white>" + cell.SocialRate + "</color>";
 				StatusText[2].text = "<color=white>" + cell.EnvironmentRate + "</color>";

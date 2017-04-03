@@ -1405,37 +1405,37 @@
             For stereo, we need to ensure the two camera viewport have the same size
             </summary>
         </member>
-        <member name="T:Vuforia.NullHideExcessAreaClipping">
+        <member name="T:Vuforia.NullHideExcessMg3Clipping">
             <summary>
             Null implementation to clip access areas
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessAreaClipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
+        <member name="M:Vuforia.StencilHideExcessMg3Clipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
             <summary>
             This function is used to create a named plane for a given parent with specified transformation and layer id
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessAreaClipping.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.StencilHideExcessMg3Clipping.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessAreaClipping.IsPlanesRenderingActive">
+        <member name="M:Vuforia.StencilHideExcessMg3Clipping.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessAreaClipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
+        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
             <summary>
             This function is used to create a named plane for a given parent with specified transformation and layer id
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessAreaClipping.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessAreaClipping.IsPlanesRenderingActive">
+        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
@@ -2002,7 +2002,7 @@
             This is the base interface for a smart terrain reconstruction.
             </summary>
         </member>
-        <member name="M:Vuforia.ReconstructionImpl.SetMaximumArea(UnityEngine.Rect)">
+        <member name="M:Vuforia.ReconstructionImpl.SetMaximumMg3(UnityEngine.Rect)">
             <summary>
             Set the maximum area of the reconstruction in scene units. 
             The ground plane will not expand outside of this rectangle.
@@ -2010,7 +2010,7 @@
             of the rectangle will be cut off.
             </summary>
         </member>
-        <member name="M:Vuforia.ReconstructionImpl.GetMaximumArea(UnityEngine.Rect@)">
+        <member name="M:Vuforia.ReconstructionImpl.GetMaximumMg3(UnityEngine.Rect@)">
             <summary>
             Get the maximum extent of the smart terrain reconstruction in scene units.
             Returns false if no maximum area has been defined.
@@ -2063,7 +2063,7 @@
             The tracker needs to be stopped before calling this function
             </summary>
         </member>
-        <member name="T:Vuforia.HideExcessAreaAbstractBehaviour">
+        <member name="T:Vuforia.HideExcessMg3AbstractBehaviour">
             <summary>
             This Behaviour creates clipping planes to hide the augmentation going off the limit of video background due to scaling.
             The clipping needs to be configured in the VideoBackgroundManager.
@@ -2071,49 +2071,49 @@
             be enabled or disabled manually..
             </summary>
         </member>
-        <member name="T:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE">
+        <member name="T:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE">
             <summary>
-            Type of clipping techniques used by the HideExcessAreaBehaviour
+            Type of clipping techniques used by the HideExcessMg3Behaviour
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.STENCIL">
+        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.STENCIL">
             <summary>
             draws a full screen quad at the near plane of each camera that clips area around the video background using a stencil mask
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.PLANES">
+        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.PLANES">
             <summary>
             draws planes only around camera frustum. Useful for devices that don't support stencil shaders (only Tegra 3, i.e. HTC One X)
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.NONE">
+        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.NONE">
             <summary>
             no clipping
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.CheckForChangedClippingMode">
+        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.CheckForChangedClippingMode">
             <summary>
             Get the clipping mode from the video background manager and adjust clipping accordingly
             </summary>
         </member>
-        <member name="P:Vuforia.HideExcessAreaAbstractBehaviour.PlaneOffset">
+        <member name="P:Vuforia.HideExcessMg3AbstractBehaviour.PlaneOffset">
             <summary>
             This vector is used to shift the planes by a known offset in world coordinates.
             This is only necessary when the clipping mode PLANES is used.
             Used for integration with Unity VR support.
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.IsPlanesRenderingActive">
+        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.OnConfigurationChanged">
+        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.OnConfigurationChanged">
             <summary>
             Call this method when the camera configuration has changed by switching between mono and stereo
             </summary>
@@ -2825,7 +2825,7 @@
             This is the base interface for a smart terrain reconstruction.
             </summary>
         </member>
-        <member name="M:Vuforia.Reconstruction.SetMaximumArea(UnityEngine.Rect)">
+        <member name="M:Vuforia.Reconstruction.SetMaximumMg3(UnityEngine.Rect)">
             <summary>
             Set the maximum area of the reconstruction in scene units. 
             The ground plane will not expand outside of this rectangle.
@@ -2833,7 +2833,7 @@
             of the rectangle will be cut off.
             </summary>
         </member>
-        <member name="M:Vuforia.Reconstruction.GetMaximumArea(UnityEngine.Rect@)">
+        <member name="M:Vuforia.Reconstruction.GetMaximumMg3(UnityEngine.Rect@)">
             <summary>
             Get the maximum extent of the smart terrain reconstruction in scene units.
             Returns false if no maximum area has been defined.
@@ -4446,7 +4446,7 @@
             The bounding box will change over time.
             </summary>
         </member>
-        <member name="M:Vuforia.Surface.GetArea">
+        <member name="M:Vuforia.Surface.GetMg3">
             <summary>
             Calculates the area that is covered by the surface mesh (in scene units)
             </summary>
@@ -6630,7 +6630,7 @@
             </summary>
             Calling this method will set the AR/VR-mode and enable or disable all behaviours regarding video background rendering
         </member>
-        <member name="M:Vuforia.VideoBackgroundManager.SetClippingMode(Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE)">
+        <member name="M:Vuforia.VideoBackgroundManager.SetClippingMode(Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE)">
             <summary>
             Set the clipping mode for the augmentation going off the limit of video background due to scaling.
             Clipping is only necessary in stereo mode.
@@ -6681,12 +6681,12 @@
             Returns true if the virtual button is active (updates while tracking).
             </summary>
         </member>
-        <member name="P:Vuforia.VirtualButton.Area">
+        <member name="P:Vuforia.VirtualButton.Mg3">
             <summary>
-            Returns the currently set Area
+            Returns the currently set Mg3
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButton.SetArea(Vuforia.RectangleData)">
+        <member name="M:Vuforia.VirtualButton.SetMg3(Vuforia.RectangleData)">
              <summary>
              Defines a new area for the button area in 3D scene units (the
              coordinate system is local to the ImageTarget).
@@ -6764,7 +6764,7 @@
             Returns true on success. False otherwise.
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.CalculateButtonArea(UnityEngine.Vector2@,UnityEngine.Vector2@)">
+        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.CalculateButtonMg3(UnityEngine.Vector2@,UnityEngine.Vector2@)">
             <summary>
             Calculates the 2D button area that the Virtual Button currently occupies
             in the Image Target.
@@ -6772,7 +6772,7 @@
             Passes out the top left and bottom right position of the rectangle area.
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.UpdateAreaRectangle">
+        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.UpdateMg3Rectangle">
             <summary>
             Update the virtual button rect in native
             </summary>

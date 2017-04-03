@@ -23,7 +23,6 @@ public class ProjectDummy : MonoBehaviour {
 		ProjectManager.Instance.CurrentDummy = this;
 		CreateRepresentation();
 		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
-
 	}
 
 	void StartDiscussion()
@@ -45,7 +44,7 @@ public class ProjectDummy : MonoBehaviour {
 		if (CanPlace)
 			UIManager.Instance.PlacementText.text = "";
 		if (!CanPlace)
-			UIManager.Instance.PlacementText.text = "Area occupied!";
+			UIManager.Instance.PlacementText.text = "Mg3 occupied!";
 	}
 
 	public void CreateRepresentation()

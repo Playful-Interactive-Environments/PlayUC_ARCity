@@ -45,13 +45,13 @@ public class ProjectInfo : MonoBehaviour {
             case "None":
                 MGText.text = "No Tasks.";
                 break;
-            case "Sort":
+            case "Mg1":
                 MGText.text = "Task: Bureucracy";
                 break;
-            case "Advertise":
+            case "Mg2":
                 MGText.text = "Task: Campaigning";
                 break;
-            case "Area":
+            case "Mg3":
                 MGText.text = "Task: Planning";
                 break;
             default:

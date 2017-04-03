@@ -608,12 +608,12 @@ public class UIManager : AManager<UIManager>
 
 	public void Debug_2()
 	{
-		MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
+		MGManager.Instance.SwitchState(MGManager.MGState.Mg2);
 	}
 
 	public void Debug_3()
 	{
-		MGManager.Instance.SwitchState(MGManager.MGState.Area);
+		MGManager.Instance.SwitchState(MGManager.MGState.Mg3);
 	}
 	public void Debug_4()
 	{
@@ -621,7 +621,7 @@ public class UIManager : AManager<UIManager>
 	}
 	public void Debug_1()
 	{
-		MGManager.Instance.SwitchState(MGManager.MGState.Sort);
+		MGManager.Instance.SwitchState(MGManager.MGState.Mg1);
 	}
 
 	public void Debug()

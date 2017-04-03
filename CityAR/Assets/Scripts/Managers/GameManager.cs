@@ -42,15 +42,21 @@ public class GameManager : NetworkBehaviour
 
 	void NetworkDisconnect()
 	{
-		StopAllCoroutines();
-		StartCoroutine(EndDiscussion());
+	    if (MyState != "GameEnd")
+	    {
+            StopAllCoroutines();
+            StartCoroutine(EndDiscussion());
+        }
 	}
 
 	void ClientDisconnect()
-	{
-		StopAllCoroutines();
-		StartCoroutine(EndDiscussion());
-	}
+    {
+        if (MyState != "GameEnd")
+        {
+            StopAllCoroutines();
+            StartCoroutine(EndDiscussion());
+        }
+    }
 
 	void Update ()
 	{
@@ -160,14 +166,14 @@ public class GameManager : NetworkBehaviour
 			MyState = SocialState;
 		if (LevelManager.Instance.RoleType == "Finance")
 			MyState = FinanceState;
-	}
+        if (MyState == "GameEnd")
+            StopAllCoroutines();
+    }
 
 	IEnumerator StartDiscussion()
 	{
 		//if user is occupied wait until they finish
 		CheckMyState();
-		if(MyState == "GameEnd")
-			StopCoroutine(StartDiscussion());
 		while (MyState == "MiniGame")
 		{
 			CheckMyState();

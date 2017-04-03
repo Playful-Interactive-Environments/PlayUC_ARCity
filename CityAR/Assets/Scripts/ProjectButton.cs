@@ -72,17 +72,17 @@ public class ProjectButton : MonoBehaviour {
 				PlayMgButton.gameObject.SetActive(false);
 				MGText.text = "No Tasks.";
 				break;
-			case "Sort":
+			case "Mg1":
 				PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Sorting Documents</color>";
 				break;
-			case "Advertise":
+			case "Mg2":
 				PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Gathering Supporters</color>";
 				break;
-			case "Area":
+			case "Mg3":
 				PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Urban Zoning</color>";
@@ -101,14 +101,14 @@ public class ProjectButton : MonoBehaviour {
 		MGManager.Instance.ProjectCsvId = ProjectCSVId;
 		switch (miniGame)
 		{
-			case "Sort":
-				MGManager.Instance.SwitchState(MGManager.MGState.Sort);
+			case "Mg1":
+				MGManager.Instance.SwitchState(MGManager.MGState.Mg1);
 				break;
-			case "Advertise":
-				MGManager.Instance.SwitchState(MGManager.MGState.Advertise);
+			case "Mg2":
+				MGManager.Instance.SwitchState(MGManager.MGState.Mg2);
 				break;
-			case "Area":
-				MGManager.Instance.SwitchState(MGManager.MGState.Area);
+			case "Mg3":
+				MGManager.Instance.SwitchState(MGManager.MGState.Mg3);
 				break;
 		}
 	}
