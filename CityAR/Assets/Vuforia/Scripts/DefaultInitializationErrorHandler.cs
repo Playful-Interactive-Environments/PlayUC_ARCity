@@ -107,7 +107,7 @@ namespace Vuforia
                     mErrorText =
                         "Vuforia App key is not valid for this product. Please get a valid key, "+
                         "by logging into your account at developer.vuforia.com and choosing the "+
-                        "right product type during project creation";
+                        "right product english during project creation";
                     break;
     #if (UNITY_IPHONE || UNITY_IOS)
                 case VuforiaUnity.InitError.INIT_NO_CAMERA_ACCESS:

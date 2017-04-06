@@ -25,16 +25,21 @@ public class CellLogic : MonoBehaviour {
     private Renderer _renderer;
     public int CellId;
     public Material[] colors;
+    public GameObject CellRepresentation;
      
     void Start()
     {
         _interface = GetComponent<CellInterface>();
-        _renderer = GetComponent<Renderer>();
+        _renderer = CellRepresentation.GetComponent<Renderer>();
         _renderer.material = colors[0];
         EventDispatcher.StartListening("Grey", Default);
         EventDispatcher.StartListening("SocialMap", SocialMap);
         EventDispatcher.StartListening("EnvironmentMap", EnvironmentMap);
         EventDispatcher.StartListening("FinanceMap", FinanceMap);
+        float _cubeX = ValueManager.Instance.MapWidth / CellGrid.Instance.Columns;
+        float _cubeZ = ValueManager.Instance.MapHeight / CellGrid.Instance.Rows;
+        CellRepresentation.transform.localScale = new Vector3(_cubeX, 1, _cubeZ);
+        GetComponent<BoxCollider>().size = new Vector3(_cubeX, 1, _cubeZ);
     }
 
     public void Default()

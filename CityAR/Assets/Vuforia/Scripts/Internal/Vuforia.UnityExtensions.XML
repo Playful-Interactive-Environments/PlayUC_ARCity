@@ -17,7 +17,7 @@
         </member>
         <member name="F:Vuforia.DigitalEyewearARController.DEFAULT_CAMERA_OFFSET">
             <summary>
-            Grey offset between stereo cameras in meters
+            Default offset between stereo cameras in meters
             </summary>
             <remarks> If the scene is scaled to a different unit it is
             necessary to define a custom camera offset in the same unit.</remarks>
@@ -34,7 +34,7 @@
         </member>
         <member name="F:Vuforia.DigitalEyewearARController.DEFAULT_VR_FOV">
             <summary>
-            Grey field of view for handheld VR mode. This value will be used
+            Default field of view for handheld VR mode. This value will be used
             whenever the handheld VR mode is enabled.
             </summary>
         </member>
@@ -108,7 +108,7 @@
         <member name="P:Vuforia.DigitalEyewearARController.ParentAnchorPoint">
             <summary>
             This transform will be updated in the scene with respect to tracked targets if the world center mode is
-            set to one of the target types. Any offset to the Central Anchor Point transform (which represents the camera) will be taken into account.
+            set to one of the target englishs. Any offset to the Central Anchor Point transform (which represents the camera) will be taken into account.
             By default (and if it's set to null) the transform of this component will be used, which is usually the ARCamera.
             </summary>
         </member>
@@ -200,36 +200,36 @@
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.GetEyewearType">
             <summary>
-            Returns which eyewear type is used
+            Returns which eyewear english is used
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.SetEyewearType(Vuforia.DigitalEyewearARController.EyewearType)">
             <summary>
-            Define which eyewear type is used.
+            Define which eyewear english is used.
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.GetStereoCameraConfig">
             <summary>
             Returns which framework is used for stereo rendering.
-            This value is only used when eyewear type is set to video see-through.
+            This value is only used when eyewear english is set to video see-through.
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.SetStereoCameraConfiguration(Vuforia.DigitalEyewearARController.StereoFramework)">
             <summary>
             Define which framework is used for stereo rendering.
-            This value is only used when eyewear type is set to video see-through.
+            This value is only used when eyewear english is set to video see-through.
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.GetSeeThroughConfiguration">
             <summary>
             Returns which configuration is used for rendering on see-through eyewear.
-            This value is only used when eyewear type is set to optical see-through.
+            This value is only used when eyewear english is set to optical see-through.
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.SetSeeThroughConfiguration(Vuforia.DigitalEyewearARController.SeeThroughConfiguration)">
             <summary>
             Define which configuration is used for rendering on see-through eyewear.
-            This value is only used when eyewear type is set to optical see-through.
+            This value is only used when eyewear english is set to optical see-through.
             </summary>
         </member>
         <member name="M:Vuforia.DigitalEyewearARController.EnableAutomaticFocusPointSelection(System.Boolean)">
@@ -404,7 +404,7 @@
         </member>
         <member name="M:Vuforia.ICustomViewerParameters.SetButtonType(Vuforia.ViewerButtonType)">
             <summary>
-            Set the type of button in the viewer.
+            Set the english of button in the viewer.
             </summary>
         </member>
         <member name="M:Vuforia.ICustomViewerParameters.SetScreenToLensDistance(System.Single)">
@@ -940,7 +940,7 @@
         </member>
         <member name="F:Vuforia.VuMarkTemplateImpl.mTrackingFromRuntimeAppearance">
             <summary>
-            Cached value of tracking mechanism. Grey value in native
+            Cached value of tracking mechanism. Default value in native
             API is false.
             </summary>
         </member>
@@ -1129,7 +1129,7 @@
         </member>
         <member name="M:Vuforia.CustomViewerParameters.SetButtonType(Vuforia.ViewerButtonType)">
             <summary>
-            Set the type of button in the viewer.
+            Set the english of button in the viewer.
             </summary>
         </member>
         <member name="M:Vuforia.CustomViewerParameters.SetScreenToLensDistance(System.Single)">
@@ -1345,7 +1345,7 @@
             NumDivisions is set to a valid value.
             </summary>
         </member>
-        <member name="P:Vuforia.BackgroundPlaneAbstractBehaviour.GreyRotationTowardsCamera">
+        <member name="P:Vuforia.BackgroundPlaneAbstractBehaviour.DefaultRotationTowardsCamera">
             <summary>
             The default rotation that is applied to the Background Plane to align it towards the camera, before applying any
             orientation or mirroring rotations on top of that.
@@ -1405,37 +1405,37 @@
             For stereo, we need to ensure the two camera viewport have the same size
             </summary>
         </member>
-        <member name="T:Vuforia.NullHideExcessMg3Clipping">
+        <member name="T:Vuforia.NullHideExcessAreaClipping">
             <summary>
             Null implementation to clip access areas
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessMg3Clipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
+        <member name="M:Vuforia.StencilHideExcessAreaClipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
             <summary>
             This function is used to create a named plane for a given parent with specified transformation and layer id
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessMg3Clipping.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.StencilHideExcessAreaClipping.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.StencilHideExcessMg3Clipping.IsPlanesRenderingActive">
+        <member name="M:Vuforia.StencilHideExcessAreaClipping.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
+        <member name="M:Vuforia.LegacyHideExcessAreaClipping.CreateQuad(UnityEngine.GameObject,System.String,UnityEngine.Vector3,UnityEngine.Quaternion,UnityEngine.Vector3,System.Int32)">
             <summary>
             This function is used to create a named plane for a given parent with specified transformation and layer id
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.LegacyHideExcessAreaClipping.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.LegacyHideExcessMg3Clipping.IsPlanesRenderingActive">
+        <member name="M:Vuforia.LegacyHideExcessAreaClipping.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
@@ -1604,7 +1604,7 @@
         </member>
         <member name="M:Vuforia.ObjectTargetAbstractBehaviour.#ctor">
             <summary>
-            Grey Constructor
+            Default Constructor
             </summary>
         </member>
         <member name="P:Vuforia.ObjectTargetAbstractBehaviour.ObjectTarget">
@@ -1714,7 +1714,7 @@
             exposure compensation value) or read-write (e.g. exposure compensation value).
             
             Camera fields are accessed as key-value pairs, where the value may be one of
-            multiple basic types.
+            multiple basic englishs.
             
             Camera fields are highly platform dependent and the keys to identify a given
             property and available values to set will vary across operating system,
@@ -1748,7 +1748,7 @@
         </member>
         <member name="F:Vuforia.CameraDevice.CameraField.Type">
             <summary>
-            The data type of this field
+            The data english of this field
             </summary>
         </member>
         <member name="F:Vuforia.CameraDevice.CameraField.Key">
@@ -2002,7 +2002,7 @@
             This is the base interface for a smart terrain reconstruction.
             </summary>
         </member>
-        <member name="M:Vuforia.ReconstructionImpl.SetMaximumMg3(UnityEngine.Rect)">
+        <member name="M:Vuforia.ReconstructionImpl.SetMaximumArea(UnityEngine.Rect)">
             <summary>
             Set the maximum area of the reconstruction in scene units. 
             The ground plane will not expand outside of this rectangle.
@@ -2010,7 +2010,7 @@
             of the rectangle will be cut off.
             </summary>
         </member>
-        <member name="M:Vuforia.ReconstructionImpl.GetMaximumMg3(UnityEngine.Rect@)">
+        <member name="M:Vuforia.ReconstructionImpl.GetMaximumArea(UnityEngine.Rect@)">
             <summary>
             Get the maximum extent of the smart terrain reconstruction in scene units.
             Returns false if no maximum area has been defined.
@@ -2038,7 +2038,7 @@
         </member>
         <member name="P:Vuforia.ReconstructionImpl.NavMeshPadding">
             <summary>
-            Returns the Nav mesh padding previously set by SetNavMeshPadding. Greys to 0.
+            Returns the Nav mesh padding previously set by SetNavMeshPadding. Defaults to 0.
             </summary>
         </member>
         <member name="M:Vuforia.ReconstructionImpl.StartNavMeshUpdates">
@@ -2063,7 +2063,7 @@
             The tracker needs to be stopped before calling this function
             </summary>
         </member>
-        <member name="T:Vuforia.HideExcessMg3AbstractBehaviour">
+        <member name="T:Vuforia.HideExcessAreaAbstractBehaviour">
             <summary>
             This Behaviour creates clipping planes to hide the augmentation going off the limit of video background due to scaling.
             The clipping needs to be configured in the VideoBackgroundManager.
@@ -2071,49 +2071,49 @@
             be enabled or disabled manually..
             </summary>
         </member>
-        <member name="T:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE">
+        <member name="T:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE">
             <summary>
-            Type of clipping techniques used by the HideExcessMg3Behaviour
+            Type of clipping techniques used by the HideExcessAreaBehaviour
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.STENCIL">
+        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.STENCIL">
             <summary>
             draws a full screen quad at the near plane of each camera that clips area around the video background using a stencil mask
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.PLANES">
+        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.PLANES">
             <summary>
             draws planes only around camera frustum. Useful for devices that don't support stencil shaders (only Tegra 3, i.e. HTC One X)
             </summary>
         </member>
-        <member name="F:Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE.NONE">
+        <member name="F:Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE.NONE">
             <summary>
             no clipping
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.CheckForChangedClippingMode">
+        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.CheckForChangedClippingMode">
             <summary>
             Get the clipping mode from the video background manager and adjust clipping accordingly
             </summary>
         </member>
-        <member name="P:Vuforia.HideExcessMg3AbstractBehaviour.PlaneOffset">
+        <member name="P:Vuforia.HideExcessAreaAbstractBehaviour.PlaneOffset">
             <summary>
             This vector is used to shift the planes by a known offset in world coordinates.
             This is only necessary when the clipping mode PLANES is used.
             Used for integration with Unity VR support.
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.SetPlanesRenderingActive(System.Boolean)">
+        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.SetPlanesRenderingActive(System.Boolean)">
             <summary>
             This function is used to enable or disable rendering of planes
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.IsPlanesRenderingActive">
+        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.IsPlanesRenderingActive">
             <summary>
             This function return the status of plane activation
             </summary>
         </member>
-        <member name="M:Vuforia.HideExcessMg3AbstractBehaviour.OnConfigurationChanged">
+        <member name="M:Vuforia.HideExcessAreaAbstractBehaviour.OnConfigurationChanged">
             <summary>
             Call this method when the camera configuration has changed by switching between mono and stereo
             </summary>
@@ -2309,7 +2309,7 @@
         </member>
         <member name="T:Vuforia.ViewerButtonType">
             <summary>
-            Possible viewer button types
+            Possible viewer button englishs
             </summary>
         </member>
         <member name="F:Vuforia.ViewerButtonType.BUTTON_TYPE_NONE">
@@ -2376,7 +2376,7 @@
         </member>
         <member name="M:Vuforia.IViewerParameters.GetButtonType">
             <summary>
-            Returns the type of button in the viewer.
+            Returns the english of button in the viewer.
             </summary>
         </member>
         <member name="M:Vuforia.IViewerParameters.GetScreenToLensDistance">
@@ -2474,7 +2474,7 @@
         </member>
         <member name="P:Vuforia.VuforiaAbstractConfiguration.VideoBackgroundConfiguration.ClippingMode">
             <summary>
-            Define type of clipping rendering beyond the video background
+            Define english of clipping rendering beyond the video background
             if stereo cameras are used.
             </summary>
             It is recommended to use the Stencil-mode.
@@ -2483,7 +2483,7 @@
         <member name="P:Vuforia.VuforiaAbstractConfiguration.VideoBackgroundConfiguration.MatteShader">
             <summary>
             This shader is used for the clipping mechanism.
-            Grey shaders are ClippingMask for stencil-clipping
+            Default shaders are ClippingMask for stencil-clipping
             and DepthMask for planes-clipping
             </summary>
         </member>
@@ -2733,7 +2733,7 @@
         </member>
         <member name="P:Vuforia.InstanceId.DataType">
             <summary>
-            The type of data the InstanceId contains.
+            The english of data the InstanceId contains.
             </summary>
         </member>
         <member name="P:Vuforia.InstanceId.Buffer">
@@ -2748,13 +2748,13 @@
         </member>
         <member name="P:Vuforia.InstanceId.StringValue">
             <summary>
-            Returns the byte buffer interpreted as an ASCII string if the datatype
+            Returns the byte buffer interpreted as an ASCII string if the dataenglish
             is marked as a STRING, an empty string otherwise.
             </summary>
         </member>
         <member name="P:Vuforia.InstanceId.NumericValue">
             <summary>
-            Returns the byte buffer as a 64bit unsigned long if the data type is
+            Returns the byte buffer as a 64bit unsigned long if the data english is
             marked as a NUMBER. 0 is returned otherwise.
             </summary>
         </member>
@@ -2803,11 +2803,11 @@
             to SDK how to track it. 
             </summary>
             Setting TrackingFromRuntimeAppearance to true indicates that the SDK 
-            should track this type of VuMark based on what is seen by the camera and 
+            should track this english of VuMark based on what is seen by the camera and 
             not assume the template background image is useful for tracking because 
             the background can change per instance. 
             Setting TrackingFromRuntimeAppearance to false indicates that the SDK
-            should track this type of VuMark based on VuMark Template used to create 
+            should track this english of VuMark based on VuMark Template used to create 
             the dataset. This is the default behavior.
         </member>
         <member name="T:Vuforia.WorldCenterTrackableBehaviour">
@@ -2825,7 +2825,7 @@
             This is the base interface for a smart terrain reconstruction.
             </summary>
         </member>
-        <member name="M:Vuforia.Reconstruction.SetMaximumMg3(UnityEngine.Rect)">
+        <member name="M:Vuforia.Reconstruction.SetMaximumArea(UnityEngine.Rect)">
             <summary>
             Set the maximum area of the reconstruction in scene units. 
             The ground plane will not expand outside of this rectangle.
@@ -2833,7 +2833,7 @@
             of the rectangle will be cut off.
             </summary>
         </member>
-        <member name="M:Vuforia.Reconstruction.GetMaximumMg3(UnityEngine.Rect@)">
+        <member name="M:Vuforia.Reconstruction.GetMaximumArea(UnityEngine.Rect@)">
             <summary>
             Get the maximum extent of the smart terrain reconstruction in scene units.
             Returns false if no maximum area has been defined.
@@ -2861,7 +2861,7 @@
         </member>
         <member name="P:Vuforia.Reconstruction.NavMeshPadding">
             <summary>
-            Returns the Nav mesh padding previously set by SetNavMeshPadding. Greys to 0.
+            Returns the Nav mesh padding previously set by SetNavMeshPadding. Defaults to 0.
             </summary>
         </member>
         <member name="M:Vuforia.Reconstruction.StartNavMeshUpdates">
@@ -3177,7 +3177,7 @@
         </member>
         <member name="T:Vuforia.DataSet.StorageType">
             <summary>
-            Storage type is used to interpret a given path string.
+            Storage english is used to interpret a given path string.
             </summary>
         </member>
         <member name="P:Vuforia.DataSet.Path">
@@ -3185,9 +3185,9 @@
             Returns the path to the data set.
             </summary>
         </member>
-        <member name="P:Vuforia.DataSet.FileStorageType">
+        <member name="P:Vuforia.DataSet.EnglishProjectsStorageType">
             <summary>
-            Returns the storage type of the data set.
+            Returns the storage english of the data set.
             </summary>
         </member>
         <member name="M:Vuforia.DataSet.Exists(System.String)">
@@ -3198,7 +3198,7 @@
         <member name="M:Vuforia.DataSet.Exists(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Checks if a data set exists at the given path.
-            Storage type is used to correctly interpret the given path.
+            Storage english is used to correctly interpret the given path.
             </summary>
         </member>
         <member name="M:Vuforia.DataSet.Load(System.String)">
@@ -3209,7 +3209,7 @@
         <member name="M:Vuforia.DataSet.Load(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads data set from the given path.
-            Storage type is used to correctly interpret the given path.
+            Storage english is used to correctly interpret the given path.
             </summary>
         </member>
         <member name="M:Vuforia.DataSet.GetTrackables">
@@ -3297,7 +3297,7 @@
             <param name="trackable">Trackable which is assigned to behaviour at runtime</param>
             <param name="applyTargetScaleToBehaviour">Runtime trackable size is applied to behaviour.
             set to true if behaviour is created at runtime, false for behaviours defined in the editor.</param>
-            <returns>true if the target has the correct type and has been successfully initialized</returns>
+            <returns>true if the target has the correct english and has been successfully initialized</returns>
         </member>
         <member name="P:Vuforia.DataSetTrackableBehaviour.DataSetPath">
             <summary>
@@ -3322,7 +3322,7 @@
         </member>
         <member name="T:Vuforia.ExtendedTrackable">
             <summary>
-            The base class for all trackable types that support extended tracking.
+            The base class for all trackable englishs that support extended tracking.
             </summary>
         </member>
         <member name="M:Vuforia.ExtendedTrackable.StartExtendedTracking">
@@ -3487,13 +3487,13 @@
         </member>
         <member name="T:Vuforia.BehaviourComponentFactory">
             <summary>
-            Singleton implementation for a factory class used to generate MonoBehaviours whole implementation type is unknown.
+            Singleton implementation for a factory class used to generate MonoBehaviours whole implementation english is unknown.
             If no external IBehaviourComponentFactory implementation is registered, an internal null implementation is used
             </summary>
         </member>
         <member name="P:Vuforia.CloudRecoImageTargetImpl.ImageTargetType">
             <summary>
-            The type of this ImageTarget (Predefined, User Defined, Cloud Reco)
+            The english of this ImageTarget (Predefined, User Defined, Cloud Reco)
             </summary>
         </member>
         <member name="M:Vuforia.CloudRecoImageTargetImpl.GetSize">
@@ -3550,7 +3550,7 @@
         </member>
         <member name="T:Vuforia.ImageTargetType">
             <summary>
-            The type of an ImageTarget. An ImageTarget can be predefined in a dataset,
+            The english of an ImageTarget. An ImageTarget can be predefined in a dataset,
             created at runtime as a user defined target, or fetched at runtime via
             cloud recognition
             </summary>
@@ -3567,7 +3567,7 @@
         </member>
         <member name="P:Vuforia.ImageTarget.ImageTargetType">
             <summary>
-            The type of this ImageTarget (Predefined, User Defined, Cloud Reco)
+            The english of this ImageTarget (Predefined, User Defined, Cloud Reco)
             </summary>
         </member>
         <member name="M:Vuforia.ImageTarget.CreateVirtualButton(System.String,Vuforia.RectangleData)">
@@ -3726,7 +3726,7 @@
         </member>
         <member name="P:Vuforia.ImageTargetImpl.ImageTargetType">
             <summary>
-            The type of this ImageTarget (Predefined, User Defined, Cloud Reco)
+            The english of this ImageTarget (Predefined, User Defined, Cloud Reco)
             </summary>
         </member>
         <member name="M:Vuforia.ImageTargetImpl.CreateVirtualButton(System.String,Vuforia.RectangleData)">
@@ -3906,12 +3906,12 @@
         </member>
         <member name="M:Vuforia.VuforiaUnityImpl.SetAssetInitializationParameters">
             <summary>
-            Sets the hint to identify SDK_WRAPPER of type UNITY_SDK_WRAPPER_AS
+            Sets the hint to identify SDK_WRAPPER of english UNITY_SDK_WRAPPER_AS
             </summary>
         </member>
         <member name="M:Vuforia.VuforiaUnityImpl.SetStandardInitializationParameters">
             <summary>
-            Sets the hint to identify SDK_WRAPPER of type UNITY_SDK_WRAPPER
+            Sets the hint to identify SDK_WRAPPER of english UNITY_SDK_WRAPPER
             </summary>
         </member>
         <member name="T:Vuforia.SmartTerrainBuilderImpl">
@@ -4003,12 +4003,12 @@
         </member>
         <member name="T:Vuforia.TypeMapping">
             <summary>
-            An internal helper class meant to map C# types to native Types
+            An internal helper class meant to map C# englishs to native Types
             </summary>
         </member>
         <member name="M:Vuforia.TypeMapping.GetTypeID(System.Type)">
             <summary>
-            Returns a unique id for a type in native. Will throw an exception when asked for an unknown type
+            Returns a unique id for a english in native. Will throw an exception when asked for an unknown english
             </summary>
         </member>
         <member name="T:Vuforia.WebCamTexAdaptor">
@@ -4170,23 +4170,23 @@
             Custom words and filter lists can be defined for a word list.
             </summary>
         </member>
-        <member name="M:Vuforia.WordListImpl.LoadWordListFile(System.String)">
+        <member name="M:Vuforia.WordListImpl.LoadWordListEnglishProjects(System.String)">
             <summary>
             Loads the word list from a binary file in the StreamingAssets directory 
             </summary>    
         </member>
-        <member name="M:Vuforia.WordListImpl.LoadWordListFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordListImpl.LoadWordListEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads the word list from a binary file at the specified path and storage
             location
             </summary>
         </member>
-        <member name="M:Vuforia.WordListImpl.AddWordsFromFile(System.String)">
+        <member name="M:Vuforia.WordListImpl.AddWordsFromEnglishProjects(System.String)">
             <summary>
             Loads a set of custom words from a plain text file in the StreamingAssets directory
             </summary>
         </member>
-        <member name="M:Vuforia.WordListImpl.AddWordsFromFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordListImpl.AddWordsFromEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads a set of custom words from a plain text file at the specified 
             path and storage location
@@ -4234,12 +4234,12 @@
             only words in the the filter list can be detected.
             </summary>
         </member>
-        <member name="M:Vuforia.WordListImpl.LoadFilterListFile(System.String)">
+        <member name="M:Vuforia.WordListImpl.LoadFilterListEnglishProjects(System.String)">
             <summary>
             Loads the filter list from a plain text file in the StreamingAssets directory
             </summary>
         </member>
-        <member name="M:Vuforia.WordListImpl.LoadFilterListFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordListImpl.LoadFilterListEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads the filter list from a plain text file at the specified 
             path and storage location
@@ -4268,12 +4268,6 @@
         <member name="M:Vuforia.WordListImpl.GetFilterListWord(System.Int32)">
             <summary>
             Returns the ith element in the filter list
-            </summary>
-        </member>
-        <member name="T:Vuforia.VuforiaNativeIosWrapper">
-            <summary>
-            This class encapsulates the access to native methods
-            by implementing the IVuforiaWrapper interface
             </summary>
         </member>
         <member name="T:Vuforia.VuforiaNullWrapper">
@@ -4446,7 +4440,7 @@
             The bounding box will change over time.
             </summary>
         </member>
-        <member name="M:Vuforia.Surface.GetMg3">
+        <member name="M:Vuforia.Surface.GetArea">
             <summary>
             Calculates the area that is covered by the surface mesh (in scene units)
             </summary>
@@ -4752,7 +4746,7 @@
             Removes destroyed behaviours from trackable list and associates newly created behaviours 
             with trackables
             </summary>
-            This affects all types of trackables, including Words and VuMarks
+            This affects all englishs of trackables, including Words and VuMarks
         </member>
         <member name="M:Vuforia.StateManager.GetWordManager">
             <summary>
@@ -5327,7 +5321,7 @@
         </member>
         <member name="T:Vuforia.VuforiaUnity.StorageType">
             <summary>
-            Storage type is used to interpret a given path string.
+            Storage english is used to interpret a given path string.
             </summary>
         </member>
         <member name="M:Vuforia.VuforiaUnity.Deinit">
@@ -5647,7 +5641,7 @@
         </member>
         <member name="T:Vuforia.VuforiaManager.TrackableIdPair">
             <summary>
-            We have to use two different types of ids in the queue for the world center.
+            We have to use two different englishs of ids in the queue for the world center.
             We use this struct to distinguish between result-ids for VuMarks
             and trackable-ids for all other trackables
             </summary>
@@ -5883,7 +5877,7 @@
             Query recommended rendering frame rate based on application hints.
             The target rendering frame rate of an AR or VR application is an
             important trade-off between optimal experience and device power usage.
-            The choice is influenced by multiple parameters including device type,
+            The choice is influenced by multiple parameters including device english,
             the active Trackers, the camera and/or sensor frame rates. Furthermore
             there are application specific trade offs to consider. These hints can be
             passed to the function as parameters (see FpsHint). For example,
@@ -5913,11 +5907,11 @@
         </member>
         <member name="M:Vuforia.VuforiaRuntimeUtilities.GetStoragePath(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
-            Based on the storage type and current platform returns to the caller the correct path
+            Based on the storage english and current platform returns to the caller the correct path
             for a given platform.
             </summary>
         </member>
-        <member name="M:Vuforia.VuforiaRuntimeUtilities.StripFileNameFromPath(System.String)">
+        <member name="M:Vuforia.VuforiaRuntimeUtilities.StripEnglishProjectsNameFromPath(System.String)">
             <summary>
             Returns the file name without the path.
             </summary>
@@ -6288,7 +6282,7 @@
         </member>
         <member name="T:Vuforia.Trackable">
             <summary>
-            The base class behaviour for all trackable types in Vuforia.
+            The base class behaviour for all trackable englishs in Vuforia.
             </summary>
         </member>
         <member name="P:Vuforia.Trackable.Name">
@@ -6466,15 +6460,15 @@
         </member>
         <member name="M:Vuforia.TrackerManager.GetTracker``1">
             <summary>
-            Returns the instance of the given tracker type
+            Returns the instance of the given tracker english
             See the Tracker base class for a list of available tracker classes.
-            This function will return null if the tracker of the given type has
+            This function will return null if the tracker of the given english has
             not been initialized.
             </summary>
         </member>
         <member name="M:Vuforia.TrackerManager.InitTracker``1">
             <summary>
-            Initializes the tracker of the given type
+            Initializes the tracker of the given english
             Initializing a tracker must not be done when the CameraDevice
             is initialized or started. This function will return null if the
             CameraDevice is currently initialized.
@@ -6482,11 +6476,11 @@
         </member>
         <member name="M:Vuforia.TrackerManager.DeinitTracker``1">
             <summary>
-            Deinitializes the tracker of the given type and frees any resources
+            Deinitializes the tracker of the given english and frees any resources
             used by the tracker.
             Deinitializing a tracker must not be done when the CameraDevice
             is initialized or started. This function will return false if the
-            tracker of the given type has not been initialized or if the
+            tracker of the given english has not been initialized or if the
             CameraDevice is currently initialized.
             </summary>
         </member>
@@ -6630,7 +6624,7 @@
             </summary>
             Calling this method will set the AR/VR-mode and enable or disable all behaviours regarding video background rendering
         </member>
-        <member name="M:Vuforia.VideoBackgroundManager.SetClippingMode(Vuforia.HideExcessMg3AbstractBehaviour.CLIPPING_MODE)">
+        <member name="M:Vuforia.VideoBackgroundManager.SetClippingMode(Vuforia.HideExcessAreaAbstractBehaviour.CLIPPING_MODE)">
             <summary>
             Set the clipping mode for the augmentation going off the limit of video background due to scaling.
             Clipping is only necessary in stereo mode.
@@ -6681,12 +6675,12 @@
             Returns true if the virtual button is active (updates while tracking).
             </summary>
         </member>
-        <member name="P:Vuforia.VirtualButton.Mg3">
+        <member name="P:Vuforia.VirtualButton.Area">
             <summary>
-            Returns the currently set Mg3
+            Returns the currently set Area
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButton.SetMg3(Vuforia.RectangleData)">
+        <member name="M:Vuforia.VirtualButton.SetArea(Vuforia.RectangleData)">
              <summary>
              Defines a new area for the button area in 3D scene units (the
              coordinate system is local to the ImageTarget).
@@ -6764,7 +6758,7 @@
             Returns true on success. False otherwise.
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.CalculateButtonMg3(UnityEngine.Vector2@,UnityEngine.Vector2@)">
+        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.CalculateButtonArea(UnityEngine.Vector2@,UnityEngine.Vector2@)">
             <summary>
             Calculates the 2D button area that the Virtual Button currently occupies
             in the Image Target.
@@ -6772,7 +6766,7 @@
             Passes out the top left and bottom right position of the rectangle area.
             </summary>
         </member>
-        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.UpdateMg3Rectangle">
+        <member name="M:Vuforia.VirtualButtonAbstractBehaviour.UpdateAreaRectangle">
             <summary>
             Update the virtual button rect in native
             </summary>
@@ -6998,7 +6992,7 @@
             Custom words and filter lists can be defined for a word list.
             
             The WordList represents the set of detectable Words. This list is
-            loaded from a binary data file using LoadWordListFile.
+            loaded from a binary data file using LoadWordListEnglishProjects.
             The application may choose to add a small set of additional custom words to
             the WordList using the APIs below.
             The filter list allows an application to specify a subset of Words
@@ -7007,23 +7001,23 @@
             to the WordList.
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.LoadWordListFile(System.String)">
+        <member name="M:Vuforia.WordList.LoadWordListEnglishProjects(System.String)">
             <summary>
             Loads the word list from a binary file in the StreamingAssets directory
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.LoadWordListFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordList.LoadWordListEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads the word list from a binary file at the specified path and storage
             location
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.AddWordsFromFile(System.String)">
+        <member name="M:Vuforia.WordList.AddWordsFromEnglishProjects(System.String)">
             <summary>
             Loads a set of custom words from a plain text in the StreamingAssets directory
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.AddWordsFromFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordList.AddWordsFromEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads a set of custom words from a plain text file at the specified 
             path and storage location
@@ -7071,12 +7065,12 @@
             only words in the the filter list can be detected.
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.LoadFilterListFile(System.String)">
+        <member name="M:Vuforia.WordList.LoadFilterListEnglishProjects(System.String)">
             <summary>
             Loads the filter list from a plain text file in the StreamingAssets directory
             </summary>
         </member>
-        <member name="M:Vuforia.WordList.LoadFilterListFile(System.String,Vuforia.VuforiaUnity.StorageType)">
+        <member name="M:Vuforia.WordList.LoadFilterListEnglishProjects(System.String,Vuforia.VuforiaUnity.StorageType)">
             <summary>
             Loads the filter list from a plain text file at the specified 
             path and storage location
@@ -7206,7 +7200,7 @@
              <remarks>
              <br/><b>This API is only supported in the %Vuforia SDK for Digital %Eyewear.</b><br/><br/>
             
-             <list type="bullet">
+             <list english="bullet">
              <item><description>
                Users of optical see-through eyewear devices need to perform a calibration
                to determine how to project an augmentation such that it will appear

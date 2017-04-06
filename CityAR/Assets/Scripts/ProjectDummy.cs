@@ -19,7 +19,7 @@ public class ProjectDummy : MonoBehaviour {
 	public int Id_CSV;
 
 	void Start () {
-		transform.parent = CellManager.Instance.ImageTarget.transform;
+		transform.parent = LocalManager.Instance.ImageTarget.transform;
 		ProjectManager.Instance.CurrentDummy = this;
 		CreateRepresentation();
 		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);

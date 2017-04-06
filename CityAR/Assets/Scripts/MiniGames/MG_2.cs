@@ -39,7 +39,7 @@ public class MG_2 : AManager<MG_2> {
 	public IEnumerator InitGame()
 	{
 		Advertisement.transform.position = new Vector3(0, Height / 4, 0);
-		TargetStage.transform.position = new Vector3(0, -Height / 2 + 20, 50);
+		TargetStage.transform.position = new Vector3(0, -Height / 2 + 40, 50);
 		for (int i = 0; i < 10; i++)
 		{
 			GameObject agent = ObjectPool.Spawn(VoterPrefab, manager.MG_2_GO.transform);

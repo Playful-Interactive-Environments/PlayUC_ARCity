@@ -15,8 +15,8 @@ public class NetworkCommunicator : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        if (CellManager.Instance != null && isLocalPlayer)
-            CellManager.Instance.NetworkCommunicator = this;
+        if (isLocalPlayer)
+            LocalManager.Instance.NetworkCommunicator = this;
     }
 
     void Start ()
@@ -29,8 +29,22 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     void Update () {
-        if (CellManager.Instance != null && isLocalPlayer)
-            CellManager.Instance.NetworkCommunicator = this;
+        if (isLocalPlayer)
+            LocalManager.Instance.NetworkCommunicator = this;
+    }
+    public void SendEvent(string name)
+    {
+        if (isServer)
+        {
+            RpcTriggerEvent(name);
+        }
+    }
+
+    [ClientRpc]
+    void RpcTriggerEvent(string name)
+    {
+        if(name == Vars.ServerHandleDisconnect)
+            GameManager.Instance.ResetDiscussion();
     }
 
     public void UpdateProjectVars(int fin, int soc, int env)
@@ -97,13 +111,13 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             switch (valuetype)
             {
-                case "Finance":
+                case Vars.Player1:
                     CellManager.Instance.UpdateFinance(cellid, amount);
                     break;
-                case "Social":
+                case Vars.Player2:
                     CellManager.Instance.UpdateSocial(cellid, amount);
                     break;
-                case "Environment":
+                case Vars.Player3:
                     CellManager.Instance.UpdateEnvironment(cellid, amount); 
                     break;
             }
@@ -120,13 +134,13 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             switch (role)
             {
-                case "Environment":
+                case Vars.Player3:
                     SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
-                case "Social":
+                case Vars.Player2:
                     SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
-                case "Finance":
+                case Vars.Player1:
                     SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
                     break;
             }
@@ -143,23 +157,23 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             switch (vote)
             {
-                case "Choice1":
+                case Vars.Choice1:
                     ProjectManager.Instance.SelectedProject.Choice1 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Approve");
-                    SaveStateManager.Instance.UpdateData(voter, "Approve", 0);
+                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Approved);
+                    SaveStateManager.Instance.UpdateData(voter, Vars.Approved, 0);
                     RpcVote(vote, voter, projectnum);
                     break;
-                case "Choice2":
+                case Vars.Choice2:
                     ProjectManager.Instance.SelectedProject.Choice2 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Deny");
-                    SaveStateManager.Instance.UpdateData(voter, "Deny", 0);
+                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Denied);
+                    SaveStateManager.Instance.UpdateData(voter, Vars.Denied, 0);
                     RpcVote(vote, voter, projectnum);
                     break;
-                case "Result_Choice1":
+                case Vars.ResultChoice1:
                     ProjectManager.Instance.ProjectApproved(projectnum);
                     RpcVote(vote, voter, projectnum);
                     break;
-                case "Result_Choice2":
+                case Vars.ResultChoice2:
                     ProjectManager.Instance.ProjectRejected(projectnum);
                     RpcVote(vote, voter, projectnum);
                     break;
@@ -233,16 +247,16 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             switch (vote)
             {
-                case "Choice1":
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Approved");
+                case Vars.Choice1:
+                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Approved);
                     break;
-                case "Choice2":
-                    DiscussionManager.Instance.ChangeVoterState(voter, "Denied");
+                case Vars.Choice2:
+                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Denied);
                     break;
-                case "Result_Choice1":
+                case Vars.ResultChoice1:
                     ProjectManager.Instance.ProjectApproved(projectnum);
                     break;
-                case "Result_Choice2":
+                case Vars.ResultChoice2:
                     ProjectManager.Instance.ProjectRejected(projectnum);
                     break;
                 default:

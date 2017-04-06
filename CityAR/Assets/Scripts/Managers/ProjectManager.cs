@@ -19,7 +19,7 @@ public class ProjectManager : NetworkBehaviour
 	public GameObject ProjectTemplate;
 	public GridLayoutGroup GridGroup;
 	private int CurrentProjectId = 0;
-
+    private bool canSpawn = true;
 	void Awake () {
 		if (Instance == null)
 			Instance = this;
@@ -31,7 +31,7 @@ public class ProjectManager : NetworkBehaviour
 
 	void Start()
 	{
-		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening(Vars.LocalClientDisconnect, NetworkDisconnect);
 	}
 
     void Update()
@@ -49,7 +49,7 @@ public class ProjectManager : NetworkBehaviour
 		GridGroup = GameObject.Find("ProjectLayout").GetComponent<GridLayoutGroup>();
 		ProjectTemplate = GameObject.Find("ProjectTemplate");
 		GameObject projectButton = Instantiate(ProjectTemplate, transform.position, Quaternion.identity);
-		projectButton.transform.parent = GridGroup.transform;
+	    projectButton.transform.SetParent(GridGroup.transform);
 		projectButton.transform.localScale = new Vector3(1, 1, 1);
 		projectButton.GetComponent<ProjectButton>().SetupProjectButton(id);
 		ProjectButtons.Add(projectButton);
@@ -58,13 +58,25 @@ public class ProjectManager : NetworkBehaviour
 	//called only on server
 	public void SpawnProject(int cellid, Vector3 pos, Vector3 rot, string owner, int id)
 	{
-		GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity);
-		Project project = gobj.GetComponent<Project>();
-		project.SetProject(owner, id, CurrentProjectId, GetCSVTitle(id), GetCSVContent(id), GetInfluenceInt(id),
-			GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);
-		NetworkServer.Spawn(gobj);
-		CurrentProjectId++;
+	    if (canSpawn)
+	    {
+            GameObject gobj = Instantiate(ProjectPrefab, pos, Quaternion.identity);
+            Project project = gobj.GetComponent<Project>();
+            project.SetProject(owner, id, CurrentProjectId, GetCSVTitle(id), GetCSVContent(id), GetInfluenceInt(id),
+                GetSocialInt(id), GetFinanceInt(id), GetEnvironmentInt(id), GetBudgetInt(id), GetCooldown(id), GetMiniGame(id), cellid, GetRepresentation(id), pos, rot);
+            NetworkServer.Spawn(gobj);
+            CurrentProjectId++;
+
+            //resetSpawners
+	        canSpawn = false;
+	        Invoke("ResetSpawn", 5f);
+	    }
 	}
+
+    void ResetSpawn()
+    {
+        canSpawn = true;
+    }
 
 	public void LockButton(int id)
 	{
@@ -119,9 +131,20 @@ public class ProjectManager : NetworkBehaviour
 		FindProject(num).TriggerCanceled();
 	}
 
-	#region CSV Handlers
+    public void LoadLanguage()
+    {
+        foreach (GameObject button in ProjectButtons)
+        {
+            button.GetComponent<ProjectButton>().SetupProjectButton(button.GetComponent<ProjectButton>().ProjectCSVId);
+        }
+        foreach (Project project in Projects)
+        {
+            project.ChangeLanguage(GetCSVTitle(project.Id_CSV), GetCSVContent(project.Id_CSV));
+        }
+    }
+    #region CSV Handlers
 
-	public string GetCSVTitle(int num)
+    public string GetCSVTitle(int num)
 	{
 		return CSVProjects.Find_ID(num).title;
 	}
@@ -207,26 +230,3 @@ public class ProjectManager : NetworkBehaviour
 	}
 	#endregion
 }
-/*	public Project FindProject(int projectnum)
-	{
-		if (isClient && !isServer)
-		{
-			Projects.Clear();
-			if (isClient && !isServer)
-			{
-				foreach (Project p in FindObjectsOfType<Project>())
-				{
-					Projects.Add(p);
-				}
-			}
-		}
-
-		foreach (Project p in Projects)
-		{
-			if (p.ID_Spawn == projectnum)
-			{
-				return p;
-			}
-		}
-		return null;
-	}*/

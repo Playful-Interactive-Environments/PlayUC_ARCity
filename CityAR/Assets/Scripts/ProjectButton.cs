@@ -13,7 +13,7 @@ public class ProjectButton : MonoBehaviour {
 	public Text RatingText;
 	public Text BudgetText;
 	public Text CooldownText;
-	public TextMeshProUGUI MGText;
+	public Text MGText;
 	public Image BlockedCover;
 	public int ProjectCSVId;
 	private string miniGame;
@@ -27,7 +27,7 @@ public class ProjectButton : MonoBehaviour {
 
 	void Start()
 	{
-		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening(Vars.LocalClientDisconnect, NetworkDisconnect);
 		ResetButton();
 	}
 
@@ -67,23 +67,23 @@ public class ProjectButton : MonoBehaviour {
 		BlockedCover.gameObject.SetActive(false);
 		switch (miniGame)
 		{
-			case "None":
+			case Vars.NoMg:
 				MGText.gameObject.SetActive(false);
 				PlayMgButton.gameObject.SetActive(false);
 				MGText.text = "No Tasks.";
 				break;
-			case "Mg1":
+			case Vars.Mg1:
 				PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Sorting Documents</color>";
 				break;
-			case "Mg2":
-				PlayMgButton.gameObject.SetActive(true);
+			case Vars.Mg2:
+                PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Gathering Supporters</color>";
 				break;
-			case "Mg3":
-				PlayMgButton.gameObject.SetActive(true);
+			case Vars.Mg3:
+                PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
 				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Urban Zoning</color>";
 				break;
@@ -101,14 +101,14 @@ public class ProjectButton : MonoBehaviour {
 		MGManager.Instance.ProjectCsvId = ProjectCSVId;
 		switch (miniGame)
 		{
-			case "Mg1":
-				MGManager.Instance.SwitchState(MGManager.MGState.Mg1);
+			case Vars.Mg1:
+                MGManager.Instance.SwitchState(MGManager.MGState.Mg1);
 				break;
-			case "Mg2":
-				MGManager.Instance.SwitchState(MGManager.MGState.Mg2);
+			case Vars.Mg2:
+                MGManager.Instance.SwitchState(MGManager.MGState.Mg2);
 				break;
-			case "Mg3":
-				MGManager.Instance.SwitchState(MGManager.MGState.Mg3);
+			case Vars.Mg3:
+                MGManager.Instance.SwitchState(MGManager.MGState.Mg3);
 				break;
 		}
 	}

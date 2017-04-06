@@ -34,37 +34,79 @@ public class TextManager : AManager<TextManager>
     public string Mg_lose;
 
     [Header("Game End")]
-	public string TimeWinText;
-	public string UtopiaWinText;
-	public string MayorWinText;
-	public string MayorAnnounceText;
+    public TextMeshProUGUI Congratulations;
+    public string TimeWinText;
+    public string UtopiaWinText;
+    public string MayorWinText;
+    public string MayorAnnounceText;
+    public TextMeshProUGUI TimePlayed;
+    public TextMeshProUGUI SuccessfulProjects;
+    public TextMeshProUGUI TotalAddValue;
+    public TextMeshProUGUI MostImprovedVal;
+    public TextMeshProUGUI LeastImprovedVal;
 
+    [Header("Player Achievements")]
+    public TextMeshProUGUI MostSuccessfulPro;
+    public TextMeshProUGUI MostMoneySpent;
+    public TextMeshProUGUI HighestInfluence;
+    public TextMeshProUGUI MostWinsMg;
+    public TextMeshProUGUI FastestMg;
+
+    [Header("Personal Stats")]
+    public TextMeshProUGUI ProjectsProposed;
+    public TextMeshProUGUI ProjectsSuccessful;
+    public TextMeshProUGUI ProjectsFailed;
+    public TextMeshProUGUI ProjectsVotedApprove;
+    public TextMeshProUGUI ProjectsVotedDenied;
+    public TextMeshProUGUI QuestsCompleted;
+
+    public string CurrentLanguage;
     public CSVLocalization Languages;
-    
-	void Start ()
-	{
-	    Languages = CSVLocalization.Instance;
-        Invoke("ChooseEnglish",.1f);
-	}
-	
-	void Update () {
-		
-	}
 
+    void Start()
+    {
+        Languages = CSVLocalization.Instance;
+        Invoke("ChooseEnglish", .1f);
+    }
+
+    void Update()
+    {
+
+    }
 
     public void ChooseEnglish()
     {
-        GetWords("english");
+        CurrentLanguage = "english";
+        GetWords(CurrentLanguage);
+
+        CSVQuests.Instance.LoadLanguage("english");
+        if (QuestManager.Instance != null)
+            QuestManager.Instance.Invoke("LoadLanguage", .1f);
+
+        CSVProjects.Instance.LoadLanguage("english");
+        if (ProjectManager.Instance != null)
+            ProjectManager.Instance.Invoke("LoadLanguage", .1f);
     }
 
     public void ChooseGerman()
     {
-        GetWords("german");
+        CurrentLanguage = "german";
+
+        GetWords(CurrentLanguage);
+
+        CSVQuests.Instance.LoadLanguage("german");
+        if (QuestManager.Instance != null)
+            QuestManager.Instance.Invoke("LoadLanguage", .1f);
+
+        CSVProjects.Instance.LoadLanguage("german");
+        if (ProjectManager.Instance != null)
+            ProjectManager.Instance.Invoke("LoadLanguage", .1f);
     }
 
     public void ChooseFrench()
     {
-        GetWords("dutch");
+        CurrentLanguage = "french";
+        GetWords(CurrentLanguage);
     }
 
     public void GetWords(string language)
@@ -95,13 +137,35 @@ public class TextManager : AManager<TextManager>
         Mg1_Goal = Languages.GetWord("Mg1_Goal", language);
         Mg2_Goal = Languages.GetWord("Mg2_Goal", language);
         Mg3_Goal = Languages.GetWord("Mg3_Goal", language);
-        Mg_win= Languages.GetWord("Mg_win", language);
+        Mg_win = Languages.GetWord("Mg_win", language);
         Mg_lose = Languages.GetWord("Mg_lose", language);
 
         //Game End
-        TimeWinText = Languages.GetWord("TimeWin", language);
-        UtopiaWinText = Languages.GetWord("UtopiaWin", language);
-        MayorWinText = Languages.GetWord("MayorWin", language);
-        MayorAnnounceText = Languages.GetWord("MayorAnnounce", language);
+        TimeWinText = Languages.GetWord("end_timewin", language);
+        UtopiaWinText = Languages.GetWord("end_utopiawin", language);
+        MayorWinText = Languages.GetWord("end_mayorwin", language);
+        MayorAnnounceText = Languages.GetWord("end_mayourannounce", language);
+
+        Congratulations.text = Languages.GetWord("end_congrats", language);
+        TimePlayed.text = Languages.GetWord("end_timeplayed", language);
+        SuccessfulProjects.text = Languages.GetWord("end_successfulprojects", language);
+        TotalAddValue.text = Languages.GetWord("end_totaladdvalue", language);
+        MostImprovedVal.text = Languages.GetWord("end_mostimprovedfield", language);
+        LeastImprovedVal.text = Languages.GetWord("end_leastimprovedfield", language);
+
+        //Player Achievements
+        MostSuccessfulPro.text = Languages.GetWord("end_mostsuccessfulpro", language);
+        MostMoneySpent.text = Languages.GetWord("end_mostmoneyspent", language);
+        HighestInfluence.text = Languages.GetWord("end_highestinfluence", language);
+        MostWinsMg.text = Languages.GetWord("end_mostwinsmg", language);
+        FastestMg.text = Languages.GetWord("end_fastestmg", language);
+
+        //Personal Stats
+        ProjectsProposed.text = Languages.GetWord("end_projectsproposed", language);
+        ProjectsSuccessful.text = Languages.GetWord("end_projectssuccessful", language);
+        ProjectsFailed.text = Languages.GetWord("end_projectsfailed", language);
+        ProjectsVotedApprove.text = Languages.GetWord("end_projectsapproved", language);
+        ProjectsVotedDenied.text = Languages.GetWord("end_projectsdenied", language);
+        QuestsCompleted.text = Languages.GetWord("end_questscompleted", language);
     }
 }

@@ -21,7 +21,7 @@ public class LevelDescription : MonoBehaviour {
 	{
 		levelData = CSVLeveling.Instance;
 		GetComponent<Image>().color = Color.grey;
-		EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+		EventDispatcher.StartListening(Vars.LocalClientDisconnect, NetworkDisconnect);
 	}
 
 	void NetworkDisconnect()
@@ -31,29 +31,30 @@ public class LevelDescription : MonoBehaviour {
 	}
 
 	void Update () {
-		if (ThisLevel <= LevelManager.Instance.CurrentRank  && !levelUnlocked)
+		if (ThisLevel <= LocalManager.Instance.CurrentRank  && !levelUnlocked)
 		{
 			GetComponent<Image>().color = Color.white;
 			if (BonusType == "Event" && !bonusUnlocked)
 			{
 				//EventManager.Instance.TriggerEvent(BonusValue);
 			}
-			if (BonusType == "Budget" && !bonusUnlocked)
+			if (BonusType == Vars.MainValue1 && !bonusUnlocked)
 			{
-				CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", ConvertString(BonusValue));
+                LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, ConvertString(BonusValue));
 			}
 			if (BonusType == "Project")
 			{
 				int projectId = 0;
-				switch (LevelManager.Instance.RoleType)
+				switch (LocalManager.Instance.RoleType)
 				{
-					case "Environment":
+
+                    case Vars.Player3:
 						projectId = ConvertString(levelData.GetEnvironmentPlayer(ThisLevel));
 						break;
-					case "Social":
+					case Vars.Player2:
 						projectId = ConvertString(levelData.GetSocialPlayer(ThisLevel));
 						break;
-					case "Finance":
+					case Vars.Player1:
 						projectId = ConvertString(levelData.GetFinancePlayer(ThisLevel));
 						break;
 				}
@@ -66,7 +67,7 @@ public class LevelDescription : MonoBehaviour {
 	public void SetupLayout(int i)
 	{
 
-		if (LevelManager.Instance.CurrentRank > 0)
+		if (LocalManager.Instance.CurrentRank > 0)
 		{
 			bonusUnlocked = true;
 		}
@@ -79,7 +80,7 @@ public class LevelDescription : MonoBehaviour {
 	public void ExtractData()
 	{
 		splitString = textToParse.Split('/');
-		//SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
+		//SaveStateManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
 
 		for (int i = 0; i < splitString.Length; i++)
 		{

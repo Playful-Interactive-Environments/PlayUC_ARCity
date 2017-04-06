@@ -153,9 +153,7 @@ public class Agent : MonoBehaviour {
                 if (transform.position == _nextWayPointPosition)
                 {
                     GetComponentInChildren<Animator>().SetBool("wave", true);
-
                 }
-
                 break;
         }
     }
@@ -223,7 +221,7 @@ public class Agent : MonoBehaviour {
     public void Capture()
     {
         _nextWayPointPosition = new Vector3(MG_2.Instance.TargetStage.transform.position.x + Utilities.RandomFloat(-15,15),
-            MG_2.Instance.TargetStage.transform.position.y + Utilities.RandomFloat(5, 25),0);
+            MG_2.Instance.TargetStage.transform.position.y + Utilities.RandomFloat(5, 30),0);
         _startingPos = transform.position;
         currentState = VoterState.Captured;
         GetComponent<SphereCollider>().enabled = false;

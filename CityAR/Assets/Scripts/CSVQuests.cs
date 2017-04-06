@@ -18,14 +18,28 @@ public class CSVQuests: AManager<CSVQuests>
         public string effect_1;
         public string effect_2;
     }
-    public TextAsset File;
+    public TextAsset EnglishQuests;
+    public TextAsset GermanQuests;
+
     public List<Row> rowList = new List<Row>();
 
     bool isLoaded = false;
-
+    public void LoadLanguage(string language)
+    {
+        rowList.Clear();
+        switch (language)
+        {
+            case "english":
+                Load(EnglishQuests);
+                break;
+            case "german":
+                Load(GermanQuests);
+                break;
+        }
+    }
     void Start()
     {
-        Load(File);
+        LoadLanguage("english");
     }
 
 

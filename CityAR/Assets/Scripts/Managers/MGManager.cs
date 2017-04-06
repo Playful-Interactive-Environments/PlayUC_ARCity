@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MGManager : AManager<MGManager> {
+public class MGManager : AManager<MGManager>
+{
 
     public MGState CurrentMG = MGState.None;
     public enum MGState
     {
-        None, Mg2, Pointer, Mg1, Mg3
+        None, Mg2, Mg1, Mg3
     }
 
     //main objects & vars
@@ -17,13 +18,14 @@ public class MGManager : AManager<MGManager> {
     public GameObject MainCanvas;
     public GameObject MGCanvas;
     public GameObject ObjectContainer;
+    public GameObject MgWinRepr;
     public Text TimerText;
     public Text ScoreText;
     public Text WinStateText;
     public Text GameDescription;
     public int ProjectCsvId;
     //vars
-    public float targetAspect = 9f/16f;
+    public float targetAspect = 9f / 16f;
     private float scaleFactor = 32f;
     public float Height;
     public float Width;
@@ -40,7 +42,8 @@ public class MGManager : AManager<MGManager> {
     public MG_3 MG_3_Mng;
 
 
-    void Start () {
+    void Start()
+    {
         /*Find Cameras & Canvas
         MGCam = GameObject.Find("MGCam");
         MainCam = Camera.main;
@@ -60,8 +63,8 @@ public class MGManager : AManager<MGManager> {
         cam.backgroundColor = Color.white;
         cam.orthographicSize = 80f;
         Height = cam.orthographicSize * 2;
-        Width = Height*cam.aspect;
-        EventDispatcher.StartListening("NetworkDisconnect", NetworkDisconnect);
+        Width = Height * cam.aspect;
+        EventDispatcher.StartListening(Vars.LocalClientDisconnect, NetworkDisconnect);
 
         Invoke("Init", .1f);
     }
@@ -71,7 +74,8 @@ public class MGManager : AManager<MGManager> {
     {
         ChangeState(MGState.None);
     }
-    void Update () {
+    void Update()
+    {
         TrackProgress();
         if (Input.GetKeyDown(KeyCode.A))
         {
@@ -96,7 +100,7 @@ public class MGManager : AManager<MGManager> {
                     }
                     if (MG_1_Mng.CollectedDocs >= MG_1_Mng.DocsNeeded)
                     {
-                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg1Win", 0);
+                        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg1Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -113,7 +117,7 @@ public class MGManager : AManager<MGManager> {
 
                     if (MG_2_Mng.VotersCollected >= MG_2_Mng.VotersNeeded)
                     {
-                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg2Win", 0);
+                        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg2Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -128,7 +132,7 @@ public class MGManager : AManager<MGManager> {
                     }
                     if (MG_3_Mng.CurrentPercent >= MG_3_Mng.PercentNeeded)
                     {
-                        CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Mg3Win", 0);
+                        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg3Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
                     }
                     break;
@@ -148,6 +152,7 @@ public class MGManager : AManager<MGManager> {
         MG_1_GO.SetActive(false);
         MG_2_GO.SetActive(false);
         MG_3_GO.SetActive(false);
+        MgWinRepr.SetActive(false);
         MG_1_Mng.ResetGame();
         MG_2_Mng.ResetGame();
         MG_3_Mng.ResetGame();
@@ -157,9 +162,6 @@ public class MGManager : AManager<MGManager> {
         Started = true;
         switch (state)
         {
-
-            case MGState.Pointer:
-                break;
             case MGState.Mg1:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
@@ -167,7 +169,7 @@ public class MGManager : AManager<MGManager> {
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg1_Description;
-                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.Mg2:
                 MGCanvas.SetActive(true);
@@ -176,7 +178,7 @@ public class MGManager : AManager<MGManager> {
                 MG_2_Mng.StartCoroutine("InitGame");
                 MG_2_GO.SetActive(true);
                 GameDescription.text = TextManager.Instance.Mg2_Description;
-                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.Mg3:
                 MGCanvas.SetActive(true);
@@ -185,7 +187,7 @@ public class MGManager : AManager<MGManager> {
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg3_Description;
-                CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
                 break;
             case MGState.None:
                 Started = false;
@@ -193,27 +195,33 @@ public class MGManager : AManager<MGManager> {
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;
-                if(CellManager.Instance!=null)
-                    CellManager.Instance.NetworkCommunicator.SetPlayerState(LevelManager.Instance.RoleType, "Game");
+                if(LocalManager.Instance.NetworkCommunicator != null)
+                    LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Game");
                 break;
         }
     }
-
+     
     public IEnumerator EndMG(string state, float time)
     {
         Started = false;
+        MgWinRepr.SetActive(true);
         if (state == "win")
         {
-            CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgTime", Mathf.RoundToInt(_currentTime));
-            WinStateText.text = TextManager.Instance.Mg_win + " " + time + "s";
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MgTime", Mathf.RoundToInt(_currentTime));
+            WinStateText.text = TextManager.Instance.Mg_win;
         }
         if (state == "lose")
         {
-            CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MgFail", 0);
-            WinStateText.text = TextManager.Instance.Mg_lose + " " + time + "s";
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MgFail", 0);
+            WinStateText.text = TextManager.Instance.Mg_lose;
         }
+        yield return new WaitForSeconds(time);
         switch (CurrentMG)
         {
+            case MGState.Mg1:
+                _currentTime = 0;
+                MG_1_Mng.ResetGame();
+                break;
             case MGState.Mg2:
                 _currentTime = 0;
                 MG_2_Mng.ResetGame();
@@ -222,14 +230,8 @@ public class MGManager : AManager<MGManager> {
                 _currentTime = 0;
                 MG_3_Mng.ResetGame();
                 break;
-            case MGState.Pointer:
-                break;
-            case MGState.Mg1:
-                _currentTime = 0;
-                MG_1_Mng.ResetGame();
-                break;
+
         }
-        yield return new WaitForSeconds(time);
         if (state == "reset")
         {
             ChangeState(MGState.None);

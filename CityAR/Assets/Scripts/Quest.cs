@@ -58,12 +58,15 @@ public class Quest : MonoBehaviour
 		nextPoint = Utilities.RandomInt(0, Waypoints.Count);
 		nextWaypoint = Waypoints[nextPoint];
 		agent.SetDestination(nextWaypoint);
-	}
+        Cell = CellGrid.Instance.GetRandomCell();
+        CellLogic = Cell.GetComponent<CellLogic>();
+    }
 
 	void Start()
 	{
 		CreateRepresentation();
-	}
+
+    }
 
 	void CreateRepresentation()
 	{
@@ -83,10 +86,9 @@ public class Quest : MonoBehaviour
 		}
 	}
 
-
 	IEnumerator GetTarget()
 	{
-		agent.Stop();
+	    agent.isStopped = true;
 		agent.velocity = new Vector3(0,0,0);
 		representation.GetComponentInChildren<Animator>().SetBool("wave", true);
 		canMove = false;
@@ -97,28 +99,40 @@ public class Quest : MonoBehaviour
 		nextPoint = Utilities.RandomInt(0, Waypoints.Count);
 		nextWaypoint = Waypoints[nextPoint];
 		agent.SetDestination(nextWaypoint);
-		agent.Resume();
+	    agent.isStopped = false;
 	}
-	public void SetCell(GameObject cell)
+	public void SetQuest(int randomId)
 	{
-		Cell = cell;
-		CellLogic = Cell.GetComponent<CellLogic>();
+        ID = randomId;
 
-	}
+        Title = CSVQuests.Instance.Find_ID(randomId).title;
+        Content = CSVQuests.Instance.Find_ID(randomId).content;
+
+        Choice1 = CSVQuests.Instance.Find_ID(randomId).choice_1;
+        Choice2 = CSVQuests.Instance.Find_ID(randomId).choice_2;
+
+        Result1 = CSVQuests.Instance.Find_ID(randomId).result_1;
+        Result2 = CSVQuests.Instance.Find_ID(randomId).result_2;
+
+        Effect1 = CSVQuests.Instance.Find_ID(randomId).effect_1;
+        Effect2 = CSVQuests.Instance.Find_ID(randomId).effect_2;
+
+    }
+
 	public void Choose(int effect)
 	{
 		if (effect == 1)
 		{
 			splitString = Effect1.Split('/');
 			UIManager.Instance.UpdateResult(Result1);
-			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
+			SaveStateManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice1 + " RESULT:" + Result1 + " EFFECT: " + Effect1);
 		}
 
 		if (effect == 2)
 		{
 			splitString = Effect2.Split('/');
 			UIManager.Instance.UpdateResult(Result2);
-			SaveStateManager.Instance.LogEvent("PLAYER: " + LevelManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
+			SaveStateManager.Instance.LogEvent("PLAYER: " + LocalManager.Instance.RoleType + " QUEST: " + Title + " CHOICE: " + Choice2 + " RESULT:" + Result2 + " EFFECT: " + Effect2);
 		}
 
 		for (int i = 0; i < splitString.Length; i++)
@@ -132,30 +146,30 @@ public class Quest : MonoBehaviour
 			if (i % 2 != 0)
 			{
 				int.TryParse(splitString[i], NumberStyles.AllowLeadingSign, null, out parsedValue);
-				if (savestring == "Influence")
+				if (savestring == Vars.MainValue2)
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", parsedValue);
-					UIManager.Instance.UpdateResult("Influence", splitString[i]);
+                    LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, parsedValue);
+					UIManager.Instance.UpdateResult(Vars.MainValue2, splitString[i]);
 				}
-				if (savestring == "Budget")
+				if (savestring == Vars.MainValue1)
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", parsedValue);
-					UIManager.Instance.UpdateResult("Budget", splitString[i]);
+                    LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, parsedValue);
+					UIManager.Instance.UpdateResult(Vars.MainValue1, splitString[i]);
 				}
-				if (savestring == "Environment")
+				if (savestring == Vars.Player3)
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
-					UIManager.Instance.UpdateResult("Environment", splitString[i]);
+                    LocalManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
+					UIManager.Instance.UpdateResult(Vars.Player3, splitString[i]);
 				}
-				if (savestring == "Finance")
+				if (savestring == Vars.Player1)
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
-					UIManager.Instance.UpdateResult("Finance", splitString[i]);
+                    LocalManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
+					UIManager.Instance.UpdateResult(Vars.Player1, splitString[i]);
 				}
-				if (savestring == "Social")
+				if (savestring == Vars.Player2)
 				{
-					CellManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
-					UIManager.Instance.UpdateResult("Social", splitString[i]);
+					LocalManager.Instance.NetworkCommunicator.UpdateCellValue(savestring, CellLogic.CellId, parsedValue);
+					UIManager.Instance.UpdateResult(Vars.Player2, splitString[i]);
 				}
 			}
 		}
@@ -166,6 +180,6 @@ public class Quest : MonoBehaviour
 	{
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
-		CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Quest", 1);
+        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Quest", 1);
 	}
 }

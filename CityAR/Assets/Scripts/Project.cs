@@ -5,12 +5,8 @@ using UnityEngine.UI;
 [NetworkSettings(channel = 1, sendInterval = 0.2f)]
 public class Project : NetworkBehaviour
 {
-	public GameObject Cell;
-	public CellLogic CellLogic;
 	public GameObject[] BuildingSets;
 	public GameObject RepresentationParent;
-	public GameObject[] PlayerLogos;
-	public GameObject[] ApprovalLogos;
 	public ParticleSystem ParticlesApproval;
 	//Vars set by project manager on server
 	[SyncVar]
@@ -35,7 +31,6 @@ public class Project : NetworkBehaviour
 	public float Cooldown;
 	[SyncVar]
 	public string MiniGame;
-	//voting
 	[SyncVar]
 	public int ID_Spawn;
 	[SyncVar]
@@ -54,7 +49,9 @@ public class Project : NetworkBehaviour
 	private Vector3 projectPos;
 	[SyncVar]
 	private Vector3 CellPos;
-	public bool Approved;
+    [SyncVar]
+    private int cellId;
+    public bool Approved;
 	public Material transparentStatic;
 	private GameObject buildingRep;
 	private GameObject transparentRep;
@@ -62,10 +59,9 @@ public class Project : NetworkBehaviour
 	void Start ()
 	{
 		transform.name = "Project" + ID_Spawn;
-		transform.parent = CellManager.Instance.ImageTarget.transform;
+		transform.parent = LocalManager.Instance.ImageTarget.transform;
 		ProjectManager.Instance.LockButton(Id_CSV);
 		CreateRepresentation();
-		ShowLogo();
 
 		ProjectManager.Instance.Projects.Add(this);
 		ProjectManager.Instance.SelectedProject = this;
@@ -77,11 +73,6 @@ public class Project : NetworkBehaviour
 		}
 	}
 
-	void OnEnable()
-	{
-		ShowLogo();
-	}
-
 	void Update()
 	{
 		if (isServer && !VoteFinished && Choice1 + Choice2 >= 3)
@@ -89,15 +80,15 @@ public class Project : NetworkBehaviour
 			if (Choice1 > Choice2)
 			{
 				TransferValues();
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice1", ProjectOwner, ID_Spawn);
+                LocalManager.Instance.NetworkCommunicator.Vote(Vars.ResultChoice1, ProjectOwner, ID_Spawn);
 				VoteFinished = true;
 			}
 			if (Choice2 > Choice1)
 			{
-				CellManager.Instance.NetworkCommunicator.Vote("Result_Choice2", ProjectOwner, ID_Spawn);
+                LocalManager.Instance.NetworkCommunicator.Vote(Vars.ResultChoice2, ProjectOwner, ID_Spawn);
 				VoteFinished = true;
 			}
-			CellManager.Instance.NetworkCommunicator.SetPlayerState(ProjectOwner, "DiscussionEnd");
+            LocalManager.Instance.NetworkCommunicator.SetPlayerState(ProjectOwner, "DiscussionEnd");
 
 		}
 		transform.position = projectPos;
@@ -119,12 +110,17 @@ public class Project : NetworkBehaviour
 		Budget = budget;
 		Cooldown = cooldown;
 		MiniGame = minigame;
-		SetCell(cellid);
-		RepresentationId = reprID;
+        cellId = cellid;
+        RepresentationId = reprID;
 		reprRot = rot;
 		projectPos = pos;
 	}
 
+    public void ChangeLanguage(string title, string content)
+    {
+        Title = title;
+        Description = content;
+    }
 	public void CreateRepresentation()
 	{
 		//create 3d representation
@@ -141,59 +137,18 @@ public class Project : NetworkBehaviour
 			child.material = transparentStatic;
 		}
 		RepresentationParent.SetActive(true);
-		ShowLogo();
 	}
 
 	public void TransparentOn()
 	{
 		transparentRep.SetActive(true);
 		buildingRep.SetActive(false);
-		HideLogo();
 	}
 
 	public void TransparentOff()
 	{
 		transparentRep.SetActive(false);
 		buildingRep.SetActive(true);
-		ShowLogo();
-	}
-
-	public void HideLogo()
-	{
-		foreach (GameObject logo in PlayerLogos)
-			logo.GetComponent<Renderer>().enabled = false;
-		foreach (GameObject logo in ApprovalLogos)
-			logo.GetComponent<Renderer>().enabled = false;
-	}
-
-	void ShowLogo()
-	{
-		HideLogo();
-		//enable player logo
-		switch (ProjectOwner)
-		{
-			case "Finance":
-				PlayerLogos[0].GetComponent<Renderer>().enabled = true;
-				break;
-			case "Social":
-				PlayerLogos[1].GetComponent<Renderer>().enabled = true;
-				break;
-			case "Environment":
-				PlayerLogos[2].GetComponent<Renderer>().enabled = true;
-				break;
-		}
-		if(!VoteFinished)
-			ApprovalLogos[0].GetComponent<Renderer>().enabled = true;
-		if (Approved && VoteFinished)
-			ApprovalLogos[1].GetComponent<Renderer>().enabled = true;
-		if (!Approved && VoteFinished)
-			ApprovalLogos[2].GetComponent<Renderer>().enabled = true;
-	}
-
-	public void SetCell(int cellid)
-	{
-		Cell = CellGrid.Instance.GetCell(cellid);
-		CellLogic = Cell.GetComponent<CellLogic>();
 	}
 
 	public void ShowProjectCanvas()
@@ -210,40 +165,39 @@ public class Project : NetworkBehaviour
 
 	public void TransferValues()
 	{
-		CellManager.Instance.UpdateFinance(CellLogic.CellId, Finance);
-		CellManager.Instance.UpdateSocial(CellLogic.CellId, Social);
-		CellManager.Instance.UpdateEnvironment(CellLogic.CellId, Environment);
+		CellManager.Instance.UpdateFinance(cellId, Finance);
+		CellManager.Instance.UpdateSocial(cellId, Social);
+		CellManager.Instance.UpdateEnvironment(cellId, Environment);
 	}
 
 	public void TriggerApproved()
 	{
-
 		var mainModule = ParticlesApproval.main;
 		switch (ProjectOwner)
 		{
-			case "Finance":
+			case Vars.Player1:
 				mainModule.startColor = Color.blue;
 				break;
-			case "Social":
+			case Vars.Player2:
 				mainModule.startColor = new Color(1f, 0.64f, 0f);
 				break;
-			case "Environment":
+			case Vars.Player3:
 				mainModule.startColor = Color.green;
 				break;
 		}
 		ParticlesApproval.Play();
-		ShowLogo();
 		//Only approved pay
 		if (Approved)
 		{
 			int toPay = Mathf.RoundToInt(Mathf.Abs(Budget / Choice1) + DiscussionManager.Instance.ExtraCost);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Budget", -toPay);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "Influence", DiscussionManager.Instance.TotalInfluence);
-			CellManager.Instance.NetworkCommunicator.UpdateData(LevelManager.Instance.RoleType, "MoneySpent",toPay);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, -toPay);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, DiscussionManager.Instance.TotalInfluence);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MoneySpent",toPay);
+            CellGrid.Instance.GetCell(cellId).GetComponent<CellInterface>().HighlightCell(Finance, Social, Environment);
 		}
-		if (isServer)
+        if (isServer)
 		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Successful", 0);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Successful", 0);
 		}
 	}
 
@@ -252,10 +206,9 @@ public class Project : NetworkBehaviour
 		var mainModule = ParticlesApproval.main;
 		mainModule.startColor = Color.red;
 		ParticlesApproval.Play();
-		ShowLogo();
 		if (isServer)
 		{
-			CellManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Failed", 0);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Failed", 0);
 			Invoke("RemoveProject", 10f);
 			Invoke("DestroyObject", 11);
 		}

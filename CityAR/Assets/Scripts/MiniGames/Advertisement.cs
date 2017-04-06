@@ -82,7 +82,7 @@ public class Advertisement : MonoBehaviour
 		if(points.Count > 0)
 			distanceSum += Vector3.Distance(points[points.Count - 1], transform.position);
 		points.Add(transform.position);
-		linerenderer.numPositions = points.Count;
+		linerenderer.positionCount = points.Count;
 		linerenderer.SetPositions(points.ToArray());
 		pointIndex++;
 	}
@@ -113,7 +113,7 @@ public class Advertisement : MonoBehaviour
 		_released = false;
 		//GetComponent<Draggable>().enabled = true;
 		linerenderer.enabled = true;
-		linerenderer.numPositions = 0;
+		linerenderer.positionCount = 0;
 		pointIndex = 0;
 		followIndex = 0;
 		points.Clear();

@@ -6,8 +6,6 @@ using UnityEngine.Networking;
 
 public class CellManager : NetworkBehaviour
 {
-    public GameObject ImageTarget;
-    public NetworkCommunicator NetworkCommunicator;
     public static CellManager Instance = null;
     public SyncListInt SocialRates = new SyncListInt();
     public SyncListInt EnvironmentRates = new SyncListInt();
@@ -15,9 +13,9 @@ public class CellManager : NetworkBehaviour
 
     private int _maxValue;
     private int maxTotalValue;
-    int totalStartingSocial;
-    int totalStartingEnvironment;
-    int totalStartingFinance;
+    [SyncVar] int totalStartingSocial;
+    [SyncVar] int totalStartingEnvironment;
+    [SyncVar] int totalStartingFinance;
     [SyncVar] public int CurrentSocialGlobal;
     [SyncVar] public int CurrentEnvironmentGlobal;
     [SyncVar] public int CurrentFinanceGlobal;
@@ -34,12 +32,11 @@ public class CellManager : NetworkBehaviour
     }
 
     void Start()
-    {
-        Invoke("GenerateValues", .1f);
-        InvokeRepeating("UpdateGridVariables", 1f, .5f);
-        ImageTarget = GameObject.Find("ImageTarget");
+    {            InvokeRepeating("UpdateGridVariables", 1f, .5f);
+
         if (isServer)
         {
+            Invoke("GenerateValues", .1f);
             InvokeRepeating("CurrentGridVariables", 1f, .5f);
         }
     }
@@ -53,9 +50,9 @@ public class CellManager : NetworkBehaviour
     {
         _maxValue = (int) Vars.Instance.SingleCellMaxVal;
         maxTotalValue = Vars.Instance.CellTotalVal;
-        randSum(_cellGrid.Count, maxTotalValue, "Social");
-        randSum(_cellGrid.Count, maxTotalValue, "Environment");
-        randSum(_cellGrid.Count, maxTotalValue, "Finance");
+        randSum(_cellGrid.Count, maxTotalValue, Vars.Player2);
+        randSum(_cellGrid.Count, maxTotalValue, Vars.Player3);
+        randSum(_cellGrid.Count, maxTotalValue, Vars.Player1);
         totalStartingSocial = CurrentSocialGlobal;
         totalStartingEnvironment = CurrentEnvironmentGlobal;
         totalStartingFinance = CurrentFinanceGlobal;
@@ -81,15 +78,15 @@ public class CellManager : NetworkBehaviour
 
             switch (type)
             {
-                case "Social":
+                case Vars.Player2:
                     SocialRates.Add(value);
                     CurrentSocialGlobal += value;
                     break;
-                case "Environment":
+                case Vars.Player3:
                     EnvironmentRates.Add(value);
                     CurrentEnvironmentGlobal += value;
                     break;
-                case "Finance":
+                case Vars.Player1:
                     FinanceRates.Add(value);
                     CurrentFinanceGlobal += value;
                     break;

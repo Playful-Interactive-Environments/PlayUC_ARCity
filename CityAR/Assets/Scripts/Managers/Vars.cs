@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class Vars : AManager<Vars>
 {
-    [Header("Player Roles")]
-    public const string Player1 = "Finance";
-    public const string Player2 = "Social";
-    public const string Player3 = "Environment";
+
 
     [Header("Cell Starting Values")]
     public int CellTotalVal;
@@ -16,16 +13,37 @@ public class Vars : AManager<Vars>
     [Header("Player Variables")]
     public int StartingBudget;
 
-    [Header("Game End Triggers")]
+    [Header("Game End Goals")]
     public float GameEndTime;
     public int UtopiaRate;
     public int MayorLevel;
-
-    [Header("Event Names")]
-    public string GameEndTrigger;
-    public string DiscussionStart;
-    public string DiscussionEnd;
     
     [Header("Mini Game Settings")]
     public float MiniGameTime = 30;
+
+    [Header("Player Roles")]
+    public const string Player1 = "Finance";
+    public const string Player2 = "Social";
+    public const string Player3 = "Environment";
+    public const string MainValue1 = "Budget";
+    public const string MainValue2 = "Influence";
+
+    [Header("Voting Strings")]
+    public const string Approved = "Approved";
+    public const string Denied = "Denied";
+    public const string Choice1 = "Choice1";
+    public const string Choice2 = "Choice2";
+    public const string ResultChoice1 = "Result_Choice1";
+    public const string ResultChoice2 = "Result_Choice2";
+
+    [Header("MgStrings")]
+    public const string Mg1 = "Sort";
+    public const string Mg2 = "Advertise";
+    public const string Mg3 = "Area";
+    public const string NoMg = "None";
+
+    [Header("Event Messages")]
+    public const string LocalClientDisconnect = "LocalClientDisconnect";
+    public const string ServerHandleDisconnect = "ServerHandleDisconnect";
+
 }

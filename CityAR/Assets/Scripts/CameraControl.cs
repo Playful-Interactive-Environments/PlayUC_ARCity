@@ -84,10 +84,6 @@ public class CameraControl : AManager<CameraControl>
                 cell.GetComponent<CellInterface>().ChangeCellDisplay(CellInterface.InterfaceState.Hide);
             }
         }
-        foreach (Project project in FindObjectsOfType<Project>())
-        {
-                project.HideLogo();
-        }
     }
 
     public void ShowDetails()

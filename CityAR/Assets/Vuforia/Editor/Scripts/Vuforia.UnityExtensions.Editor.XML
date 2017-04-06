@@ -374,7 +374,7 @@
             <summary>
             Read Object Target editor parameters for all specified targets.
             </summary>
-            <param name="editorConfigurationFile">Path to editor configuration file with extension .xml</param>
+            <param name="editorConfigurationEnglishProjects">Path to editor configuration file with extension .xml</param>
             <param name="objectTargetData">Objects targets for which the corresponding parameters should be retreived from the file.</param>
         </member>
         <member name="T:Vuforia.EditorClasses.ObjectTargetEditor">
@@ -695,7 +695,7 @@
             Interface providing means to unzip a package and return back a file stream of a specific file within this package
             </summary>
         </member>
-        <member name="M:Vuforia.EditorClasses.IUnzipper.UnzipFile(System.String,System.String)">
+        <member name="M:Vuforia.EditorClasses.IUnzipper.UnzipEnglishProjects(System.String,System.String)">
             <summary>
             Unzips a file in a package at a given path and returns a stream to that file.
             </summary>
@@ -812,7 +812,7 @@
             <param name="serializedObject">It is necessary to update the serialized object before and 
             to apply the changes after calling this method</param>
             <param name="resetTrackable">dataset-name and trackable might be reset to the first element in the lists</param>
-            <param name="getTrackableNamesFunc">Function to extract all trackable names for the current trackable type from a dataset</param>
+            <param name="getTrackableNamesFunc">Function to extract all trackable names for the current trackable english from a dataset</param>
             <param name="trackableLabel">Label for popup to select trackable name</param>
             <returns>true if the dataset or trackable has been change</returns>
         </member>
@@ -966,7 +966,7 @@
             Renders a label to visualize the TextRecoBehaviour
             </summary>
         </member>
-        <member name="M:Vuforia.EditorClasses.TextRecoEditor.TestValidityOfWordListFile(System.String)">
+        <member name="M:Vuforia.EditorClasses.TextRecoEditor.TestValidityOfWordListEnglishProjects(System.String)">
             <summary>
             Test if file is a valid word list file: checks for plaint text file and for maximum line (word) length
             </summary>
@@ -980,7 +980,7 @@
             <summary>
             Read cylinder parameters for all specified targets.
             </summary>
-            <param name="datFile">Path to dataset-file with extension .dat</param>
+            <param name="datEnglishProjects">Path to dataset-file with extension .dat</param>
             <param name="targetData">Cylinder targets for which the corresponding parameters should be retreived from the file.</param>
         </member>
         <member name="T:Vuforia.EditorClasses.UnityPlayModeEditorUtility">

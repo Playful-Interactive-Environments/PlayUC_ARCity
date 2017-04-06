@@ -21,34 +21,36 @@ public class CSVProjects : AManager<CSVProjects>
         public string reprid;
 
     }
-    public TextAsset File;
+    public TextAsset EnglishProjects;
+    public TextAsset GermanProjects;
+
     public List<Row> rowList = new List<Row>();
 
     bool isLoaded = false;
 
+    public void LoadLanguage(string language)
+    {
+        rowList.Clear();
+        switch (language)
+        {
+            case "english":
+                Load(EnglishProjects);
+                break;
+            case "german":
+                Load(GermanProjects);
+                break;
+        }
+    }
+
     void Start()
     {
-        Load(File);
+        LoadLanguage("english");
     }
 
     #region CSV Commands
     public List<Row> GetRowList()
     {
         return rowList;
-    }
-
-    public void AddNew(int id, string title, string content, int influence, int social, int environment, int finance, int cost)
-    {
-        Row row = new Row();
-        row.id = "" + id;
-        row.title = title;
-        row.content = content;
-        row.influence = "" + influence;
-        row.social = "" + social;
-        row.environment = "" + environment;
-        row.finance = "" + finance;
-        row.cost = "" + cost;
-        rowList.Add(row);
     }
 
     public bool IsLoaded()

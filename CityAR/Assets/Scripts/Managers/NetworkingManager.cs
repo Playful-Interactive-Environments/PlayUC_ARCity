@@ -14,7 +14,7 @@ public class NetworkingManager : NetworkManager
     public string ConnectionIP;
     public int ConnectionPort = 7777;
     public bool ClientConnected = false;
-    public static NetworkingManager Instance = null;             
+    public static NetworkingManager Instance = null;
     public bool isServer;
     public bool isClient;
     public InputField IPInput;
@@ -34,7 +34,6 @@ public class NetworkingManager : NetworkManager
             Instance = this;
         else if (Instance != this)
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
     }
 
     void Update()
@@ -91,7 +90,7 @@ public class NetworkingManager : NetworkManager
     {
         ConnectionIP = IPInput.text;
         System.Net.IPAddress aIP;
-        
+
         if (!System.Net.IPAddress.TryParse(ConnectionIP, out aIP))
         {
             //DebugText.text = "INVALID IP ADDRESS";
@@ -147,7 +146,7 @@ public class NetworkingManager : NetworkManager
         base.OnServerDisconnect(conn);
         // DebugText.text = "Server Disconnected" + conn.lastError;
         SaveStateManager.Instance.SetTaken(conn.connectionId, false);
-        EventDispatcher.TriggerEvent("ClientDisconnect");
+        EventDispatcher.TriggerEvent(Vars.ServerHandleDisconnect);
     }
     #endregion
 
@@ -168,7 +167,7 @@ public class NetworkingManager : NetworkManager
 
     IEnumerator TryConnect()
     {
-        for(int i = 0; i <= 3; i++)
+        for (int i = 0; i <= 3; i++)
         {
             yield return new WaitForSeconds(1f);
             if (listen.serverIP != "")
@@ -182,7 +181,7 @@ public class NetworkingManager : NetworkManager
             {
                 if (i < 3)
                     AutoConnectButton.GetComponentInChildren<Text>().text = "" + (3 - i);
-                if(i == 3)
+                if (i == 3)
                 {
                     AutoConnectButton.GetComponentInChildren<Text>().text = "No Server";
                     yield return new WaitForSeconds(2f);
@@ -213,13 +212,12 @@ public class NetworkingManager : NetworkManager
     {
         base.OnServerAddPlayer(conn, playerControllerId);
         Debug.Log("OnAddPlayer");
-
     }
 
     public override void OnStartClient(NetworkClient client)
     {
         base.OnStartClient(client);
-            Debug.Log("OnStartClient");
+        Debug.Log("OnStartClient");
     }
 
     public override void OnStopClient()
@@ -228,7 +226,7 @@ public class NetworkingManager : NetworkManager
         ClientScene.DestroyAllClientObjects();
         ClientScene.ClearSpawners();
         isClient = false;
-        EventDispatcher.TriggerEvent("NetworkDisconnect");
+        EventDispatcher.TriggerEvent(Vars.LocalClientDisconnect);
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -248,26 +246,15 @@ public class NetworkingManager : NetworkManager
     {
         UIManager.Instance.ResetMenus();
     }
+
     IEnumerator Reconnect()
     {
+        LocalManager.Instance.GameRunning = false;
         StopClient();
         Reset();
         yield return new WaitForSeconds(.5f);
         StartClient();
-        /*
-        yield return new WaitForSeconds(.5f);
-        switch (LevelManager.Instance.RoleType)
-        {
-            case "Environment":
-                UIManager.Instance.ChooseEnvironment();
-                break;
-            case "Finance":
-                UIManager.Instance.ChooseFinance();
-                break;
-            case "Social":
-                UIManager.Instance.ChooseSocial();
-                break;
-        }*/
+
     }
     #endregion
 }

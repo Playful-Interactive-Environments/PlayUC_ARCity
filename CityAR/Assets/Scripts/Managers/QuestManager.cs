@@ -117,36 +117,26 @@ public class QuestManager : MonoBehaviour {
 	{
 		if (CurrentQuests < MaxQuests && _questTime > SpawnRate)
 		{
-			//TODO:Fix Random Cell
-			GameObject cell = CellGrid.Instance.GetRandomCell();
-			GameObject obj = ObjectPool.Spawn(QuestPrefab, startPoints[Utilities.RandomInt(0, startPoints.Count)], Quaternion.identity);
-			obj.transform.parent = CellManager.Instance.ImageTarget.transform;
+            //TODO:Fix Random Cell
+            GameObject obj = ObjectPool.Spawn(QuestPrefab, startPoints[Utilities.RandomInt(0, startPoints.Count)], Quaternion.identity);
+			obj.transform.parent = LocalManager.Instance.ImageTarget.transform;
 			obj.transform.name = "Quest";
 			QuestList.Add(obj);
 			Quest _quest = obj.GetComponent<Quest>();
-			_quest.ID = randomId;
-
-			_quest.Title = CSVQuests.Find_ID(randomId).title;
-			_quest.Content = CSVQuests.Find_ID(randomId).content;
-
-			_quest.Choice1 = CSVQuests.Find_ID(randomId).choice_1;
-			_quest.Choice2 = CSVQuests.Find_ID(randomId).choice_2;
-
-			_quest.Result1 = CSVQuests.Find_ID(randomId).result_1;
-			_quest.Result2 = CSVQuests.Find_ID(randomId).result_2;
-
-			_quest.Effect1 = CSVQuests.Find_ID(randomId).effect_1;
-			_quest.Effect2 = CSVQuests.Find_ID(randomId).effect_2;
-
-			_quest.SetCell(cell);
-
+		    _quest.SetQuest(randomId);
 			randomId = GetRandomQuest();
-
 			CurrentQuests++;
 			_questTime = 0;
-
 		}
 	}
+
+    public void LoadLanguage()
+    {
+        foreach (GameObject quest in QuestList)
+        {
+           quest.GetComponent<Quest>().SetQuest(quest.GetComponent<Quest>().ID);
+        }
+    }
 
 	int GetRandomQuest()
 	{

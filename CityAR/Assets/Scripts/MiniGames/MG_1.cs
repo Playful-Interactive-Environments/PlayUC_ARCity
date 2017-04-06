@@ -19,7 +19,6 @@ public class MG_1 : AManager<MG_1>
 	private MGManager manager;
 	private float Height;
 	private float Width;
-	private float threshold = 2f;
 	private float spawnTime;
 	public Vector3 StartingPos;
 	public float zLayer = 100f;
@@ -27,11 +26,14 @@ public class MG_1 : AManager<MG_1>
 	//CSV Rows
 	public class Row
 	{
-		public string title;
 		public string type;
-	}
+        public string english;
+        public string german;
+        public string french;
+        public string dutch;
+    }
 
-	public TextAsset WordFile;
+    public TextAsset WordFile;
 	public List<Row> rowList = new List<Row>();
 	private bool isLoaded = false; 
 
@@ -52,24 +54,24 @@ public class MG_1 : AManager<MG_1>
 
 		//TargetFinance = ObjectPool.Spawn(DropPrefab, manager.MG_1_GO.transform, finDropPos, Quaternion.identity);
 		TargetFinance.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Finance;
-		TargetFinance.transform.name = "finance";
-		TargetFinance.transform.GetComponentInChildren<TextMesh>().text = "Finance";
+		TargetFinance.transform.name = Vars.Player1;
+		TargetFinance.transform.GetComponentInChildren<TextMesh>().text = Vars.Player1;
 		TargetFinance.transform.position = finDropPos;
 		TargetFinance.transform.localScale = new Vector3(1, 1, 1);
 
 		Vector3 socDropPos = new Vector3(0, Height / 4, 0);
 		//TargetSocial = ObjectPool.Spawn(DropPrefab, manager.MG_1_GO.transform, socDropPos, Quaternion.identity);
 		TargetSocial.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Social;
-		TargetSocial.transform.name = "social";
-		TargetSocial.transform.GetComponentInChildren<TextMesh>().text = "Social";
+		TargetSocial.transform.name = Vars.Player2;
+		TargetSocial.transform.GetComponentInChildren<TextMesh>().text = Vars.Player2;
 		TargetSocial.transform.localScale = new Vector3(1, 1, 1);
 		TargetSocial.transform.position = socDropPos;
 
 		Vector3 envDropBos = new Vector3(Width / 3, Height / 4, 0);
 		//TargetEnvironment = ObjectPool.Spawn(DropPrefab, manager.MG_1_GO.transform, envDropBos, Quaternion.identity);
 		TargetEnvironment.GetComponent<DropArea>().CurrentType = DropArea.DragZoneType.Environment;
-		TargetEnvironment.transform.name = "environment";
-		TargetEnvironment.transform.GetComponentInChildren<TextMesh>().text = "Environment";
+		TargetEnvironment.transform.name = Vars.Player3;
+		TargetEnvironment.transform.GetComponentInChildren<TextMesh>().text = Vars.Player3;
 		TargetEnvironment.transform.localScale = new Vector3(1, 1, 1);
 		TargetEnvironment.transform.position = envDropBos;
 
@@ -88,9 +90,23 @@ public class MG_1 : AManager<MG_1>
 		GameObject word = ObjectPool.Spawn(WordPrefab, manager.MG_1_GO.transform);
 
 		int random = Utilities.RandomInt(0, rowList.Count - 1);
-		string title = GetRow(random).title;
-
-		word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(random).type);
+	    string title = "";
+        switch (TextManager.Instance.CurrentLanguage)
+	    {
+            case "english":
+                title = GetRow(random).english;
+	            break;
+            case "german":
+                title = GetRow(random).german;
+                break;
+            case "french":
+                title = GetRow(random).french;
+                break;
+            case "dutch":
+                title = GetRow(random).dutch;
+                break;
+        }
+        word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(random).type);
 		WordList.Add(word);
 		word.transform.name = zLayer + " " + title;
 		word.transform.SetAsFirstSibling();
@@ -127,8 +143,11 @@ public class MG_1 : AManager<MG_1>
 		{
 			Row row = new Row();
 			row.type = grid[i][0];
-			row.title = grid[i][1];
-			rowList.Add(row);
+			row.english = grid[i][1];
+            row.german = grid[i][2];
+            row.french = grid[i][3];
+            row.dutch = grid[i][4];
+            rowList.Add(row);
 		}
 		isLoaded = true;
 	}
@@ -136,6 +155,5 @@ public class MG_1 : AManager<MG_1>
 	{
 		return rowList[find];
 	}
-
 	#endregion
 }

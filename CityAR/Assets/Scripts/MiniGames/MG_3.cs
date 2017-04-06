@@ -127,7 +127,6 @@ public class MG_3 : AManager<MG_3>
 	//agents
 	public GameObject AgentPrefab;
 	private int agentNum = 10;
-	private int waypoints = 20;
 	private List<GameObject> Agents = new List<GameObject>();
 	public List<Vector3> AgentWaypoints = new List<Vector3>();
 	//dragging
@@ -167,7 +166,7 @@ public class MG_3 : AManager<MG_3>
 		dragObject.layer = LayerMask.NameToLayer("MG_3");
 		dragObject.transform.parent = MGManager.Instance.MG_3_GO.transform;
 		dragLine = dragObject.GetComponent<LineRenderer>();
-		dragLine.numPositions = 2;
+		dragLine.positionCount = 2;
 		dragLine.material = LineMats[1];
 		//goal of dragged line is always symmetric of the starting point
 		switch (dragStartWall.transform.name)
@@ -205,13 +204,11 @@ public class MG_3 : AManager<MG_3>
 				break;
 			case "north":
 				goto case "south";
-				break;
 			case "west":
 				distanceSnap = Vector3.Distance(dragEnd, new Vector3(dragEnd.x,lineGoal.y, 0));
 				break;
 			case "east":
 				goto case "west";
-				break;
 		}
 	}
 
@@ -271,7 +268,6 @@ public class MG_3 : AManager<MG_3>
 			case "north":
 				lineStart = lineGoal;
 				goto case "south";
-				break;
 			case "west":
 				val1 = Vector3.Distance(freeArea.GetNW(), lineStart);
 				val2 = Vector3.Distance(freeArea.GetSW(), lineStart);
@@ -296,7 +292,7 @@ public class MG_3 : AManager<MG_3>
 			case "east":
 				lineStart = lineGoal;
 				goto case "west";
-				break;
+
 		}
 	}
 
@@ -339,7 +335,7 @@ public class MG_3 : AManager<MG_3>
 			case "north":
 				lineStart = lineGoal;
 				goto case "south";
-				break;
+
 			case "west":
 				val1 = Vector3.Distance(freeArea.GetNW(), lineStart);
 				val2 = Vector3.Distance(freeArea.GetSW(), lineStart);
@@ -369,7 +365,6 @@ public class MG_3 : AManager<MG_3>
 			case "east":
 				lineStart = lineGoal;
 				goto case "west";
-				break;
 		}
 	}
 
@@ -380,7 +375,7 @@ public class MG_3 : AManager<MG_3>
 			CreateCoveredArea();
 			UpdateAgentBorders();
 		}
-		dragLine.numPositions = 0;
+		dragLine.positionCount = 0;
 		dragLine = null;
 		ObjectPool.Recycle(dragObject);
 	}

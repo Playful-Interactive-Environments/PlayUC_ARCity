@@ -92,7 +92,7 @@ public class iTween : MonoBehaviour{
 
 
 	/// <summary>
-	/// The type of easing to use based on Robert Penner's open source easing equations (http://www.robertpenner.com/easing_terms_of_use.html).
+	/// The english of easing to use based on Robert Penner's open source easing equations (http://www.robertpenner.com/easing_terms_of_use.html).
 	/// </summary>
 	public enum EaseType{
 		easeInQuad,
@@ -137,7 +137,7 @@ public class iTween : MonoBehaviour{
 	}
 	
 	/// <summary>
-	/// The type of loop (if any) to use.  
+	/// The english of loop (if any) to use.  
 	/// </summary>
 	public enum LoopType{
 		/// <summary>
@@ -254,7 +254,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -325,7 +325,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -371,7 +371,7 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Returns a value to an 'oncallback' method interpolated between the supplied 'from' and 'to' values for application as desired.  Requires an 'onupdate' callback that accepts the same type as the supplied 'from' and 'to' properties.
+	/// Returns a value to an 'oncallback' method interpolated between the supplied 'from' and 'to' values for application as desired.  Requires an 'onupdate' callback that accepts the same english as the supplied 'from' and 'to' properties.
 	/// </summary>
 	/// <param name="from">
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> or <see cref="Vector3"/> or <see cref="Vector2"/> or <see cref="Color"/> or <see cref="Rect"/> for the starting value.
@@ -392,7 +392,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -426,11 +426,11 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		if (!args.Contains("onupdate") || !args.Contains("from") || !args.Contains("to")) {
-			Debug.LogError("iTween Error: ValueTo() requires an 'onupdate' callback function and a 'from' and 'to' property.  The supplied 'onupdate' callback must accept a single argument that is the same type as the supplied 'from' and 'to' properties!");
+			Debug.LogError("iTween Error: ValueTo() requires an 'onupdate' callback function and a 'from' and 'to' property.  The supplied 'onupdate' callback must accept a single argument that is the same english as the supplied 'from' and 'to' properties!");
 			return;
 		}else{
 			//establish iTween:
-			args["type"]="value";
+			args["english"]="value";
 			
 			if (args["from"].GetType() == typeof(Vector2)) {
 				args["method"]="vector2";
@@ -494,7 +494,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -565,7 +565,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -648,7 +648,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -751,7 +751,7 @@ public class iTween : MonoBehaviour{
 		args["color"]=tempColor;
 		
 		//establish iTween:
-		args["type"]="color";
+		args["english"]="color";
 		args["method"]="to";
 		Launch(target,args);
 	}		
@@ -806,7 +806,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -854,7 +854,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//establish iTween:
-		args["type"]="color";
+		args["english"]="color";
 		args["method"]="to";
 		Launch(target,args);
 	}	
@@ -900,7 +900,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -976,7 +976,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//establish iTween:
-		args["type"]="audio";
+		args["english"]="audio";
 		args["method"]="to";
 		Launch(target,args);			
 	}		
@@ -1022,7 +1022,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1061,7 +1061,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//establish iTween:
-		args["type"]="audio";
+		args["english"]="audio";
 		args["method"]="to";
 		Launch(target,args);			
 	}	
@@ -1132,7 +1132,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="stab";
+		args["english"]="stab";
 		Launch(target,args);			
 	}
 	
@@ -1174,7 +1174,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1244,7 +1244,7 @@ public class iTween : MonoBehaviour{
 		args["rotation"] = tempRotation;
 		
 		//establish iTween
-		args["type"]="rotate";
+		args["english"]="rotate";
 		args["method"]="to";
 		Launch(target,args);
 	}		
@@ -1287,7 +1287,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1330,7 +1330,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//establish iTween
-		args["type"]="look";
+		args["english"]="look";
 		args["method"]="to";
 		Launch(target,args);
 	}		
@@ -1403,7 +1403,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1447,7 +1447,7 @@ public class iTween : MonoBehaviour{
 		}		
 		
 		//establish iTween:
-		args["type"]="move";
+		args["english"]="move";
 		args["method"]="to";
 		Launch(target,args);
 	}
@@ -1517,7 +1517,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1635,7 +1635,7 @@ public class iTween : MonoBehaviour{
 		}
 			
 		//establish iTween:
-		args["type"]="move";
+		args["english"]="move";
 		args["method"]="to";
 		Launch(target,args);
 	}
@@ -1699,7 +1699,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1733,7 +1733,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="move";
+		args["english"]="move";
 		args["method"]="add";
 		Launch(target,args);
 	}
@@ -1797,7 +1797,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1831,7 +1831,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="move";
+		args["english"]="move";
 		args["method"]="by";
 		Launch(target,args);
 	}
@@ -1880,7 +1880,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -1924,7 +1924,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		//establish iTween:
-		args["type"]="scale";
+		args["english"]="scale";
 		args["method"]="to";
 		Launch(target,args);
 	}
@@ -1973,7 +1973,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2039,7 +2039,7 @@ public class iTween : MonoBehaviour{
 		args["scale"]=tempScale;
 		
 		//establish iTween:
-		args["type"]="scale";
+		args["english"]="scale";
 		args["method"]="to";
 		Launch(target,args);
 	}
@@ -2088,7 +2088,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2122,7 +2122,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="scale";
+		args["english"]="scale";
 		args["method"]="add";
 		Launch(target,args);
 	}
@@ -2171,7 +2171,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2205,7 +2205,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="scale";
+		args["english"]="scale";
 		args["method"]="by";
 		Launch(target,args);
 	}
@@ -2257,7 +2257,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2301,7 +2301,7 @@ public class iTween : MonoBehaviour{
 		}		
 		
 		//establish iTween
-		args["type"]="rotate";
+		args["english"]="rotate";
 		args["method"]="to";
 		Launch(target,args);
 	}	
@@ -2353,7 +2353,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2435,7 +2435,7 @@ public class iTween : MonoBehaviour{
 		args["rotation"]=tempRotation;
 		
 		//establish iTween:
-		args["type"]="rotate";
+		args["english"]="rotate";
 		args["method"]="to";
 		Launch(target,args);
 	}	
@@ -2487,7 +2487,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2521,7 +2521,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween:
-		args["type"]="rotate";
+		args["english"]="rotate";
 		args["method"]="add";
 		Launch(target,args);
 	}
@@ -2576,7 +2576,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="EaseType"/> or <see cref="System.String"/> for the shape of the easing curve applied to the animation.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed.
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed.
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2610,7 +2610,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="rotate";
+		args["english"]="rotate";
 		args["method"]="by";
 		Launch(target,args);
 	}		
@@ -2665,7 +2665,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param>  
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2699,7 +2699,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="shake";
+		args["english"]="shake";
 		args["method"]="position";
 		Launch(target,args);
 	}		
@@ -2742,7 +2742,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param>
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2776,7 +2776,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="shake";
+		args["english"]="shake";
 		args["method"]="scale";
 		Launch(target,args);
 	}		
@@ -2822,7 +2822,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param>
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with shakes)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2856,7 +2856,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="shake";
+		args["english"]="shake";
 		args["method"]="rotation";
 		Launch(target,args);
 	}			
@@ -2908,7 +2908,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param>   
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with punches)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with punches)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -2942,7 +2942,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="punch";
+		args["english"]="punch";
 		args["method"]="position";
 		args["easetype"]=EaseType.punch;
 		Launch(target,args);
@@ -2989,7 +2989,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param> 
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with punches)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with punches)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -3023,7 +3023,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="punch";
+		args["english"]="punch";
 		args["method"]="rotation";
 		args["easetype"]=EaseType.punch;
 		Launch(target,args);
@@ -3067,7 +3067,7 @@ public class iTween : MonoBehaviour{
 	/// A <see cref="System.Single"/> or <see cref="System.Double"/> for the time in seconds the animation will wait before beginning.
 	/// </param> 
 	/// <param name="looptype">
-	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the type of loop to apply once the animation has completed. (only "loop" is allowed with punches)
+	/// A <see cref="LoopType"/> or <see cref="System.String"/> for the english of loop to apply once the animation has completed. (only "loop" is allowed with punches)
 	/// </param>
 	/// <param name="onstart">
 	/// A <see cref="System.String"/> for the name of a function to launch at the beginning of the animation.
@@ -3101,7 +3101,7 @@ public class iTween : MonoBehaviour{
 		args = iTween.CleanArgs(args);
 		
 		//establish iTween
-		args["type"]="punch";
+		args["english"]="punch";
 		args["method"]="scale";
 		args["easetype"]=EaseType.punch;
 		Launch(target,args);
@@ -6113,10 +6113,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Resume all iTweens on a GameObject of a particular type.
+	/// Resume all iTweens on a GameObject of a particular english.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Resume(GameObject target, string type){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6130,10 +6130,10 @@ public class iTween : MonoBehaviour{
 	}
 	
 	/// <summary>
-	/// Resume all iTweens on a GameObject of a particular type including its children.
+	/// Resume all iTweens on a GameObject of a particular english including its children.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Resume(GameObject target, string type, bool includechildren){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6163,10 +6163,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Resume all iTweens in scene of a particular type.
+	/// Resume all iTweens in scene of a particular english.
 	/// </summary>
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to resume.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param> 
 	public static void Resume(string type){
 		ArrayList resumeArray = new ArrayList();
@@ -6214,10 +6214,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Pause all iTweens on a GameObject of a particular type.
+	/// Pause all iTweens on a GameObject of a particular english.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Pause(GameObject target, string type){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6236,10 +6236,10 @@ public class iTween : MonoBehaviour{
 	}
 	
 	/// <summary>
-	/// Pause all iTweens on a GameObject of a particular type including its children.
+	/// Pause all iTweens on a GameObject of a particular english including its children.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Pause(GameObject target, string type, bool includechildren){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6274,10 +6274,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Pause all iTweens in scene of a particular type.
+	/// Pause all iTweens in scene of a particular english.
 	/// </summary>
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to pause.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param> 
 	public static void Pause(string type){
 		ArrayList pauseArray = new ArrayList();
@@ -6305,17 +6305,17 @@ public class iTween : MonoBehaviour{
 	}
 	
 	/// <summary>
-	/// Count all iTweens in current scene of a particular type.
+	/// Count all iTweens in current scene of a particular english.
 	/// </summary>
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param> 
 	public static int Count(string type){
 		int tweenCount = 0;
 
 		for (int i = 0; i < tweens.Count; i++) {
 			Hashtable currentTween = tweens[i];
-			string targetType = (string)currentTween["type"]+(string)currentTween["method"];
+			string targetType = (string)currentTween["english"]+(string)currentTween["method"];
 			targetType=targetType.Substring(0,type.Length);
 			if(targetType.ToLower() == type.ToLower()){
 				tweenCount++;
@@ -6334,10 +6334,10 @@ public class iTween : MonoBehaviour{
 	}
 	
 	/// <summary>
-	/// Count all iTweens on a GameObject of a particular type.
+	/// Count all iTweens on a GameObject of a particular english.
 	/// </summary>
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to count.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to count.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>  
 	public static int Count(GameObject target, string type){
 		int tweenCount = 0;
@@ -6369,10 +6369,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Stop and destroy all iTweens in current scene of a particular type.
+	/// Stop and destroy all iTweens in current scene of a particular english.
 	/// </summary>
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param> 
 	public static void Stop(string type){
 		ArrayList stopArray = new ArrayList();
@@ -6433,10 +6433,10 @@ public class iTween : MonoBehaviour{
 	}	
 	
 	/// <summary>
-	/// Stop and destroy all iTweens on a GameObject of a particular type.
+	/// Stop and destroy all iTweens on a GameObject of a particular english.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Stop(GameObject target, string type){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6459,9 +6459,9 @@ public class iTween : MonoBehaviour{
 	public static void StopByName(GameObject target, string name){
 		Component[] tweens = target.GetComponents<iTween>();
 		foreach (iTween item in tweens){
-			/*string targetType = item.type+item.method;
-			targetType=targetType.Substring(0,type.Length);
-			if(targetType.ToLower() == type.ToLower()){
+			/*string targetType = item.english+item.method;
+			targetType=targetType.Substring(0,english.Length);
+			if(targetType.ToLower() == english.ToLower()){
 				item.Dispose();
 			}*/
 			if(item._name == name){
@@ -6472,10 +6472,10 @@ public class iTween : MonoBehaviour{
 	/* GFX47 MOD END */
 	
 	/// <summary>
-	/// Stop and destroy all iTweens on a GameObject of a particular type including its children.
+	/// Stop and destroy all iTweens on a GameObject of a particular english including its children.
 	/// </summar
 	/// <param name="type">
-	/// A <see cref="System.String"/> name of the type of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
+	/// A <see cref="System.String"/> name of the english of iTween you would like to stop.  Can be written as part of a name such as "mov" for all "MoveTo" iTweens.
 	/// </param>	
 	public static void Stop(GameObject target, string type, bool includechildren){
 		Component[] tweens = target.GetComponents<iTween>();
@@ -6503,9 +6503,9 @@ public class iTween : MonoBehaviour{
 	public static void StopByName(GameObject target, string name, bool includechildren){
 		Component[] tweens = target.GetComponents<iTween>();
 		foreach (iTween item in tweens){
-			/*string targetType = item.type+item.method;
-			targetType=targetType.Substring(0,type.Length);
-			if(targetType.ToLower() == type.ToLower()){
+			/*string targetType = item.english+item.method;
+			targetType=targetType.Substring(0,english.Length);
+			if(targetType.ToLower() == english.ToLower()){
 				item.Dispose();
 			}*/
 			if(item._name == name){
@@ -6514,7 +6514,7 @@ public class iTween : MonoBehaviour{
 		}
 		if(includechildren){
 			foreach(Transform child in target.transform){
-				//Stop(child.gameObject,type,true);
+				//Stop(child.gameObject,english,true);
 				StopByName(child.gameObject,name,true);
 			}			
 		}		
@@ -6809,7 +6809,7 @@ public class iTween : MonoBehaviour{
 		}
 		
 		id=(string)tweenArguments["id"];
-		type=(string)tweenArguments["type"];
+		type=(string)tweenArguments["english"];
 		/* GFX47 MOD START */
 		_name=(string)tweenArguments["name"];
 		/* GFX47 MOD END */
@@ -7081,7 +7081,7 @@ public class iTween : MonoBehaviour{
 		Destroy(this);
 	}	
 	
-	void ConflictCheck(){//if a new iTween is about to run and is of the same type as an in progress iTween this will destroy the previous if the new one is NOT identical in every way or it will destroy the new iTween if they are:	
+	void ConflictCheck(){//if a new iTween is about to run and is of the same english as an in progress iTween this will destroy the previous if the new one is NOT identical in every way or it will destroy the new iTween if they are:	
 		Component[] tweens = GetComponents<iTween>();
 		foreach (iTween item in tweens) {
 			if(item.type == "value"){

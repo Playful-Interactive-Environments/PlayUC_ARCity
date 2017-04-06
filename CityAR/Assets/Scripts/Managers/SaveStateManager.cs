@@ -37,17 +37,17 @@ public class SaveStateManager : NetworkBehaviour
 		if (isServer)
 		{
 			//init player save
-			Players.Add(new PlayerStats("Finance", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
-			Players.Add(new PlayerStats("Social", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
-			Players.Add(new PlayerStats("Environment", false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			Players.Add(new PlayerStats(Vars.Player1, false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			Players.Add(new PlayerStats(Vars.Player2, false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
+			Players.Add(new PlayerStats(Vars.Player3, false, 0, Vars.Instance.StartingBudget, defaultConnId, 0, 0));
 			//init project data save
-			PlayerProjects.Add(new ProjectStats("Finance", 0, 0, 0, 0, 0, 0));
-			PlayerProjects.Add(new ProjectStats("Social", 0, 0, 0, 0, 0, 0));
-			PlayerProjects.Add(new ProjectStats("Environment", 0, 0, 0, 0, 0, 0));
+			PlayerProjects.Add(new ProjectStats(Vars.Player1, 0, 0, 0, 0, 0, 0));
+			PlayerProjects.Add(new ProjectStats(Vars.Player2, 0, 0, 0, 0, 0, 0));
+			PlayerProjects.Add(new ProjectStats(Vars.Player3, 0, 0, 0, 0, 0, 0));
 			//init mini game data save
-			PlayerMiniGames.Add(new MiniGameStats("Finance", 0, 0, 0, 0, 0));
-			PlayerMiniGames.Add(new MiniGameStats("Social", 0, 0, 0, 0, 0));
-			PlayerMiniGames.Add(new MiniGameStats("Environment", 0, 0, 0, 0, 0));
+			PlayerMiniGames.Add(new MiniGameStats(Vars.Player1, 0, 0, 0, 0, 0));
+			PlayerMiniGames.Add(new MiniGameStats(Vars.Player2, 0, 0, 0, 0, 0));
+			PlayerMiniGames.Add(new MiniGameStats(Vars.Player3, 0, 0, 0, 0, 0));
 			//init event logging
 			GlobalSave = new EventSave();
 		}
@@ -435,10 +435,10 @@ public class SaveStateManager : NetworkBehaviour
 	{
 		switch (datatype)
 		{
-			case "Budget":
+			case Vars.MainValue1:
 				SetBudget(roletype, amount);
 				break;
-			case "Influence":
+			case Vars.MainValue2:
 				SetInfluence(roletype, amount);
 				break;
 			case "Quest":
@@ -509,7 +509,7 @@ public class SaveStateManager : NetworkBehaviour
 			case "MostSuccessfulProjects":
 				foreach (ProjectStats project in PlayerProjects)
 				{
-					if (project.Player == LevelManager.Instance.RoleType)
+					if (project.Player == LocalManager.Instance.RoleType)
 						playerMe = project.Successful;
 					if (project.Player == Vars.Player1)
 						player1 = project.Successful;
@@ -520,19 +520,20 @@ public class SaveStateManager : NetworkBehaviour
 				}
 				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
 				UiM.MostSuccessfulProjectsN.text = "" + chosenVal;
-				if (playerMe == chosenVal)
-					UiM.MostSuccessfulProjects.sprite = UiM.YouWin;
+
 				if (chosenVal == player1)
 					UiM.MostSuccessfulProjects.sprite = UiM.Player1_winSprite;
 				if (chosenVal == player2)
 					UiM.MostSuccessfulProjects.sprite = UiM.Player2_winSprite;
 				if (chosenVal == player3)
 					UiM.MostSuccessfulProjects.sprite = UiM.Player3_winSprite;
-				break;
+                if (playerMe == chosenVal)
+                    UiM.MostSuccessfulProjects.sprite = UiM.YouWin;
+                break;
 			case "MostMoneySpent":
 				foreach (ProjectStats player in PlayerProjects)
 				{
-					if (player.Player == LevelManager.Instance.RoleType)
+					if (player.Player == LocalManager.Instance.RoleType)
 						playerMe = player.MoneySpent;
 					if (player.Player == Vars.Player1)
 						player1 = player.MoneySpent;
@@ -544,19 +545,20 @@ public class SaveStateManager : NetworkBehaviour
 				}
 				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
 				UiM.MostMoneySpentN.text = "" + chosenVal;
-				if (playerMe == chosenVal)
-					UiM.MostMoneySpent.sprite = UiM.YouWin;
+
 				if (chosenVal == player1)
 					UiM.MostMoneySpent.sprite = UiM.Player1_winSprite;
 				if (chosenVal == player2)
 					UiM.MostMoneySpent.sprite = UiM.Player2_winSprite;
 				if (chosenVal == player3)
 					UiM.MostMoneySpent.sprite = UiM.Player3_winSprite;
-				break;
+                if (playerMe == chosenVal)
+                    UiM.MostMoneySpent.sprite = UiM.YouWin;
+                break;
 			case "HighestInfluence":
 				foreach (PlayerStats playerStat in Players)
 				{
-					if (playerStat.Player == LevelManager.Instance.RoleType)
+					if (playerStat.Player == LocalManager.Instance.RoleType)
 						playerMe = playerStat.Influence;
 					if (playerStat.Player == Vars.Player1)
 						player1 = playerStat.Influence;
@@ -568,19 +570,20 @@ public class SaveStateManager : NetworkBehaviour
 				}
 				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
 				UiM.HighestInfluenceN.text = "" + chosenVal;
-				if (playerMe == chosenVal)
-					UiM.HighestInfluence.sprite = UiM.YouWin;
+
 				if (chosenVal == player1)
 					UiM.HighestInfluence.sprite = UiM.Player1_winSprite;
 				if (chosenVal == player2)
 					UiM.HighestInfluence.sprite = UiM.Player2_winSprite;
 				if (chosenVal == player3)
 					UiM.HighestInfluence.sprite = UiM.Player3_winSprite;
-				break;
+                if (playerMe == chosenVal)
+                    UiM.HighestInfluence.sprite = UiM.YouWin;
+                break;
 			case "MostWinMiniGames":
 				foreach (MiniGameStats miniGameStats in PlayerMiniGames)
 				{
-					if (miniGameStats.Player == LevelManager.Instance.RoleType)
+					if (miniGameStats.Player == LocalManager.Instance.RoleType)
 						playerMe = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
 					if (miniGameStats.Player == Vars.Player1)
 						player1 = miniGameStats.Mg1Wins + miniGameStats.Mg2Wins + miniGameStats.Mg3Wins;
@@ -591,19 +594,19 @@ public class SaveStateManager : NetworkBehaviour
 				}
 				chosenVal = Utilities.GetHighestVal(player1, player2, player3);
 				UiM.MostWinMiniGamesN.text = "" + chosenVal;
-				if (playerMe == chosenVal)
-					UiM.MostWinMiniGames.sprite = UiM.YouWin;
 				if (chosenVal == player1)
 					UiM.MostWinMiniGames.sprite = UiM.Player1_winSprite;
 				if (chosenVal == player2)
 					UiM.MostWinMiniGames.sprite = UiM.Player2_winSprite;
 				if (chosenVal == player3)
 					UiM.MostWinMiniGames.sprite = UiM.Player3_winSprite;
-				break;
+                if (playerMe == chosenVal)
+                    UiM.MostWinMiniGames.sprite = UiM.YouWin;
+                break;
 			case "LeastTimeMiniGames":
 				foreach (MiniGameStats miniGameStats in PlayerMiniGames)
 				{
-					if (miniGameStats.Player == LevelManager.Instance.RoleType)
+					if (miniGameStats.Player == LocalManager.Instance.RoleType)
 						playerMe = miniGameStats.TimeSpent;
 					if (miniGameStats.Player == Vars.Player1)
 						player1 = miniGameStats.TimeSpent;
@@ -614,15 +617,15 @@ public class SaveStateManager : NetworkBehaviour
 				}
 				chosenVal = Utilities.GetLowestVal(player1, player2, player3);
 				UiM.LeastTimeMiniGamesN.text = "" + chosenVal;
-				if (playerMe == chosenVal)
-					UiM.LeastTimeMiniGames.sprite = UiM.YouWin;
 				if (chosenVal == player1)
 					UiM.LeastTimeMiniGames.sprite = UiM.Player1_winSprite;
 				if (chosenVal == player2)
 					UiM.LeastTimeMiniGames.sprite = UiM.Player2_winSprite;
 				if (chosenVal == player3)
 					UiM.LeastTimeMiniGames.sprite = UiM.Player3_winSprite;
-				break;
+                if (playerMe == chosenVal)
+                    UiM.LeastTimeMiniGames.sprite = UiM.YouWin;
+                break;
 		}
 	}
 
@@ -636,7 +639,7 @@ public class SaveStateManager : NetworkBehaviour
 		int quests = 0;
 		foreach (ProjectStats project in PlayerProjects)
 		{
-			if (project.Player == LevelManager.Instance.RoleType)
+			if (project.Player == LocalManager.Instance.RoleType)
 			{
 				projectsProposed = project.Proposed;
 				proSuccess = project.Successful;
@@ -647,7 +650,7 @@ public class SaveStateManager : NetworkBehaviour
 		}
 		foreach (PlayerStats player in Players)
 		{
-			if (player.Player == LevelManager.Instance.RoleType)
+			if (player.Player == LocalManager.Instance.RoleType)
 			{
 				quests = player.Quests;
 			}
