@@ -29,9 +29,12 @@ public class CellInterface : MonoBehaviour {
     public TextMeshPro FinanceRiseText;
     public TextMeshPro SocialRiseText;
     public TextMeshPro EnvironmentRiseText;
-    private float FinRiseVal;
-    private float SocRiseVal;
-    private float EnvRiseVal;
+    private float finCurVal;
+    private float socCurVal;
+    private float envCurVal;
+    private int FinRiseVal;
+    private int SocRiseVal;
+    private int EnvRiseVal;
     private bool animate;
     private float animateT = 5;
 
@@ -39,43 +42,25 @@ public class CellInterface : MonoBehaviour {
     void Start ()
 	{
 		cell = GetComponent<CellLogic>();
-		//CellText.transform.position = new Vector3(transform.position.x, CellText.transform.position.y / 297, transform.position.z);
-		//ChangeCellDisplay(InterfaceState.Grey);
-		StatusText[0].richText = true;
-		StatusText[1].richText = true;
-		StatusText[2].richText = true;
-	}
-
-    IEnumerator ExpandDisplay(int finVal, int socVal, int envVal)
-    {
-        animateT = 5f;
-        animate = true;
-        Images[0].SetActive(true);
-        Images[1].SetActive(true);
-        Images[2].SetActive(true);
-
-        iTween.ScaleTo(FinanceRise, iTween.Hash("y", cell.FinanceRate / 10f, "time", animateT));
-        iTween.MoveTo(FinanceRise, iTween.Hash("y", cell.FinanceRate / 10f, "time", animateT));
-        iTween.ScaleTo(SocialRise, iTween.Hash("y", cell.SocialRate / 10f, "time", animateT));
-        iTween.MoveTo(SocialRise, iTween.Hash("y", cell.SocialRate / 10f, "time", animateT));
-        iTween.ScaleTo(EnvironmentRise, iTween.Hash("y", cell.EnvironmentRate / 10f, "time", animateT));
-        iTween.MoveTo(EnvironmentRise, iTween.Hash("y", cell.EnvironmentRate / 10f, "time", animateT));
-
-        yield return new WaitForSeconds(animateT);
-        animate = false;
+        FinanceRise.SetActive(false);
+        SocialRise.SetActive(false);
+        EnvironmentRise.SetActive(false);
+        FinanceRiseText.text = "";
+        SocialRiseText.text = "";
+        EnvironmentRiseText.text = "";
     }
 
     void Update ()
 	{
 	    if (animate)
 	    {
-            FinanceRiseText.rectTransform.anchoredPosition3D = new Vector3(FinanceRise.transform.position.x, FinanceRise.transform.position.y + 10f, FinanceRise.transform.position.z);
-            SocialRiseText.rectTransform.anchoredPosition3D = new Vector3(SocialRise.transform.position.x, SocialRise.transform.position.y + 10f, SocialRise.transform.position.z);
-            EnvironmentRiseText.rectTransform.anchoredPosition3D = new Vector3(EnvironmentRise.transform.position.x, EnvironmentRise.transform.position.y + 10f, EnvironmentRise.transform.position.z);
-	        FinanceRiseText.text = "" + cell.FinanceRate;
-	        SocialRiseText.text = "" + cell.SocialRate;
-	        EnvironmentRiseText.text = "" + cell.EnvironmentRate;
-	    }
+            FinanceRiseText.rectTransform.anchoredPosition3D = new Vector3(FinanceRiseText.rectTransform.anchoredPosition3D.x, FinanceRise.transform.position.y + 15f, FinanceRiseText.rectTransform.anchoredPosition3D.z);
+            SocialRiseText.rectTransform.anchoredPosition3D = new Vector3(SocialRiseText.rectTransform.anchoredPosition3D.x, SocialRise.transform.position.y + 15f, SocialRiseText.rectTransform.anchoredPosition3D.z);
+            EnvironmentRiseText.rectTransform.anchoredPosition3D = new Vector3(EnvironmentRiseText.rectTransform.anchoredPosition3D.x, EnvironmentRise.transform.position.y + 15f, EnvironmentRiseText.rectTransform.anchoredPosition3D.z);
+            AnimateText();
+            ChangeCellDisplay(InterfaceState.White);
+            ChangeCellText(TextState.White);
+        }
     }
 
     public void HighlightCell(int fin, int soc, int env)
@@ -83,7 +68,79 @@ public class CellInterface : MonoBehaviour {
         StartCoroutine(ExpandDisplay(fin, soc, env));
     }
 
-	public void ChangeCellText(TextState state)
+    IEnumerator ExpandDisplay(int finVal, int socVal, int envVal)
+    {
+        yield return new WaitForSeconds(1f);
+        animateT = 5f;
+        float elapsedTime = 0;
+
+        animate = true;
+        Images[0].SetActive(true);
+        Images[1].SetActive(true);
+        Images[2].SetActive(true);
+        FinanceRise.SetActive(true);
+        SocialRise.SetActive(true);
+        EnvironmentRise.SetActive(true);
+
+        iTween.ScaleTo(FinanceRise, iTween.Hash("y", cell.FinanceRate / 10f, "time", animateT, "easeType", iTween.EaseType.linear));
+        iTween.ScaleTo(SocialRise, iTween.Hash("y", cell.SocialRate / 10f, "time", animateT, "easeType", iTween.EaseType.linear));
+        iTween.ScaleTo(EnvironmentRise, iTween.Hash("y", cell.EnvironmentRate / 10f, "time", animateT, "easeType", iTween.EaseType.linear));
+        iTween.MoveTo(FinanceRise, iTween.Hash("y", cell.FinanceRate / 10f + 2f, "time", animateT, "easeType", iTween.EaseType.linear));
+        iTween.MoveTo(SocialRise, iTween.Hash("y", cell.SocialRate / 10f + 2f, "time", animateT, "easeType", iTween.EaseType.linear));
+        iTween.MoveTo(EnvironmentRise, iTween.Hash("y", cell.EnvironmentRate / 10f + 2f, "time", animateT, "easeType", iTween.EaseType.linear));
+
+        FinRiseVal = finVal;
+        SocRiseVal = socVal;
+        EnvRiseVal = envVal;
+        while (elapsedTime <= animateT)
+        {
+            finCurVal = Mathf.Lerp(0, finVal, elapsedTime / animateT);
+            socCurVal = Mathf.Lerp(0, socVal, elapsedTime / animateT);
+            envCurVal = Mathf.Lerp(0, envVal, elapsedTime / animateT);
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        yield return new WaitForSeconds(animateT);
+        /*
+        iTween.ScaleTo(FinanceRise, iTween.Hash("y", 0, "time", animateT));
+        iTween.ScaleTo(SocialRise, iTween.Hash("y", 0, "time", animateT));
+        iTween.ScaleTo(EnvironmentRise, iTween.Hash("y", 0, "time", animateT));
+        iTween.MoveTo(FinanceRise, iTween.Hash("y", 2, "time", animateT));
+        iTween.MoveTo(SocialRise, iTween.Hash("y", 2, "time", animateT));
+        iTween.MoveTo(EnvironmentRise, iTween.Hash("y", 2, "time", animateT));
+        yield return new WaitForSeconds(5f);*/
+
+        animate = false;
+        FinanceRise.SetActive(false);
+        SocialRise.SetActive(false);
+        EnvironmentRise.SetActive(false);
+        FinanceRiseText.text = "";
+        SocialRiseText.text = "";
+        EnvironmentRiseText.text = "";
+    }
+    void AnimateText()
+    {
+        if (FinRiseVal > 0)
+            FinanceRiseText.text = "<color=white>" + (cell.FinanceRate - FinRiseVal) + "</color>" + "<color=green><b>+" + Mathf.RoundToInt(finCurVal) + "</color></b>";
+        if (SocRiseVal > 0)
+            SocialRiseText.text = "<color=white>" + (cell.SocialRate - SocRiseVal) + "</color>" + "<color=green><b>+" + Mathf.RoundToInt(socCurVal) + "</color></b>";
+        if (EnvRiseVal > 0)
+            EnvironmentRiseText.text = "<color=white>" + (cell.EnvironmentRate - EnvRiseVal) + "</color>" + "<color=green><b>+" + Mathf.RoundToInt(envCurVal) + "</color></b>";
+        if (FinRiseVal < 0)
+            FinanceRiseText.text = "<color=white>" + (cell.FinanceRate - FinRiseVal) + "</color>" + "<color=red><b>" + Mathf.RoundToInt(finCurVal) + "</color>";
+        if (SocRiseVal < 0)
+            SocialRiseText.text = "<color=white>" + (cell.SocialRate - SocRiseVal) + "</color>" + "<color=red><b>" + Mathf.RoundToInt(socCurVal) + "</color>";
+        if (EnvRiseVal < 0)
+            EnvironmentRiseText.text = "<color=white>" + (cell.EnvironmentRate - EnvRiseVal) + "</color>" + "<color=red><b>" + Mathf.RoundToInt(envCurVal) + "</color>";
+        if (FinRiseVal == 0)
+            FinanceRiseText.text = "<color=white>" + cell.FinanceRate + "</color>";
+        if (SocRiseVal == 0)
+            SocialRiseText.text = "<color=white>" + cell.SocialRate + "</color>";
+        if (EnvRiseVal == 0)
+            EnvironmentRiseText.text = "<color=white>" + cell.EnvironmentRate + "</color>";
+    }
+
+    public void ChangeCellText(TextState state)
 	{
 	    CurrentTextState = state;
 		switch (state)

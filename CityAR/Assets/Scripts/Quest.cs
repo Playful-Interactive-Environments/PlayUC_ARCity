@@ -62,10 +62,9 @@ public class Quest : MonoBehaviour
         CellLogic = Cell.GetComponent<CellLogic>();
     }
 
-	void Start()
+    void Start()
 	{
 		CreateRepresentation();
-
     }
 
 	void CreateRepresentation()
@@ -73,9 +72,10 @@ public class Quest : MonoBehaviour
 		representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
 		representation.transform.parent = RepresentationParent.transform;
 		representation.transform.localScale = new Vector3(75, 75, 75);
-	}
+        representation.GetComponentInChildren<Animator>().SetBool("walk", true);
+    }
 
-	void Update ()
+    void Update ()
 	{
 		distance = Vector3.Distance(transform.position, nextWaypoint);
 		yRot += Time.deltaTime * 50f;
@@ -90,17 +90,21 @@ public class Quest : MonoBehaviour
 	{
 	    agent.isStopped = true;
 		agent.velocity = new Vector3(0,0,0);
-		representation.GetComponentInChildren<Animator>().SetBool("wave", true);
+        representation.GetComponentInChildren<Animator>().SetBool("walk", false);
+        yield return new WaitForSeconds(.5f);
+        representation.GetComponentInChildren<Animator>().SetBool("wave", true);
 		canMove = false;
-		yield return new WaitForSeconds(Utilities.RandomFloat(2,5));
+		yield return new WaitForSeconds(7f);
 		agent.speed = Utilities.RandomFloat(5, 15);
 		representation.GetComponentInChildren<Animator>().SetBool("wave", false);
-		canMove = true;
+        representation.GetComponentInChildren<Animator>().SetBool("walk", true);
+        canMove = true;
 		nextPoint = Utilities.RandomInt(0, Waypoints.Count);
 		nextWaypoint = Waypoints[nextPoint];
 		agent.SetDestination(nextWaypoint);
 	    agent.isStopped = false;
 	}
+
 	public void SetQuest(int randomId)
 	{
         ID = randomId;
@@ -116,7 +120,6 @@ public class Quest : MonoBehaviour
 
         Effect1 = CSVQuests.Instance.Find_ID(randomId).effect_1;
         Effect2 = CSVQuests.Instance.Find_ID(randomId).effect_2;
-
     }
 
 	public void Choose(int effect)

@@ -41,6 +41,10 @@ public class GameManager : NetworkBehaviour
 
         LocalManager.Instance.GameRunning = true;
         CameraControl.Instance.Invoke("ShowAll",1f);
+        foreach (GameObject cell in CellGrid.Instance.GridCells)
+        {
+            cell.GetComponent<CellInterface>().HighlightCell(0,0,0);
+        }
     }
 
     void LocalClientDisconnect()

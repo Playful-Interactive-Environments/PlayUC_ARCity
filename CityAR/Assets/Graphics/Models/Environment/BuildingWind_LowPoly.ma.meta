@@ -1,0 +1,232 @@
+fileFormatVersion: 2
+guid: 3bf42eb4dafd5194995370baad3ac978
+timeCreated: 1490001812
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: buildingWind_floor0
+    100002: buildingWind_floor1
+    100004: buildingWind_last_floor
+    100006: //RootNode
+    100008: wind62
+    100010: wind63
+    100012: wind64
+    100014: wind65
+    100016: wind66
+    100018: wind67
+    100020: wind68
+    100022: wind69
+    100024: wind70
+    100026: wind71
+    100028: wind72
+    100030: wind73
+    100032: wind74
+    100034: wind75
+    100036: windmills
+    400000: buildingWind_floor0
+    400002: buildingWind_floor1
+    400004: buildingWind_last_floor
+    400006: //RootNode
+    400008: wind62
+    400010: wind63
+    400012: wind64
+    400014: wind65
+    400016: wind66
+    400018: wind67
+    400020: wind68
+    400022: wind69
+    400024: wind70
+    400026: wind71
+    400028: wind72
+    400030: wind73
+    400032: wind74
+    400034: wind75
+    400036: windmills
+    2300000: buildingWind_floor0
+    2300002: buildingWind_floor1
+    2300004: buildingWind_last_floor
+    2300006: wind62
+    2300008: wind63
+    2300010: wind64
+    2300012: wind65
+    2300014: wind66
+    2300016: wind67
+    2300018: wind68
+    2300020: wind69
+    2300022: wind70
+    2300024: wind71
+    2300026: wind72
+    2300028: wind73
+    2300030: wind74
+    2300032: wind75
+    3300000: buildingWind_floor0
+    3300002: buildingWind_floor1
+    3300004: buildingWind_last_floor
+    3300006: wind62
+    3300008: wind63
+    3300010: wind64
+    3300012: wind65
+    3300014: wind66
+    3300016: wind67
+    3300018: wind68
+    3300020: wind69
+    3300022: wind70
+    3300024: wind71
+    3300026: wind72
+    3300028: wind73
+    3300030: wind74
+    3300032: wind75
+    4300000: buildingWind_floor0
+    4300002: buildingWind_floor1
+    4300004: wind62
+    4300006: wind63
+    4300008: wind64
+    4300010: wind65
+    4300012: wind66
+    4300014: wind67
+    4300016: wind68
+    4300018: wind69
+    4300020: wind70
+    4300022: wind71
+    4300024: wind72
+    4300026: wind73
+    4300028: wind74
+    4300030: wind75
+    4300032: buildingWind_last_floor
+    7400000: Take 001
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: buildingWind_floor0
+        weight: 1
+      - path: buildingWind_floor1
+        weight: 1
+      - path: buildingWind_last_floor
+        weight: 1
+      - path: windmills
+        weight: 1
+      - path: windmills/wind62
+        weight: 1
+      - path: windmills/wind63
+        weight: 1
+      - path: windmills/wind64
+        weight: 1
+      - path: windmills/wind65
+        weight: 1
+      - path: windmills/wind66
+        weight: 1
+      - path: windmills/wind67
+        weight: 1
+      - path: windmills/wind68
+        weight: 1
+      - path: windmills/wind69
+        weight: 1
+      - path: windmills/wind70
+        weight: 1
+      - path: windmills/wind71
+        weight: 1
+      - path: windmills/wind72
+        weight: 1
+      - path: windmills/wind73
+        weight: 1
+      - path: windmills/wind74
+        weight: 1
+      - path: windmills/wind75
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

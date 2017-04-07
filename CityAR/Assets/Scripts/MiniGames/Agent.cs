@@ -54,6 +54,7 @@ public class Agent : MonoBehaviour {
         {
             child.gameObject.layer = LayerMask.NameToLayer("MG_3");
         }
+        GetComponentInChildren<Animator>().SetBool("walk", true);
     }
 
     public void SetWaypoints(float xE, float xW, float yN, float yS)
@@ -152,7 +153,7 @@ public class Agent : MonoBehaviour {
                 Walk();
                 if (transform.position == _nextWayPointPosition)
                 {
-                    GetComponentInChildren<Animator>().SetBool("wave", true);
+                    GetComponentInChildren<Animator>().SetBool("walk", false);
                 }
                 break;
         }
