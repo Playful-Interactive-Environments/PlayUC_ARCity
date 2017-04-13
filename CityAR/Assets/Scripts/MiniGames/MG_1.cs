@@ -6,9 +6,7 @@ using Vuforia;
 
 public class MG_1 : AManager<MG_1>
 {
-	public float TimeLimit;
 	public int CollectedDocs;
-	public int DocsNeeded = 5;
 	public GameObject WordPrefab;
 	//public GameObject DropPrefab;
 	public GameObject Background;
@@ -19,14 +17,18 @@ public class MG_1 : AManager<MG_1>
 	private MGManager manager;
 	private float Height;
 	private float Width;
-	private float spawnTime;
 	public Vector3 StartingPos;
 	public float zLayer = 100f;
+    //balancing
+    public int DocsNeeded = 5;
+    private float spawnTime = 3.5f;
+    private int timesPlayed;
 
-	//CSV Rows
-	public class Row
+    //CSV Rows
+    public class Row
 	{
 		public string type;
+	    public string difficulty;
         public string english;
         public string german;
         public string french;
@@ -35,7 +37,11 @@ public class MG_1 : AManager<MG_1>
 
     public TextAsset WordFile;
 	public List<Row> rowList = new List<Row>();
-	private bool isLoaded = false; 
+    private List<Row> wordsEasy = new List<Row>();
+    private List<Row> wordsMedium = new List<Row>();
+    private List<Row> wordsHard = new List<Row>();
+
+    private bool isLoaded = false; 
 
 	void Start ()
 	{	
@@ -43,7 +49,7 @@ public class MG_1 : AManager<MG_1>
 		//ObjectPool.CreatePool(DropPrefab, 3);
 		manager = MGManager.Instance;
 		Load(WordFile);
-		Invoke("SetSize", 0.1f);
+        Invoke("SetSize", 0.1f);
 	}
 
 	void SetSize()
@@ -88,25 +94,25 @@ public class MG_1 : AManager<MG_1>
 	public void SpawnWord()
 	{
 		GameObject word = ObjectPool.Spawn(WordPrefab, manager.MG_1_GO.transform);
-
-		int random = Utilities.RandomInt(0, rowList.Count - 1);
-	    string title = "";
+	    int wordN = 0;
+        string title = "";
         switch (TextManager.Instance.CurrentLanguage)
 	    {
             case "english":
-                title = GetRow(random).english;
+                wordN = Utilities.RandomInt(0, rowList.Count - 1);
+                title = GetRow(wordN).english;
 	            break;
             case "german":
-                title = GetRow(random).german;
+                title = GetRow(wordN).german;
                 break;
             case "french":
-                title = GetRow(random).french;
+                title = GetRow(wordN).french;
                 break;
             case "dutch":
-                title = GetRow(random).dutch;
+                title = GetRow(wordN).dutch;
                 break;
         }
-        word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(random).type);
+        word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(wordN).type);
 		WordList.Add(word);
 		word.transform.name = zLayer + " " + title;
 		word.transform.SetAsFirstSibling();
@@ -114,9 +120,28 @@ public class MG_1 : AManager<MG_1>
 
 	public void InitGame()
 	{
-		InvokeRepeating("SpawnWord", 0f, 3.5f);
+	    if (timesPlayed == 0 || timesPlayed == 1)
+	    {
+	        spawnTime = Vars.Instance.Mg1_SpawnTimes[0];
+	        DocsNeeded = Vars.Instance.Mg1_DocsNeeded[0];
+	    }
+	    if (timesPlayed == 2 || timesPlayed == 3)
+	    {
+            spawnTime = Vars.Instance.Mg1_SpawnTimes[1];
+            DocsNeeded = Vars.Instance.Mg1_DocsNeeded[1];
+        }
+        if (timesPlayed > 4)
+        {
+            spawnTime = Vars.Instance.Mg1_SpawnTimes[2];
+            DocsNeeded = Vars.Instance.Mg1_DocsNeeded[2];
+        }
+        InvokeRepeating("SpawnWord", 0f, spawnTime);
 	}
 
+    public void IncreaseDifficulty()
+    {
+        timesPlayed += 1;
+    }
 	public void ResetGame()
 	{
 		ObjectPool.RecycleAll(WordPrefab);
@@ -143,17 +168,46 @@ public class MG_1 : AManager<MG_1>
 		{
 			Row row = new Row();
 			row.type = grid[i][0];
-			row.english = grid[i][1];
-            row.german = grid[i][2];
-            row.french = grid[i][3];
-            row.dutch = grid[i][4];
+            row.difficulty = grid[i][1];
+            row.english = grid[i][2];
+            row.german = grid[i][3];
+            row.french = grid[i][4];
+            row.dutch = grid[i][5];
             rowList.Add(row);
 		}
-		isLoaded = true;
+        foreach (Row row in rowList)
+        {
+            if (row.difficulty == "1")
+            {
+                wordsEasy.Add(row);
+            }
+            if (row.difficulty == "2")
+            {
+                wordsMedium.Add(row);
+
+            }
+            if (row.difficulty == "3")
+            {
+                wordsHard.Add(row);
+            }
+        }
+        isLoaded = true;
 	}
 	public Row GetRow(int find)
 	{
 		return rowList[find];
 	}
-	#endregion
+    public Row GetEasy(int find)
+    {
+        return wordsEasy[find];
+    }
+    public Row GetMedium(int find)
+    {
+        return wordsMedium[find];
+    }
+    public Row GetHard(int find)
+    {
+        return wordsHard[find];
+    }
+    #endregion
 }

@@ -10,12 +10,15 @@ public class ServerBroadcast : MonoBehaviour {
 
     UdpClient serverOriginator;
     string serverIP;
-    int broadcastPort = 7778;
+    int broadcastPort = 25123;
     IPAddress groupIP = IPAddress.Parse("224.0.0.224");
     IPEndPoint remoteEP;
+    public bool broadcastStarted;
 
     public void StartServerBroadcast()
     {
+        if (broadcastStarted)
+            return;
         //Get Server IP
         serverIP = Network.player.ipAddress;
 
@@ -25,7 +28,7 @@ public class ServerBroadcast : MonoBehaviour {
         serverOriginator.JoinMulticastGroup(groupIP);
 
         remoteEP = new IPEndPoint(groupIP, broadcastPort);
-
+        broadcastStarted = true;
         //Broadcast IP
         InvokeRepeating("BroadcastServerIP", 0, 1f);
     }
@@ -39,7 +42,8 @@ public class ServerBroadcast : MonoBehaviour {
     {
         Debug.Log("Stop Broadcast");
         CancelInvoke("BroadcastServerIP");
-        //serverOriginator.DropMulticastGroup(groupIP);
+        serverOriginator.DropMulticastGroup(groupIP);
         serverOriginator.Close();
+        broadcastStarted = false;
     }
 }

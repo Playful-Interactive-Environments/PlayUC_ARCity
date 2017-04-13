@@ -38,8 +38,8 @@ public class CellLogic : MonoBehaviour {
         EventDispatcher.StartListening("FinanceMap", FinanceMap);
         float _cubeX = ValueManager.Instance.MapWidth / CellGrid.Instance.Columns;
         float _cubeZ = ValueManager.Instance.MapHeight / CellGrid.Instance.Rows;
-        CellRepresentation.transform.localScale = new Vector3(_cubeX, 1, _cubeZ);
-        GetComponent<BoxCollider>().size = new Vector3(_cubeX, 1, _cubeZ);
+        CellRepresentation.transform.localScale = new Vector3(_cubeX, .1f, _cubeZ);
+        GetComponent<BoxCollider>().size = new Vector3(_cubeX, 1f, _cubeZ);
     }
 
     public void Default()

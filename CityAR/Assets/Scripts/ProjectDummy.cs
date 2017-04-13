@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class ProjectDummy : MonoBehaviour {
 
-	public Material placementMat;
+	private Material placementMat;
 	public Material blockedMat;
-	private float lerpVal;
 	private Renderer[] allRenderers;
 	public GameObject[] BuildingSets;
 	private GameObject representation;
@@ -21,8 +20,9 @@ public class ProjectDummy : MonoBehaviour {
 	void Start () {
 		transform.parent = LocalManager.Instance.ImageTarget.transform;
 		ProjectManager.Instance.CurrentDummy = this;
-		CreateRepresentation();
-		EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
+        placementMat = GameManager.Instance.placementMat;
+        CreateRepresentation();
+        EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
 	}
 
 	void StartDiscussion()
@@ -31,8 +31,7 @@ public class ProjectDummy : MonoBehaviour {
 	}
 
 	void Update () {
-		lerpVal = Mathf.PingPong(Time.time, 1f) / 1f;
-		placementMat.color = new Color(lerpVal, lerpVal, lerpVal, .5f);
+
 		if (CameraControl.Instance.MainCamera.gameObject.activeInHierarchy)
 		{
 			transform.position = CameraControl.Instance.GetLastCell();
@@ -57,7 +56,6 @@ public class ProjectDummy : MonoBehaviour {
 		Arrow.transform.parent = representation.transform;
 		Free();
 	    CameraControl.Instance.CanTouch = false;
-
 	}
 
 	public void Blocked()
@@ -89,6 +87,7 @@ public class ProjectDummy : MonoBehaviour {
 		if (other.gameObject.transform.tag.Equals("Project") || other.gameObject.transform.tag.Equals("Quest"))
 			Free();
 	}
+
 	public void DestroySelf()
 	{
 		//reset placement text & color of cells

@@ -20,6 +20,9 @@ ModelImporter:
     100024: trees_first_floor
     100026: trees_floor
     100028: trees_last_floor
+    100030: building_first_floor
+    100032: building_floor
+    100034: building_last_floor
     400000: //RootNode
     400002: first_floor
     400004: first_floor_building
@@ -35,6 +38,9 @@ ModelImporter:
     400024: trees_first_floor
     400026: trees_floor
     400028: trees_last_floor
+    400030: building_first_floor
+    400032: building_floor
+    400034: building_last_floor
     2300000: first_floor_building
     2300002: floor_building
     2300004: last_floor_building
@@ -44,6 +50,9 @@ ModelImporter:
     2300012: trees_first_floor
     2300014: trees_floor
     2300016: trees_last_floor
+    2300018: building_first_floor
+    2300020: building_floor
+    2300022: building_last_floor
     3300000: first_floor_building
     3300002: floor_building
     3300004: last_floor_building
@@ -53,6 +62,9 @@ ModelImporter:
     3300012: trees_first_floor
     3300014: trees_floor
     3300016: trees_last_floor
+    3300018: building_first_floor
+    3300020: building_floor
+    3300022: building_last_floor
     4300000: trees
     4300002: first_floor_building
     4300004: trees
@@ -62,6 +74,9 @@ ModelImporter:
     4300012: trees_first_floor
     4300014: trees_last_floor
     4300016: trees_floor
+    4300018: building_last_floor
+    4300020: building_first_floor
+    4300022: building_floor
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -73,6 +88,8 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

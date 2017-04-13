@@ -65,7 +65,7 @@ public class MGManager : AManager<MGManager>
         Height = cam.orthographicSize * 2;
         Width = Height * cam.aspect;
         EventDispatcher.StartListening(Vars.LocalClientDisconnect, NetworkDisconnect);
-
+        _timeLimit = Vars.Instance.MiniGameTime;
         Invoke("Init", .1f);
     }
 
@@ -102,6 +102,7 @@ public class MGManager : AManager<MGManager>
                     {
                         LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg1Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
+                        MG_1_Mng.IncreaseDifficulty();
                     }
                     break;
                 case MGState.Mg2:
@@ -165,7 +166,6 @@ public class MGManager : AManager<MGManager>
             case MGState.Mg1:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
-                _timeLimit = MG_1_Mng.TimeLimit;
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg1_Description;
@@ -174,7 +174,6 @@ public class MGManager : AManager<MGManager>
             case MGState.Mg2:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
-                _timeLimit = MG_2_Mng.TimeLimit;
                 MG_2_Mng.StartCoroutine("InitGame");
                 MG_2_GO.SetActive(true);
                 GameDescription.text = TextManager.Instance.Mg2_Description;
@@ -183,7 +182,6 @@ public class MGManager : AManager<MGManager>
             case MGState.Mg3:
                 MGCanvas.SetActive(true);
                 MGCam.SetActive(true);
-                _timeLimit = MG_3_Mng.TimeLimit;
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg3_Description;

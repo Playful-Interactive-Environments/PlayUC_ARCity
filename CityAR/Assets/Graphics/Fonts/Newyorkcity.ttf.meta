@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 83bfca472a501d346884b35ef3ea2670
+timeCreated: 1491832979
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: New York City
+  fontNames:
+  - New York City
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

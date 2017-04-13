@@ -9,7 +9,7 @@ using System.Threading;
 public class ClientListen : MonoBehaviour {
     
     UdpClient client;
-    int receivePort = 7778;
+    int receivePort = 25123;
     public string serverIP;
     IPAddress groupIP = IPAddress.Parse("224.0.0.224");
     IPEndPoint remoteEP;

@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Vars : AManager<Vars>
 {
-
-
     [Header("Cell Starting Values")]
     public int CellTotalVal;
     public float SingleCellMaxVal; //4 heatmap steps!
 
     [Header("Player Variables")]
     public int StartingBudget;
+    public int MinPlayers;
 
     [Header("Game End Goals")]
     public float GameEndTime;
@@ -20,6 +19,8 @@ public class Vars : AManager<Vars>
     
     [Header("Mini Game Settings")]
     public float MiniGameTime = 30;
+    public float[] Mg1_SpawnTimes =  {3, 4, 5};
+    public int[] Mg1_DocsNeeded = {4, 3, 3};
 
     [Header("Player Roles")]
     public const string Player1 = "Finance";
@@ -45,5 +46,4 @@ public class Vars : AManager<Vars>
     [Header("Event Messages")]
     public const string LocalClientDisconnect = "LocalClientDisconnect";
     public const string ServerHandleDisconnect = "ServerHandleDisconnect";
-
 }

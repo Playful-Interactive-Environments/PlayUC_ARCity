@@ -17,11 +17,12 @@ public class NetworkingManager : NetworkManager
     public static NetworkingManager Instance = null;
     public bool isServer;
     public bool isClient;
+    private bool tryConnect;
     public InputField IPInput;
     public Button HostButton;
-    public Button ConnectButton;
     public Button AutoConnectButton;
     public Text DebugText;
+    public Text IpText;
     public GameObject GameManagerPrefab;
     public ServerBroadcast broadcast;
     public ClientListen listen;
@@ -34,40 +35,37 @@ public class NetworkingManager : NetworkManager
             Instance = this;
         else if (Instance != this)
             Destroy(gameObject);
+        networkPort = ConnectionPort;
+    }
+
+    void Start()
+    {
+        connectionConfig.AcksType = ConnectionAcksType.Acks128;
+        connectionConfig.MaxSentMessageQueueSize = 1024;
+        connectionConfig.MaxCombinedReliableMessageCount = 1;
+        IpText.text = "My IP: " + Network.player.ipAddress;
+
     }
 
     void Update()
     {
-        if (isServer || isClient)
-        {
-            ConnectButton.interactable = false;
-        }
-        else
-        {
-            ConnectButton.interactable = true;
-        }
-        if (isServer)
-            HostButton.interactable = false;
-        if (!isServer && !isClient)
-        {
-            HostButton.interactable = true;
-        }
+
     }
 
     public void StartupHost()
     {
         StopHosting();
-        SetPort();
         StartHost();
-        GameObject gamemng = Instantiate(GameManagerPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        GameObject gamemng = Instantiate(GameManagerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         NetworkServer.Spawn(gamemng);
         isServer = true;
         broadcast.StartServerBroadcast();
         if (listen.listenStarted)
         {
             listen.StopListenning();
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
         }
+        GameManager.Instance.ClientsConnected += 1;
     }
 
     public void StopHosting()
@@ -80,31 +78,19 @@ public class NetworkingManager : NetworkManager
         }
         if (isClient)
         {
+            StopHost();
             StopClient();
         }
+        if (listen.listenStarted)
+            listen.StopListenning();
+        if (broadcast.broadcastStarted)
+            broadcast.StopBroadcasting();
+        StopAllCoroutines();
         NetworkServer.Reset();
-        Reset();
-    }
-
-    public void SetIPAddress()
-    {
-        ConnectionIP = IPInput.text;
-        System.Net.IPAddress aIP;
-
-        if (!System.Net.IPAddress.TryParse(ConnectionIP, out aIP))
-        {
-            //DebugText.text = "INVALID IP ADDRESS";
-            return;
-        }
-        else
-        {
-            networkAddress = ConnectionIP;
-        }
-    }
-
-    void SetPort()
-    {
-        networkPort = ConnectionPort;
+        AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
+        AutoConnectButton.interactable = true;
+        HostButton.interactable = true;
+        UIManager.Instance.ResetMenus();
     }
 
     #region Server 
@@ -112,26 +98,48 @@ public class NetworkingManager : NetworkManager
     {
         base.OnStartServer();
         //Debug.Log("Server IP: " + Network.player.ipAddress);
-        DebugText.text = "Server IP: " + Network.player.ipAddress;
+        IpText.text = "My IP: " + Network.player.ipAddress;
+        UIManager.Instance.RoleUI();
+        AutoConnectButton.interactable = false;
+        HostButton.interactable = false;
+        DebugText.text = "OnStartHost";
+
     }
 
     public override void OnStopServer()
     {
         base.OnStopServer();
-        Debug.Log("Server Stopped");
         isServer = false;
+        LocalManager.Instance.GameRunning = false;
         broadcast.StopBroadcasting();
+        AutoConnectButton.interactable = true;
+        HostButton.interactable = true;
         if (listen.listenStarted)
         {
             listen.StopListenning();
-            AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
         }
+        Debug.Log("Server Stopped");
+        DebugText.text = "OnStopServer";
+
+
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
         Debug.Log("OnServerConnect " + conn.connectionId);
+        if (GameManager.Instance != null)
+            GameManager.Instance.ClientsConnected += 1;
+        DebugText.text = "OnServerConnect";
+
+    }
+
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        base.OnServerAddPlayer(conn, playerControllerId);
+        Debug.Log("OnAddPlayer");
+        DebugText.text = "OnServerAddPlayer" + conn.connectionId;
+
     }
 
     public override void OnServerRemovePlayer(NetworkConnection conn, PlayerController player)
@@ -139,85 +147,148 @@ public class NetworkingManager : NetworkManager
         base.OnServerRemovePlayer(conn, player);
         NetworkServer.DestroyPlayersForConnection(conn);
         Debug.Log("OnServerRemovePlayer " + player);
+        EventDispatcher.TriggerEvent(Vars.ServerHandleDisconnect);
+
+        DebugText.text = "OnServerRemovePlayer" + conn.lastError;
+
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-        // DebugText.text = "Server Disconnected" + conn.lastError;
+        // IpText.text = "Server Disconnected" + conn.lastError;
         SaveStateManager.Instance.SetTaken(conn.connectionId, false);
         EventDispatcher.TriggerEvent(Vars.ServerHandleDisconnect);
+        GameManager.Instance.ClientsConnected -= 1;
+        DebugText.text = "OnServerDisconnect" + conn.lastError;
+
+    }
+
+    public override void OnServerError(NetworkConnection conn, int errorCode)
+    {
+        base.OnServerError(conn, errorCode);
+        Debug.Log(errorCode);
+        EventDispatcher.TriggerEvent(Vars.ServerHandleDisconnect);
+
+        DebugText.text = "OnServerError" + conn.lastError;
+
     }
     #endregion
 
     #region Client
-    public void JoinGame()
-    {
-        StopHosting();
-        SetPort();
-        SetIPAddress();
-        StartClient();
-    }
 
     public void AutoConnect()
     {
-        listen.StartClientListen();
-        StartCoroutine("TryConnect");
+        if (isNetworkActive)
+            StopHosting();
+        StopAllCoroutines();
+        StartCoroutine(TryConnect());
     }
 
     IEnumerator TryConnect()
     {
-        for (int i = 0; i <= 3; i++)
+        AutoConnectButton.interactable = false;
+        HostButton.interactable = false;
+        listen.StartClientListen();
+
+        int loopT = 3;
+        for (int i = 0; i <= loopT; i++)
         {
-            yield return new WaitForSeconds(1f);
-            if (listen.serverIP != "")
+            yield return new WaitForSeconds(Mathf.Round(loopT / 3));
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Searching + ".";
+            yield return new WaitForSeconds(Mathf.Round(loopT / 3));
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Searching + "..";
+            yield return new WaitForSeconds(Mathf.Round(loopT / 3));
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Searching + "...";
+            if (listen.serverIP != "" && !tryConnect)
             {
                 ConnectionIP = listen.serverIP;
                 IPInput.text = listen.serverIP;
-                AutoConnectButton.GetComponentInChildren<Text>().text = "Found!";
-                StopCoroutine("TryConnect");
+                AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Connecting + ".";
+                yield return new WaitForSeconds(.3f);
+                AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Connecting + "..";
+                yield return new WaitForSeconds(.3f);
+                AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Connecting + "...";
+                yield return new WaitForSeconds(.3f);
+                UIManager.Instance.RoleUI();
+                StartClient();
+                listen.StopListenning();
+                StopAllCoroutines();
             }
-            else
+            if (SetIPAddress() && !tryConnect)  
             {
-                if (i < 3)
-                    AutoConnectButton.GetComponentInChildren<Text>().text = "" + (3 - i);
-                if (i == 3)
+                StartClient();
+                tryConnect = true;
+                yield return new WaitForSeconds(.5f);
+            }
+            if (tryConnect)
+            {
+                if (IsClientConnected())
                 {
-                    AutoConnectButton.GetComponentInChildren<Text>().text = "No Server";
+                    AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.ServerFound;
+                    tryConnect = false;
                     yield return new WaitForSeconds(2f);
-                    AutoConnectButton.GetComponentInChildren<Text>().text = "Search";
+                    UIManager.Instance.RoleUI();
+                    DebugText.text = "manual successful";
+                    listen.StopListenning();
+                    StopAllCoroutines();
+                }
+                if (!IsClientConnected())
+                {
+                    tryConnect = false;
+                    StopClient();
+                    DebugText.text = "manual fail";
                 }
             }
         }
-    }
-
-    public override void OnClientConnect(NetworkConnection conn)
-    {
-        base.OnClientConnect(conn);
-        UIManager.Instance.RoleUI();
-        if (!isServer)
+        if (!IsClientConnected())
         {
-            //DebugText.text = "Connected. IP: " + Network.player.ipAddress;
-            isClient = true;
-            if (listen.listenStarted)
-            {
-                listen.StopListenning();
-                AutoConnectButton.GetComponentInChildren<Text>().text = "Find";
-            }
-            Debug.Log("OnClientConnect " + conn);
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.NoServer;
+            yield return new WaitForSeconds(2f);
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
+            AutoConnectButton.interactable = true;
+            HostButton.interactable = true;
+            listen.StopListenning();
         }
     }
 
-    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    public bool SetIPAddress()
     {
-        base.OnServerAddPlayer(conn, playerControllerId);
-        Debug.Log("OnAddPlayer");
+        ConnectionIP = IPInput.text;
+        System.Net.IPAddress aIP;
+
+        if (!System.Net.IPAddress.TryParse(ConnectionIP, out aIP))
+        {
+            IPInput.text = "INVALID IP!";
+            return false;
+        }
+        else
+        {
+            networkAddress = ConnectionIP;
+            return true;
+        }
+    }
+    public override void OnClientConnect(NetworkConnection conn)
+    {
+        base.OnClientConnect(conn);
+        if (!isServer)
+        {
+
+            IpText.text = "My IP: " + Network.player.ipAddress;
+            isClient = true;
+            AutoConnectButton.interactable = false;
+            HostButton.interactable = false;
+            AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
+            Debug.Log("OnClientConnect " + conn);
+            DebugText.text = "Client Connected";
+
+        }
     }
 
     public override void OnStartClient(NetworkClient client)
     {
         base.OnStartClient(client);
-        Debug.Log("OnStartClient");
+        //Debug.Log("OnStartClient");
     }
 
     public override void OnStopClient()
@@ -226,34 +297,39 @@ public class NetworkingManager : NetworkManager
         ClientScene.DestroyAllClientObjects();
         ClientScene.ClearSpawners();
         isClient = false;
-        EventDispatcher.TriggerEvent(Vars.LocalClientDisconnect);
+        if (IsClientConnected())
+        {
+            AutoConnectButton.interactable = true;
+            HostButton.interactable = true;
+            EventDispatcher.TriggerEvent(Vars.LocalClientDisconnect);
+            DebugText.text = "Disconnected! Try Again! Code:1" ;
+
+        }
+        //Debug.Log("OnStopClient");
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        //DebugText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
-        StartCoroutine(Reconnect());
-    }
-
-    public override void OnServerError(NetworkConnection conn, int errorCode)
-    {
-        base.OnServerError(conn, errorCode);
-        Debug.Log(errorCode);
-    }
-
-    public void Reset()
-    {
-        UIManager.Instance.ResetMenus();
-    }
-
-    IEnumerator Reconnect()
-    {
+        //IpText.text = "Client Disconnected" + conn.lastError + conn.lastMessageTime;
+       // StartCoroutine(Reconnect());
+        AutoConnectButton.interactable = true;
+        HostButton.interactable = true;
         LocalManager.Instance.GameRunning = false;
-        StopClient();
-        Reset();
-        yield return new WaitForSeconds(.5f);
-        StartClient();
+        UIManager.Instance.ResetMenus();
+        Debug.Log("OnClientDisconnect");
+        DebugText.text = "Disconnected! Try Again! Code:2" + conn.lastError;
+        EventDispatcher.TriggerEvent(Vars.LocalClientDisconnect);
+    }
+
+    public override void OnClientError(NetworkConnection conn, int errorCode)
+    {
+        base.OnClientError(conn, errorCode);
+        Debug.Log("OnClientError");
+        AutoConnectButton.interactable = true;
+        HostButton.interactable = true;
+        DebugText.text = "Disconnected! Try Again! Code:3" + conn.lastError;
+        EventDispatcher.TriggerEvent(Vars.LocalClientDisconnect);
 
     }
     #endregion

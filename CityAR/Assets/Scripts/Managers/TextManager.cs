@@ -7,9 +7,14 @@ using UnityEngine.UI;
 public class TextManager : AManager<TextManager>
 {
     [Header("Main Menu")]
+
+    public string Search;
+    public string Searching;
+    public string Connecting;
+    public string NoServer;
+    public string ServerFound;
     public Text Host;
-    public Text Connect;
-    public Text Search;
+    public Text SearchText;
     public Text Restart;
     public Text Stop;
     public Text Menu;
@@ -22,8 +27,14 @@ public class TextManager : AManager<TextManager>
     public Text Discussion_Description;
     public string InfoTextVoted;
     public string InfoTextProposed;
+    public TextMeshProUGUI AreaText;
+    public TextMeshProUGUI ChangesText;
+
 
     [Header("MiniGames")]
+    public string Mg1_Name;
+    public string Mg2_Name;
+    public string Mg3_Name;
     public string Mg1_Description;
     public string Mg2_Description;
     public string Mg3_Description;
@@ -32,6 +43,8 @@ public class TextManager : AManager<TextManager>
     public string Mg3_Goal;
     public string Mg_win;
     public string Mg_lose;
+    public string Mg_CompleteTask;
+    public string Mg_NoTasks;
 
     [Header("Game End")]
     public TextMeshProUGUI Congratulations;
@@ -112,9 +125,14 @@ public class TextManager : AManager<TextManager>
     public void GetWords(string language)
     {
         //Main Menu
+
+        Search = Languages.GetWord("mm_search", language);
+        Searching = Languages.GetWord("mm_searching", language);
+        ServerFound = Languages.GetWord("mm_serverfound", language);
+        NoServer = Languages.GetWord("mm_noserver", language);
+        Connecting = Languages.GetWord("mm_connecting", language);
         Host.text = Languages.GetWord("mm_host", language);
-        Connect.text = Languages.GetWord("mm_connect", language);
-        Search.text = Languages.GetWord("mm_search", language);
+        SearchText.text = Search;
         Restart.text = Languages.GetWord("mm_restart", language);
         Stop.text = Languages.GetWord("mm_stop", language);
         Menu.text = Languages.GetWord("mm_menu", language);
@@ -129,8 +147,14 @@ public class TextManager : AManager<TextManager>
         Discussion_Description.text = Languages.GetWord("disc_descr", language);
         InfoTextVoted = Languages.GetWord("disc_info_voted", language);
         InfoTextProposed = Languages.GetWord("disc_info_proposed", language);
+        AreaText.text = Languages.GetWord("disc_areatxt", language);
+        ChangesText.text = Languages.GetWord("disc_changestxt", language);
+
 
         //Mini Games
+        Mg1_Name = Languages.GetWord("Mg1_Name", language);
+        Mg2_Name = Languages.GetWord("Mg2_Name", language);
+        Mg3_Name = Languages.GetWord("Mg3_Name", language);
         Mg1_Description = Languages.GetWord("Mg1_Description", language);
         Mg2_Description = Languages.GetWord("Mg2_Description", language);
         Mg3_Description = Languages.GetWord("Mg3_Description", language);
@@ -139,7 +163,9 @@ public class TextManager : AManager<TextManager>
         Mg3_Goal = Languages.GetWord("Mg3_Goal", language);
         Mg_win = Languages.GetWord("Mg_win", language);
         Mg_lose = Languages.GetWord("Mg_lose", language);
-
+        Mg_CompleteTask = Languages.GetWord("Mg_CompleteTask", language);
+        Mg_NoTasks = Languages.GetWord("Mg_NoTasks", language);
+        
         //Game End
         TimeWinText = Languages.GetWord("end_timewin", language);
         UtopiaWinText = Languages.GetWord("end_utopiawin", language);

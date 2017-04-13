@@ -132,18 +132,7 @@ public class NetworkCommunicator : NetworkBehaviour
     {
         if (isServer)
         {
-            switch (role)
-            {
-                case Vars.Player3:
-                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
-                    break;
-                case Vars.Player2:
-                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
-                    break;
-                case Vars.Player1:
-                    SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
-                    break;
-            }
+            SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
         }
         if (isClient && !isServer)
         {

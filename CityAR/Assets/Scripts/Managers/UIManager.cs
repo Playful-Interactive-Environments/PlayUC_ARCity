@@ -113,9 +113,11 @@ public class UIManager : AManager<UIManager>
     public Button GameEndPrevButton;
     public Button GameEndNextButton;
     public Button GameEndNextRestartButton;
+    public GameObject WaitingPlayers;
 
     public Text RoleDescriptionText;
     public Text DebugText;
+    public Text WaitingText;
     public Sprite DefaultSprite;
     public Sprite ApproveSprite;
     public Sprite DenySprite;
@@ -232,6 +234,7 @@ public class UIManager : AManager<UIManager>
                 PlacementCanvas.enabled = true;
                 break;
             case UiState.Quest:
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Quest");
                 QuestCanvas.enabled = true;
                 break;
             case UiState.Result:
@@ -601,6 +604,12 @@ public class UIManager : AManager<UIManager>
     public void ResetMenus()
     {
         Change(UiState.Network);
+        Finance.interactable = true;
+        Social.interactable = true;
+        Environment.interactable = true;
+        WaitingPlayers.SetActive(false);
+        HideProjectDisplay();
+        HideDiscussionPanel();
     }
 
     IEnumerator AnimateIcon(GameObject icon, float scaleTo, float originalScale)

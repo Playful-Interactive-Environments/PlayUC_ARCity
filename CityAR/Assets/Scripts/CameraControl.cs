@@ -126,7 +126,6 @@ public class CameraControl : AManager<CameraControl>
 #endregion
 }
 
-
 /*  
 #if UNITY_ANDROID
        if (Input.touchCount > 0)

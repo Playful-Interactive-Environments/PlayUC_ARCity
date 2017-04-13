@@ -70,22 +70,22 @@ public class ProjectButton : MonoBehaviour {
 			case Vars.NoMg:
 				MGText.gameObject.SetActive(false);
 				PlayMgButton.gameObject.SetActive(false);
-				MGText.text = "No Tasks.";
-				break;
+				MGText.text = TextManager.Instance.Mg_NoTasks;
+                break;
 			case Vars.Mg1:
 				PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
-				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Sorting Documents</color>";
-				break;
+				MGText.text = TextManager.Instance.Mg_CompleteTask + ":\n" + "<color=red>" + TextManager.Instance.Mg1_Name + "</color>";
+                break;
 			case Vars.Mg2:
                 PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
-				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Gathering Supporters</color>";
-				break;
+				MGText.text = TextManager.Instance.Mg_CompleteTask + ":\n" + "<color=red>" + TextManager.Instance.Mg2_Name + "</color>";
+                break;
 			case Vars.Mg3:
                 PlayMgButton.gameObject.SetActive(true);
 				MGText.gameObject.SetActive(true);
-				MGText.text = "Complete Task to Unlock:\n" + "<color=red>Urban Zoning</color>";
+				MGText.text = TextManager.Instance.Mg_CompleteTask + ":\n" + "<color=red>"+ TextManager.Instance.Mg3_Name + "</color>";
 				break;
 			default:
 				BlockedCover.gameObject.SetActive(false);

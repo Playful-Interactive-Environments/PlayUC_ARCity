@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MG_2 : AManager<MG_2> {
 
-	public float TimeLimit;
 	public float TimeSpent;
 	public int VotersNeeded = 10;
 	public int VotersCollected;
@@ -22,12 +21,6 @@ public class MG_2 : AManager<MG_2> {
 	{
 		ObjectPool.CreatePool(VoterPrefab, VotersNeeded);
 		manager = MGManager.Instance;
-	}
-
-	public void SetVars(int agents, int needed, float time)
-	{
-		VotersNeeded = needed;
-		TimeLimit = time;
 	}
 
 	void Update ()

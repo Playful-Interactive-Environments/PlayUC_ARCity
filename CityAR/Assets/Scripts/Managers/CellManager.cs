@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-[NetworkSettings(channel = 2, sendInterval = .5f)]
+[NetworkSettings(channel = 1, sendInterval = .1f)]
 
 public class CellManager : NetworkBehaviour
 {
@@ -102,9 +102,9 @@ public class CellManager : NetworkBehaviour
         CurrentFinanceGlobal = 0;
         for (int i = 0; i < _cellGrid.Count; i++)
         {
-            CurrentEnvironmentGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().EnvironmentRate;
-            CurrentSocialGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().SocialRate;
-            CurrentFinanceGlobal += _cellGrid.GetCell(i).GetComponent<CellLogic>().FinanceRate;
+            CurrentEnvironmentGlobal += _cellGrid.GetCellLogic(i).EnvironmentRate;
+            CurrentSocialGlobal += _cellGrid.GetCellLogic(i).SocialRate;
+            CurrentFinanceGlobal += _cellGrid.GetCellLogic(i).FinanceRate;
         }
     }
 
@@ -144,9 +144,9 @@ public class CellManager : NetworkBehaviour
     {
         for (int i = 0; i < _cellGrid.Count; i++)
         {
-            _cellGrid.GetCell(i).GetComponent<CellLogic>().SocialRate = social[i];
-            _cellGrid.GetCell(i).GetComponent<CellLogic>().EnvironmentRate = environment[i];
-            _cellGrid.GetCell(i).GetComponent<CellLogic>().FinanceRate = finance[i];
+            _cellGrid.GetCellLogic(i).SocialRate = social[i];
+            _cellGrid.GetCellLogic(i).EnvironmentRate = environment[i];
+            _cellGrid.GetCellLogic(i).FinanceRate = finance[i];
         }
     }
 

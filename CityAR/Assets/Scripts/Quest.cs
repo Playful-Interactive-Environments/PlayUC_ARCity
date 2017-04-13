@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
 using UnityEngine.AI;
 
 public class Quest : MonoBehaviour
@@ -60,6 +61,12 @@ public class Quest : MonoBehaviour
 		agent.SetDestination(nextWaypoint);
         Cell = CellGrid.Instance.GetRandomCell();
         CellLogic = Cell.GetComponent<CellLogic>();
+	    if (representation != null)
+	    {
+            representation.GetComponentInChildren<Animator>().SetBool("walk", false);
+            representation.GetComponentInChildren<Animator>().SetBool("wave", false);
+            representation.GetComponentInChildren<Animator>().SetBool("walk", true);
+        }
     }
 
     void Start()
@@ -184,5 +191,6 @@ public class Quest : MonoBehaviour
 		QuestManager.Instance.RemoveQuest(ID);
 		QuestManager.Instance.CurrentQuests -= 1;
         LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Quest", 1);
-	}
+
+    }
 }

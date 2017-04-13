@@ -6,7 +6,7 @@
 		_ColorR2("ColorR Mask2", Color) = (1,1,1,1)
 		_ColorG2("ColorG Mask2", Color) = (1,1,1,1)
 		_ColorB2("ColorB Mask2", Color) = (1,1,1,1)
-		_MainTex("Albedo (RGB)", 2D) = "black" {}
+		_MainTex("Albedo (RGB)", 2D) = "white" {}
 		_Mask1Tex("Mask1", 2D) = "black" {}
 		_Mask2Tex("Mask2", 2D) = "black" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
@@ -41,16 +41,19 @@
 			fixed4 mask1 = tex2D(_Mask1Tex, IN.uv_Mask1Tex);
 			fixed4 mask2 = tex2D(_Mask2Tex, IN.uv_Mask2Tex);
 			//c.rgb = c.rgb * (1 - mask.r) + _ColorR * mask.R;
-			c.rgb = c.rgb + _ColorR1 * mask1.r + _ColorG1 * mask1.g + _ColorB1 * mask1.b;
-			c.rgb = c.rgb + _ColorR2 * mask2.r + _ColorG2 * mask2.g + _ColorB2 * mask2.b;
 
-			float grayScale = (float)((c.rgb.r * 0.3) + (c.rgb.g * 0.59) + (c.rgb.b * 0.11));
+			fixed4 cc;
+			cc.rgb = _ColorR1 * mask1.r + _ColorG1 * mask1.g + _ColorB1 * mask1.b;
+			cc.rgb = cc.rgb + _ColorR2 * mask2.r + _ColorG2 * mask2.g + _ColorB2 * mask2.b;
+
+			float grayScale = (float)((cc.rgb.r * 0.3) + (cc.rgb.g * 0.59) + (cc.rgb.b * 0.11));
 			fixed4 g = (grayScale, grayScale, grayScale, grayScale);
-			c.rgb = c.rgb * _Saturation + g.rgb * (1 - _Saturation);
+			cc.rgb = cc.rgb * _Saturation + g.rgb * (1 - _Saturation);
+
+			cc.rgb = cc.rgb * c.rgb;
 
 
-
-			o.Albedo = c.rgb;
+			o.Albedo = cc.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

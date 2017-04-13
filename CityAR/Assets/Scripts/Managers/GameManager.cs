@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+[NetworkSettings(channel = 3, sendInterval = 0.1f)]
 public class GameManager : NetworkBehaviour
 {
 
@@ -15,12 +15,18 @@ public class GameManager : NetworkBehaviour
     public string SocialState;
     [SyncVar]
     public float CurrentTime;
+    [SyncVar]
+    public int ClientsConnected;
+
     private string MyState;
     private int currentEvent;
     public float eventTime;
     public static GameManager Instance;
     private UIManager UiM;
     private SaveStateManager SaveData;
+    //animate placement mat
+    private float lerpVal;
+    public Material placementMat;
 
     void Awake()
     {
@@ -41,10 +47,6 @@ public class GameManager : NetworkBehaviour
 
         LocalManager.Instance.GameRunning = true;
         CameraControl.Instance.Invoke("ShowAll",1f);
-        foreach (GameObject cell in CellGrid.Instance.GridCells)
-        {
-            cell.GetComponent<CellInterface>().HighlightCell(0,0,0);
-        }
     }
 
     void LocalClientDisconnect()
@@ -60,24 +62,37 @@ public class GameManager : NetworkBehaviour
         if (MyState != "GameEnd")
         {
             ResetDiscussion();
-            if(isServer)
+            if (isServer)
                 LocalManager.Instance.NetworkCommunicator.SendEvent(Vars.ServerHandleDisconnect);
         }
     }
 
     public void ResetDiscussion()
     {
+        UiM.HideProjectDisplay();
+        UiM.HideDiscussionPanel();
         StopAllCoroutines();
-        StartCoroutine(EndDiscussion());
     }
 
     void Update()
     {
-        if (isServer)
+        if (isServer && ClientsConnected >= Vars.Instance.MinPlayers)
         {
             CurrentTime += Time.deltaTime;
         }
+        if (ClientsConnected < Vars.Instance.MinPlayers && UiM.CurrentState != UIManager.UiState.Network &&
+            UiM.CurrentState != UIManager.UiState.Role)
+        {
+            UIManager.Instance.WaitingPlayers.SetActive(true);
+            UIManager.Instance.WaitingText.text = "Waiting for players... " + ClientsConnected + "/3";
+        }
+        if (ClientsConnected >= Vars.Instance.MinPlayers)
+        {
+            UIManager.Instance.WaitingPlayers.SetActive(false);
+        }
         UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
+        lerpVal = Mathf.PingPong(Time.time, 1f) / 1f;
+        placementMat.color = new Color(lerpVal, lerpVal, lerpVal, .5f);
     }
 
     #region GameEnd
@@ -179,10 +194,16 @@ public class GameManager : NetworkBehaviour
         while (MyState == "MiniGame")
         {
             CheckMyState();
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.5f);
+        }
+        while (MyState == "Quest")
+        {
+            CheckMyState();
+            yield return new WaitForSeconds(.5f);
         }
         EventDispatcher.TriggerEvent("StartDiscussion");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.1f);
+        UIManager.Instance.Change(UIManager.UiState.Game);
         UiM.ShowProjectDisplay();
         UiM.ShowDiscussionPanel();
         UiM.ShowInfoScreen();
@@ -190,6 +211,7 @@ public class GameManager : NetworkBehaviour
 
     IEnumerator EndDiscussion()
     {
+        yield return new WaitForSeconds(3f);
         UiM.HideProjectDisplay();
         UiM.HideDiscussionPanel();
         yield return new WaitForSeconds(1f);

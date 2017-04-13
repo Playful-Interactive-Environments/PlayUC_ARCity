@@ -50,7 +50,15 @@ public class CellGrid : AManager<CellGrid>
 		return GridCells[cellid];
 	}
 
-	public GameObject GetRandomCell()
+    public CellLogic GetCellLogic(int cellid)
+    {
+        return GridCells[cellid].GetComponent<CellLogic>();
+    }
+    public CellInterface GetCellInterface(int cellid)
+    {
+        return GridCells[cellid].GetComponent<CellInterface>();
+    }
+    public GameObject GetRandomCell()
 	{
 		return GridCells[Random.Range(0, Count)];
 	}

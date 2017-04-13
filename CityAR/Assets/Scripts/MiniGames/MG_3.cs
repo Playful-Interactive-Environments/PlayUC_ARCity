@@ -103,7 +103,6 @@ public class MG_3 : AManager<MG_3>
 		}
 	}
 
-	public float TimeLimit;
 	public float CurrentPercent;
 	public float PercentNeeded = 80f;
 	private float Height;
