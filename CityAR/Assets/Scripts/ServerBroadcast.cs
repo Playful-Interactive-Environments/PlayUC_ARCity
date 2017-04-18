@@ -10,7 +10,7 @@ public class ServerBroadcast : MonoBehaviour {
 
     UdpClient serverOriginator;
     string serverIP;
-    int broadcastPort = 25123;
+    int broadcastPort = 7778;
     IPAddress groupIP = IPAddress.Parse("224.0.0.224");
     IPEndPoint remoteEP;
     public bool broadcastStarted;
