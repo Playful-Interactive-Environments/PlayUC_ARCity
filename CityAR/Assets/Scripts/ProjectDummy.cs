@@ -7,8 +7,10 @@ public class ProjectDummy : MonoBehaviour {
 	private Material placementMat;
 	public Material blockedMat;
 	private Renderer[] allRenderers;
-	public GameObject[] BuildingSets;
-	private GameObject representation;
+    public GameObject[] FinanceRepr;
+    public GameObject[] SocialRepr;
+    public GameObject[] EnvironmentRepr;
+    private GameObject representation;
 	public GameObject Arrow;
 	public int RepresentationId;
 	public Vector3 CurrentRot;
@@ -48,8 +50,19 @@ public class ProjectDummy : MonoBehaviour {
 
 	public void CreateRepresentation()
 	{
-		//create 3d representation
-		representation = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
+        //create 3d representation
+        switch (LocalManager.Instance.RoleType)
+        {
+            case Vars.Player1:
+                representation = Instantiate(FinanceRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+            case Vars.Player2:
+                representation = Instantiate(SocialRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+            case Vars.Player3:
+                representation = Instantiate(EnvironmentRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+        }
 		representation.transform.parent = transform;
 		representation.transform.localScale = new Vector3(.5f, .5f, .5f);
 		allRenderers = representation.GetComponentsInChildren<Renderer>();

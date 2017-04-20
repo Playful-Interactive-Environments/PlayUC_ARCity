@@ -33,6 +33,7 @@ public class Agent : MonoBehaviour {
     private float Width;
 
     //Representation
+    private GameObject representation;
     public GameObject[] RepresentationSets;
     
     void Start ()
@@ -43,18 +44,17 @@ public class Agent : MonoBehaviour {
 
     void CreateRepresentation()
     {
-        GameObject representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
+        representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
         representation.transform.parent = this.transform;
-        representation.transform.localScale = new Vector3(100, 100, 100);
-        representation.transform.localEulerAngles += new Vector3(0, 90, -90);
+        representation.transform.localScale = new Vector3(3, 3, 3);
+        representation.transform.localEulerAngles += new Vector3(0, 0, 90);
         representation.transform.localPosition = new Vector3(0,0, 20f);
         representation.layer = LayerMask.NameToLayer("MG_3");
-        Transform[] allChildren = representation.GetComponentsInChildren<Transform>();
-        foreach (Transform child in allChildren)
-        {
-            child.gameObject.layer = LayerMask.NameToLayer("MG_3");
-        }
-        GetComponentInChildren<Animator>().SetBool("walk", true);
+        if (speed >= 25f)
+            GetComponentInChildren<Animator>().speed = 1f;
+        if (speed < 25f)
+            GetComponentInChildren<Animator>().speed = .5f;
+        GetComponentInChildren<Animator>().SetBool("idle", false);
     }
 
     public void SetWaypoints(float xE, float xW, float yN, float yS)
@@ -131,6 +131,7 @@ public class Agent : MonoBehaviour {
                 speed = Random.Range(5f, 12f);
                 break;
         }
+
         GetNextPoint();
         transform.position = _nextWayPointPosition;
         GetComponent<SphereCollider>().enabled = true;
@@ -153,7 +154,8 @@ public class Agent : MonoBehaviour {
                 Walk();
                 if (transform.position == _nextWayPointPosition)
                 {
-                    GetComponentInChildren<Animator>().SetBool("walk", false);
+                    GetComponentInChildren<Animator>().SetBool("idle", true);
+                    GetComponentInChildren<AgentSpriteHandler>().IdleMat();
                 }
                 break;
         }
@@ -222,9 +224,36 @@ public class Agent : MonoBehaviour {
     public void Capture()
     {
         _nextWayPointPosition = new Vector3(MG_2.Instance.TargetStage.transform.position.x + Utilities.RandomFloat(-15,15),
-            MG_2.Instance.TargetStage.transform.position.y + Utilities.RandomFloat(5, 30),0);
+            MG_2.Instance.TargetStage.transform.position.y + Utilities.RandomFloat(10, 30),0);
         _startingPos = transform.position;
         currentState = VoterState.Captured;
         GetComponent<SphereCollider>().enabled = false;
     }
+
+    void OnEnable()
+    {
+        if (GetComponentInChildren<Animator>() != null)
+        {
+            GetComponentInChildren<Animator>().SetBool("idle", false);
+            GetComponentInChildren<AgentSpriteHandler>().MoveMat();
+        }
+    }
 }
+
+/*
+     void CreateRepresentation()
+    {
+        GameObject representation = Instantiate(RepresentationSets[Utilities.RandomInt(0, RepresentationSets.Length - 1)], transform.position, Quaternion.identity);
+        representation.transform.parent = this.transform;
+        representation.transform.localScale = new Vector3(100, 100, 100);
+        representation.transform.localEulerAngles += new Vector3(0, 90, -90);
+        representation.transform.localPosition = new Vector3(0,0, 20f);
+        representation.layer = LayerMask.NameToLayer("MG_3");
+        Transform[] allChildren = representation.GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            child.gameObject.layer = LayerMask.NameToLayer("MG_3");
+        }
+        GetComponentInChildren<Animator>().SetBool("walk", true);
+    }
+     */

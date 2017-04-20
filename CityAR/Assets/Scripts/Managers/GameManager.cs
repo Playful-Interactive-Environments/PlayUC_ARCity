@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-[NetworkSettings(channel = 3, sendInterval = 0.1f)]
+
+[NetworkSettings(channel = 0, sendInterval = 0.2f)]
 public class GameManager : NetworkBehaviour
 {
 
@@ -42,11 +43,37 @@ public class GameManager : NetworkBehaviour
         EventDispatcher.StartListening(Vars.LocalClientDisconnect, LocalClientDisconnect);
         EventDispatcher.StartListening(Vars.ServerHandleDisconnect, ServerHandleDisconnect);
         InvokeRepeating("CheckWinState", 0, 1f);
+        InvokeRepeating("CheckPlayers", 0, 1f);
+
         UiM = UIManager.Instance;
         SaveData = SaveStateManager.Instance;
-
         LocalManager.Instance.GameRunning = true;
         CameraControl.Instance.Invoke("ShowAll",1f);
+    }
+    
+    void Update()
+    {
+        if (isServer && ClientsConnected >= Vars.Instance.MinPlayers)
+        {
+            CurrentTime += Time.deltaTime;
+        }
+        if (ClientsConnected < Vars.Instance.MinPlayers && UiM.CurrentState != UIManager.UiState.Network &&
+            UiM.CurrentState != UIManager.UiState.Role)
+        {
+            UIManager.Instance.WaitingPlayers.SetActive(true);
+            UIManager.Instance.WaitingText.text = "Waiting for players... " + ClientsConnected + "/" + Vars.Instance.MinPlayers;
+        }
+        if (ClientsConnected >= Vars.Instance.MinPlayers)
+        {
+            UIManager.Instance.WaitingPlayers.SetActive(false);
+        }
+        if (ClientsConnected < 0)
+        {
+            ClientsConnected = 0;
+        }
+        UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
+        lerpVal = Mathf.PingPong(Time.time, 1f) / 1f;
+        placementMat.color = new Color(lerpVal, lerpVal, lerpVal, .5f);
     }
 
     void LocalClientDisconnect()
@@ -73,26 +100,16 @@ public class GameManager : NetworkBehaviour
         UiM.HideDiscussionPanel();
         StopAllCoroutines();
     }
-
-    void Update()
+    void CheckPlayers()
     {
-        if (isServer && ClientsConnected >= Vars.Instance.MinPlayers)
+        ClientsConnected = 0;
+        foreach (SaveStateManager.PlayerStats playerdata in SaveStateManager.Instance.Players)
         {
-            CurrentTime += Time.deltaTime;
+            if (playerdata.Taken)
+            {
+                ClientsConnected += 1;
+            }
         }
-        if (ClientsConnected < Vars.Instance.MinPlayers && UiM.CurrentState != UIManager.UiState.Network &&
-            UiM.CurrentState != UIManager.UiState.Role)
-        {
-            UIManager.Instance.WaitingPlayers.SetActive(true);
-            UIManager.Instance.WaitingText.text = "Waiting for players... " + ClientsConnected + "/3";
-        }
-        if (ClientsConnected >= Vars.Instance.MinPlayers)
-        {
-            UIManager.Instance.WaitingPlayers.SetActive(false);
-        }
-        UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
-        lerpVal = Mathf.PingPong(Time.time, 1f) / 1f;
-        placementMat.color = new Color(lerpVal, lerpVal, lerpVal, .5f);
     }
 
     #region GameEnd

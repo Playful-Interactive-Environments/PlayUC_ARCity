@@ -7,7 +7,7 @@ using System.Threading;
 using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
-[NetworkSettings(channel = 1, sendInterval = 0.2f)]
+[NetworkSettings(channel = 1, sendInterval = 0.1f)]
 public class NetworkCommunicator : NetworkBehaviour
 {
     public int ConnectionId;
@@ -31,20 +31,17 @@ public class NetworkCommunicator : NetworkBehaviour
     void Update () {
         if (isLocalPlayer)
             LocalManager.Instance.NetworkCommunicator = this;
+
+        if (isServer)
+            ConnectionId = connectionToClient.connectionId;
     }
+
     public void SendEvent(string name)
     {
         if (isServer)
         {
             RpcTriggerEvent(name);
         }
-    }
-
-    [ClientRpc]
-    void RpcTriggerEvent(string name)
-    {
-        if(name == Vars.ServerHandleDisconnect)
-            GameManager.Instance.ResetDiscussion();
     }
 
     public void UpdateProjectVars(int fin, int soc, int env)
@@ -253,5 +250,11 @@ public class NetworkCommunicator : NetworkBehaviour
                     break;
             }
         }
+    }
+    [ClientRpc]
+    void RpcTriggerEvent(string name)
+    {
+        if (name == Vars.ServerHandleDisconnect)
+            GameManager.Instance.ResetDiscussion();
     }
 }

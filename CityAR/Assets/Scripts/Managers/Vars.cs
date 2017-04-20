@@ -16,12 +16,15 @@ public class Vars : AManager<Vars>
     public float GameEndTime;
     public int UtopiaRate;
     public int MayorLevel;
-    
+
     [Header("Mini Game Settings")]
     public float MiniGameTime = 30;
-    public float[] Mg1_SpawnTimes =  {3, 4, 5};
-    public int[] Mg1_DocsNeeded = {4, 3, 3};
-
+    public float[] Mg1_SpawnTimes;
+    public int[] Mg1_DocsNeeded;
+    public int[] Mg2_VotersNeeded;
+    public int[] Mg2_VotersSpawned;
+    public int[] Mg3_AgentNum;
+    public int[] Mg3_AreaNeeded;
     [Header("Player Roles")]
     public const string Player1 = "Finance";
     public const string Player2 = "Social";

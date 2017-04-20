@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using Vuforia;
@@ -23,7 +24,7 @@ public class MG_1 : AManager<MG_1>
     public int DocsNeeded = 5;
     private float spawnTime = 3.5f;
     private int timesPlayed;
-
+    private string currentDifficulty;
     //CSV Rows
     public class Row
 	{
@@ -81,7 +82,7 @@ public class MG_1 : AManager<MG_1>
 		TargetEnvironment.transform.localScale = new Vector3(1, 1, 1);
 		TargetEnvironment.transform.position = envDropBos;
 
-		Background.transform.localScale = new Vector3(Width, Height, 0);
+		Background.transform.localScale = new Vector3(60, 60, 0);
 		Background.transform.localPosition = new Vector3(0, 0, zLayer + 25);
 		StartingPos = new Vector3(0, -Height / 4, 0);
 	}
@@ -91,6 +92,10 @@ public class MG_1 : AManager<MG_1>
 
 	}
 
+    void GetWord()
+    {
+        
+    }
 	public void SpawnWord()
 	{
 		GameObject word = ObjectPool.Spawn(WordPrefab, manager.MG_1_GO.transform);
@@ -99,20 +104,97 @@ public class MG_1 : AManager<MG_1>
         switch (TextManager.Instance.CurrentLanguage)
 	    {
             case "english":
-                wordN = Utilities.RandomInt(0, rowList.Count - 1);
-                title = GetRow(wordN).english;
+	            switch (currentDifficulty)
+	            {
+                    case "easy":
+                        wordN = Utilities.RandomInt(0, wordsEasy.Count - 1);
+                        title = GetEasy(wordN).english;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetEasy(wordN).type);
+                        break;
+                    case "medium":
+                        wordN = Utilities.RandomInt(0, wordsMedium.Count - 1);
+                        title = GetMedium(wordN).english;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetMedium(wordN).type);
+
+                        break;
+                    case "hard":
+                        wordN = Utilities.RandomInt(0, wordsHard.Count - 1);
+                        title = GetHard(wordN).english;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetHard(wordN).type);
+
+                        break;
+	            }
 	            break;
             case "german":
-                title = GetRow(wordN).german;
+                switch (currentDifficulty)
+                {
+                    case "easy":
+                        wordN = Utilities.RandomInt(0, wordsEasy.Count - 1);
+                        title = GetEasy(wordN).german;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetEasy(wordN).type);
+
+                        break;
+                    case "medium":
+                        wordN = Utilities.RandomInt(0, wordsMedium.Count - 1);
+                        title = GetMedium(wordN).german;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetMedium(wordN).type);
+
+                        break;
+                    case "hard":
+                        wordN = Utilities.RandomInt(0, wordsHard.Count - 1);
+                        title = GetHard(wordN).german;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetHard(wordN).type);
+
+                        break;
+                }
                 break;
             case "french":
-                title = GetRow(wordN).french;
+                switch (currentDifficulty)
+                {
+                    case "easy":
+                        wordN = Utilities.RandomInt(0, wordsEasy.Count - 1);
+                        title = GetEasy(wordN).french;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetEasy(wordN).type);
+
+                        break;
+                    case "medium":
+                        wordN = Utilities.RandomInt(0, wordsMedium.Count - 1);
+                        title = GetMedium(wordN).french;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetMedium(wordN).type);
+
+                        break;
+                    case "hard":
+                        wordN = Utilities.RandomInt(0, wordsHard.Count - 1);
+                        title = GetHard(wordN).german;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetHard(wordN).type);
+
+                        break;
+                }
                 break;
             case "dutch":
-                title = GetRow(wordN).dutch;
+                switch (currentDifficulty)
+                {
+                    case "easy":
+                        wordN = Utilities.RandomInt(0, wordsEasy.Count - 1);
+                        title = GetEasy(wordN).dutch;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetEasy(wordN).type);
+
+                        break;
+                    case "medium":
+                        wordN = Utilities.RandomInt(0, wordsMedium.Count - 1);
+                        title = GetMedium(wordN).dutch;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetMedium(wordN).type);
+
+                        break;
+                    case "hard":
+                        wordN = Utilities.RandomInt(0, wordsHard.Count - 1);
+                        title = GetHard(wordN).dutch;
+                        word.GetComponent<Word>().SetVars(StartingPos, title, GetHard(wordN).type);
+
+                        break;
+                }
                 break;
         }
-        word.GetComponent<Word>().SetVars(StartingPos, title, GetRow(wordN).type);
 		WordList.Add(word);
 		word.transform.name = zLayer + " " + title;
 		word.transform.SetAsFirstSibling();
@@ -124,16 +206,19 @@ public class MG_1 : AManager<MG_1>
 	    {
 	        spawnTime = Vars.Instance.Mg1_SpawnTimes[0];
 	        DocsNeeded = Vars.Instance.Mg1_DocsNeeded[0];
+	        currentDifficulty = "easy";
 	    }
 	    if (timesPlayed == 2 || timesPlayed == 3)
 	    {
             spawnTime = Vars.Instance.Mg1_SpawnTimes[1];
             DocsNeeded = Vars.Instance.Mg1_DocsNeeded[1];
+            currentDifficulty = "medium";
         }
-        if (timesPlayed > 4)
+        if (timesPlayed > 3)
         {
             spawnTime = Vars.Instance.Mg1_SpawnTimes[2];
             DocsNeeded = Vars.Instance.Mg1_DocsNeeded[2];
+            currentDifficulty = "hard";
         }
         InvokeRepeating("SpawnWord", 0f, spawnTime);
 	}
@@ -142,6 +227,7 @@ public class MG_1 : AManager<MG_1>
     {
         timesPlayed += 1;
     }
+
 	public void ResetGame()
 	{
 		ObjectPool.RecycleAll(WordPrefab);
@@ -177,16 +263,15 @@ public class MG_1 : AManager<MG_1>
 		}
         foreach (Row row in rowList)
         {
-            if (row.difficulty == "1")
+            if (row.difficulty == "easy")
             {
                 wordsEasy.Add(row);
             }
-            if (row.difficulty == "2")
+            if (row.difficulty == "medium")
             {
                 wordsMedium.Add(row);
-
             }
-            if (row.difficulty == "3")
+            if (row.difficulty == "hard")
             {
                 wordsHard.Add(row);
             }

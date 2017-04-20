@@ -124,7 +124,7 @@ public class ProjectButton : MonoBehaviour {
 	{
 		GameObject gobj = Instantiate(DummyPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 		gobj.GetComponent<ProjectDummy>().Id_CSV = ProjectCSVId;
-		gobj.GetComponent<ProjectDummy>().RepresentationId = ProjectManager.Instance.GetRepresentation(ProjectCSVId); ;
+        gobj.GetComponent<ProjectDummy>().RepresentationId = ProjectManager.Instance.GetRepresentation(ProjectCSVId); ;
 		UIManager.Instance.ShowPlacementCanvas();
 	}
 

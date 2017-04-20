@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-[NetworkSettings(channel = 2, sendInterval = 0.1f)]
+[NetworkSettings(channel = 5, sendInterval = 0.1f)]
 public class ProjectManager : NetworkBehaviour
 {
 
@@ -14,7 +14,8 @@ public class ProjectManager : NetworkBehaviour
     public CSVProjects CSVProjects;
     public QuestManager Quests;
     public Project SelectedProject;
-    [SyncVar] public int SelectedProjectId;
+    [SyncVar]
+    public int SelectedProjectId;
     public List<Project> Projects;
     public List<GameObject> ProjectButtons = new List<GameObject>();
     public GameObject ProjectTemplate;

@@ -118,6 +118,10 @@ public class UIManager : AManager<UIManager>
     public Text RoleDescriptionText;
     public Text DebugText;
     public Text WaitingText;
+    public Text FinDebugTxt;
+    public Text SocDebugTxt;
+    public Text EnvDebugTxt;
+
     public Sprite DefaultSprite;
     public Sprite ApproveSprite;
     public Sprite DenySprite;
@@ -138,6 +142,7 @@ public class UIManager : AManager<UIManager>
     {
         ResetMenus();
         InvokeRepeating("RefreshPlayerVars", .2f, .5f);
+        GameEndNextRestartButton.gameObject.SetActive(false);
     }
 
     void Update()
@@ -536,7 +541,6 @@ public class UIManager : AManager<UIManager>
         GlobalEndState.gameObject.SetActive(false);
         PlayerAchievements.gameObject.SetActive(false);
         PlayerStats.gameObject.SetActive(false);
-        GameEndNextRestartButton.gameObject.SetActive(false);
         switch (state)
         {
             case "EndStateStart":

@@ -41,7 +41,6 @@ public class MGManager : AManager<MGManager>
     public GameObject MG_3_GO;
     public MG_3 MG_3_Mng;
 
-
     void Start()
     {
         /*Find Cameras & Canvas
@@ -69,11 +68,11 @@ public class MGManager : AManager<MGManager>
         Invoke("Init", .1f);
     }
 
-
     void Init()
     {
         ChangeState(MGState.None);
     }
+
     void Update()
     {
         TrackProgress();
@@ -120,6 +119,7 @@ public class MGManager : AManager<MGManager>
                     {
                         LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg2Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
+                        MG_2_Mng.IncreaseDifficulty();
                     }
                     break;
                 case MGState.Mg3:
@@ -135,6 +135,8 @@ public class MGManager : AManager<MGManager>
                     {
                         LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "Mg3Win", 0);
                         StartCoroutine(EndMG("win", _resetTime));
+                        MG_3_Mng.IncreaseDifficulty();
+
                     }
                     break;
             }
@@ -193,8 +195,10 @@ public class MGManager : AManager<MGManager>
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;
-                if(LocalManager.Instance.NetworkCommunicator != null)
+                if (NetworkingManager.Instance.isNetworkActive)
+                {
                     LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Game");
+                }
                 break;
         }
     }
@@ -228,7 +232,6 @@ public class MGManager : AManager<MGManager>
                 _currentTime = 0;
                 MG_3_Mng.ResetGame();
                 break;
-
         }
         if (state == "reset")
         {

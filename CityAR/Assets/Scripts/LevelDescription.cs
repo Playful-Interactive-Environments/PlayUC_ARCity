@@ -40,7 +40,8 @@ public class LevelDescription : MonoBehaviour {
 			}
 			if (BonusType == Vars.MainValue1 && !bonusUnlocked)
 			{
-                LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, ConvertString(BonusValue));
+                if(NetworkingManager.Instance.isNetworkActive)
+                    LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, ConvertString(BonusValue));
 			}
 			if (BonusType == "Project")
 			{

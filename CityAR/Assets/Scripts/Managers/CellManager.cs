@@ -2,8 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-[NetworkSettings(channel = 1, sendInterval = .1f)]
-
+[NetworkSettings(channel = 2, sendInterval = .5f)]
 public class CellManager : NetworkBehaviour
 {
     public static CellManager Instance = null;
@@ -32,8 +31,8 @@ public class CellManager : NetworkBehaviour
     }
 
     void Start()
-    {            InvokeRepeating("UpdateGridVariables", 1f, .5f);
-
+    {
+        InvokeRepeating("UpdateGridVariables", 1f, .5f);
         if (isServer)
         {
             Invoke("GenerateValues", .1f);
@@ -43,7 +42,6 @@ public class CellManager : NetworkBehaviour
 
     void Update()
     {
-
     }
 
     void GenerateValues()
@@ -151,7 +149,6 @@ public class CellManager : NetworkBehaviour
     }
 
     #region End Game Stats
-
     public int GetTotalAddedValue()
     {
         return (CurrentEnvironmentGlobal + CurrentFinanceGlobal + CurrentSocialGlobal) -
@@ -188,7 +185,5 @@ public class CellManager : NetworkBehaviour
         if (lowestVal == CurrentFinanceGlobal)
             UIManager.Instance.LeastImprovedFieldImage.sprite = UIManager.Instance.Player1_winSprite;
     }
-#endregion
-
+    #endregion
 }
-

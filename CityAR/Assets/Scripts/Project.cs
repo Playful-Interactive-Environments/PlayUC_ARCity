@@ -1,15 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-[NetworkSettings(channel = 4, sendInterval = 0.2f)]
+
+[NetworkSettings(channel = 3, sendInterval = 0.1f)]
 public class Project : NetworkBehaviour
 {
-    public GameObject[] BuildingSets;
+    public GameObject[] FinanceRepr;
+    public GameObject[] SocialRepr;
+    public GameObject[] EnvironmentRepr;
+
     public GameObject RepresentationParent;
+    public GameObject ProjectSign;
+
     public ParticleSystem ParticlesResult;
     public ParticleSystem ParticlesVoting;
     public ParticleSystem ParticlesStart;
+    public TextMeshPro ProjectSignText;
+    public TextMeshPro ProjectSignText2;
 
     //Vars set by project manager on server
     [SyncVar]
@@ -128,23 +137,41 @@ public class Project : NetworkBehaviour
     public void CreateRepresentation()
     {
         //create 3d representation
-        buildingRep = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
+        switch (ProjectOwner)
+        {
+            case Vars.Player1:
+                buildingRep = Instantiate(FinanceRepr[RepresentationId], transform.position, Quaternion.identity);
+                transparentRep = Instantiate(FinanceRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+            case Vars.Player2:
+                buildingRep = Instantiate(SocialRepr[RepresentationId], transform.position, Quaternion.identity);
+                transparentRep = Instantiate(SocialRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+            case Vars.Player3:
+                buildingRep = Instantiate(EnvironmentRepr[RepresentationId], transform.position, Quaternion.identity);
+                transparentRep = Instantiate(EnvironmentRepr[RepresentationId], transform.position, Quaternion.identity);
+                break;
+        }
         buildingRep.transform.parent = RepresentationParent.transform;
         buildingRep.transform.localScale = new Vector3(1f, 1f, 1f);
         buildingRep.transform.localEulerAngles = reprRot;
-        transparentRep = Instantiate(BuildingSets[RepresentationId], transform.position, Quaternion.identity);
         transparentRep.transform.parent = RepresentationParent.transform;
         transparentRep.transform.localScale = new Vector3(1f, 1f, 1f);
         transparentRep.transform.localEulerAngles = reprRot;
         placementMat = GameManager.Instance.placementMat;
+        ProjectSignText.text = Title;
+        ProjectSignText2.text = Title;
+        ProjectSign.transform.position = new Vector3(transform.position.x + 10, transform.position.y, transform.position.z + 10);
+        ProjectSign.transform.localEulerAngles = new Vector3(reprRot.x, reprRot.y + 100f, reprRot.z);
+
         foreach (Renderer child in transparentRep.GetComponentsInChildren<Renderer>())
         {
             child.material = placementMat;
         }
         RepresentationParent.SetActive(true);
-        if(!VoteFinished)
+        if (!VoteFinished)
             TransparentOn();
-        if(VoteFinished)
+        if (VoteFinished)
             TransparentOff();
     }
 

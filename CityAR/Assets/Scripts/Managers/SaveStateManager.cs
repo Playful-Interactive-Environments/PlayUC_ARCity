@@ -6,7 +6,8 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-[NetworkSettings(channel = 0, sendInterval = 0.1f)]
+
+[NetworkSettings(channel = 4, sendInterval = 0.1f)]
 public class SaveStateManager : NetworkBehaviour
 {
     public static SaveStateManager Instance = null;
@@ -64,6 +65,16 @@ public class SaveStateManager : NetworkBehaviour
         {
             RecordData();
         }
+        UiM.FinDebugTxt.text = Players[0].Player + " connId: " + Players[0].ConnectionId + " taken: " + Players[0].Taken +
+              " quests: " + Players[0].Quests + " budget: " + Players[0].Budget + " influence: " +
+              Players[0].Influence;
+        UiM.SocDebugTxt.text = Players[1].Player + " connId: " + Players[1].ConnectionId + " taken: " + Players[1].Taken +
+               " quests: " + Players[1].Quests + " budget: " + Players[1].Budget + " influence: " +
+               Players[0].Influence;
+        UiM.EnvDebugTxt.text = Players[2].Player + " connId: " + Players[2].ConnectionId + " taken: " + Players[2].Taken +
+                               " quests: " + Players[2].Quests + " budget: " + Players[2].Budget + " influence: " +
+                               Players[2].Influence;
+        UiM.DebugText.text = "Connected:" + GameManager.Instance.ClientsConnected;
     }
 
     #region Event Logger
@@ -249,7 +260,6 @@ public class SaveStateManager : NetworkBehaviour
         PlayerProjects.Remove(dataOld);
         PlayerProjects.Add(dataNew);
     }
-
 
     public void SetTaken(int connectionId, bool taken)
     {
