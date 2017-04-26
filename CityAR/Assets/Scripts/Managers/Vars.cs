@@ -1,6 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
 
 public class Vars : AManager<Vars>
 {
@@ -49,4 +53,97 @@ public class Vars : AManager<Vars>
     [Header("Event Messages")]
     public const string LocalClientDisconnect = "LocalClientDisconnect";
     public const string ServerHandleDisconnect = "ServerHandleDisconnect";
+
+
+
+    #region CSV
+    public class Row
+    {
+        public string startingbudget;
+        public string minplayers;
+        public string gameendtime;
+        public string utopiarate;
+        public string mayorlevel;
+        public string minigametime;
+    }
+    public TextAsset VarsAsset;
+    private string VarsText;
+    public List<Row> rowList = new List<Row>();
+
+    bool isLoaded = false;
+
+    void Start()
+    {
+        LoadExternalFile();
+        Load(VarsText);
+        LoadVariables();
+    }
+
+    void LoadExternalFile()
+    {
+        try
+        {
+            string _varsPath = Path.Combine(Application.persistentDataPath, "GlobalVariables.csv");
+            VarsText = File.ReadAllText(_varsPath, Encoding.UTF8);
+            Debug.Log("File found.");
+            NetworkingManager.Instance.DebugText.text = "found";
+        }
+        catch (Exception c)
+        {
+            Debug.Log("No file found. Loading defaults.");
+            VarsText = VarsAsset.text;
+        }
+    }
+
+    public void Load(string text)
+    {
+        rowList.Clear();
+        string[][] grid = CsvParser2.Parse(text);
+        for (int i = 0; i < grid.Length; i++)
+        {
+            Row row = new Row();
+            row.startingbudget = grid[i][0];
+            row.minplayers = grid[i][1];
+            row.gameendtime = grid[i][2];
+            row.utopiarate = grid[i][3];
+            row.mayorlevel = grid[i][4];
+            row.minigametime = grid[i][5];
+            rowList.Add(row);
+        }
+        isLoaded = true;
+    }
+
+    private void LoadVariables()
+    {
+        int i = 1; //numbers are on second line
+        StartingBudget = ConvertToInt(rowList[i].startingbudget);
+        MinPlayers = ConvertToInt(rowList[i].minplayers);
+        GameEndTime = ConvertToFloat(rowList[i].gameendtime);
+        UtopiaRate = ConvertToInt(rowList[i].utopiarate);
+        MayorLevel = ConvertToInt(rowList[i].mayorlevel);
+        MiniGameTime = ConvertToFloat(rowList[i].minigametime);
+    }
+    public List<Row> GetRowList()
+    {
+        return rowList;
+    }
+
+    public bool IsLoaded()
+    {
+        return isLoaded;
+    }
+
+    private int ConvertToInt(string input)
+    {
+        int parsedInt = 0;
+        int.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
+        return parsedInt;
+    }
+    private float ConvertToFloat(string input)
+    {
+        float parsedInt = 0;
+        float.TryParse(input, NumberStyles.AllowLeadingSign, null, out parsedInt);
+        return parsedInt;
+    }
+    #endregion
 }

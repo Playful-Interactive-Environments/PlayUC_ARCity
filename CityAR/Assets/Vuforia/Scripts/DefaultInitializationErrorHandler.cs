@@ -81,7 +81,7 @@ namespace Vuforia
                     break;
                 case VuforiaUnity.InitError.INIT_LICENSE_ERROR_MISSING_KEY:
                     mErrorText =
-                        "Vuforia App key is missing. Please get a valid key, " + 
+                        "Vuforia App startingbudget is missing. Please get a valid startingbudget, " + 
 					    "by logging into your account at developer.vuforia.com " + 
 					    "and creating a new project";
                     break;
@@ -100,12 +100,12 @@ namespace Vuforia
                     break;
                 case VuforiaUnity.InitError.INIT_LICENSE_ERROR_CANCELED_KEY:
                     mErrorText =
-                        "This App license key has been cancelled " + 
-                        "and may no longer be used. Please get a new license key.";
+                        "This App license startingbudget has been cancelled " + 
+                        "and may no longer be used. Please get a new license startingbudget.";
                     break;
                 case VuforiaUnity.InitError.INIT_LICENSE_ERROR_PRODUCT_TYPE_MISMATCH:
                     mErrorText =
-                        "Vuforia App key is not valid for this product. Please get a valid key, "+
+                        "Vuforia App startingbudget is not valid for this product. Please get a valid startingbudget, "+
                         "by logging into your account at developer.vuforia.com and choosing the "+
                         "right product english during project creation";
                     break;

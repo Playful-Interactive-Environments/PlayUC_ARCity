@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.Remoting.Messaging;
+using System.Text;
 using UnityEngine;
 using Vuforia;
+using Debug = UnityEngine.Debug;
 
 public class MG_1 : AManager<MG_1>
 {
@@ -37,7 +41,9 @@ public class MG_1 : AManager<MG_1>
     }
 
     public TextAsset WordFile;
-	public List<Row> rowList = new List<Row>();
+    private string SortingGameText;
+
+    public List<Row> rowList = new List<Row>();
     private List<Row> wordsEasy = new List<Row>();
     private List<Row> wordsMedium = new List<Row>();
     private List<Row> wordsHard = new List<Row>();
@@ -49,11 +55,26 @@ public class MG_1 : AManager<MG_1>
 		ObjectPool.CreatePool(WordPrefab, 5);
 		//ObjectPool.CreatePool(DropPrefab, 3);
 		manager = MGManager.Instance;
-		Load(WordFile);
+	    LoadExternalFile();
+        Load(SortingGameText);
         Invoke("SetSize", 0.1f);
 	}
-
-	void SetSize()
+    void LoadExternalFile()
+    {
+        try
+        {
+            string _sortingGamePath = Path.Combine(Application.persistentDataPath, "SortingGame.csv");
+            SortingGameText = File.ReadAllText(_sortingGamePath, Encoding.UTF8);
+            Debug.Log("File found.");
+            NetworkingManager.Instance.DebugText.text = "found";
+        }
+        catch (Exception c)
+        {
+            Debug.Log("No file found. Loading defaults.");
+            SortingGameText = WordFile.text;
+        }
+    }
+    void SetSize()
 	{
 		Height = manager.Height;
 		Width = manager.Width;
@@ -246,10 +267,10 @@ public class MG_1 : AManager<MG_1>
 	{
 		return isLoaded;
 	}
-	public void Load(TextAsset asset)
+	public void Load(string text)
 	{
 		rowList.Clear();
-		string[][] grid = CsvParser2.Parse(asset.text);
+		string[][] grid = CsvParser2.Parse(text);
 		for (int i = 1; i < grid.Length; i++)
 		{
 			Row row = new Row();

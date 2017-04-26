@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 public class CSVLeveling : AManager<CSVLeveling>
 {
-
-
     public class Row
     {
         public string rank;
@@ -16,16 +17,32 @@ public class CSVLeveling : AManager<CSVLeveling>
         public string financeplayer;
 
     }
-    public TextAsset File;
+    public TextAsset LevelFile;
+    private string LevelingText;
     public List<Row> rowList = new List<Row>();
 
     bool isLoaded = false;
 
     void Start()
     {
-        Load(File);
+        LoadExternalFile();
+        Load(LevelingText);
     }
-
+    void LoadExternalFile()
+    {
+        try
+        {
+            string _levelPath = Path.Combine(Application.persistentDataPath, "LevelingSystem.csv");
+            LevelingText = File.ReadAllText(_levelPath, Encoding.UTF8);
+            Debug.Log("File found.");
+            NetworkingManager.Instance.DebugText.text = "found";
+        }
+        catch (Exception c)
+        {
+            Debug.Log("No file found. Loading defaults.");
+            LevelingText = LevelFile.text;
+        }
+    }
 
     void Update()
     {
@@ -42,10 +59,10 @@ public class CSVLeveling : AManager<CSVLeveling>
     {
         return isLoaded;
     }
-    public void Load(TextAsset csv)
+    public void Load(string text)
     {
         rowList.Clear();
-        string[][] grid = CsvParser2.Parse(csv.text);
+        string[][] grid = CsvParser2.Parse(text);
         for (int i = 0; i < grid.Length; i++)
         {
             Row row = new Row();

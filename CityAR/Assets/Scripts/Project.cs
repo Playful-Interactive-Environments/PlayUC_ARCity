@@ -87,9 +87,9 @@ public class Project : NetworkBehaviour
 
     void Update()
     {
-        if (isServer && !VoteFinished && Choice1 + Choice2 >= 3)
+        if (isServer && !VoteFinished && Choice1 + Choice2 >= Vars.Instance.MinPlayers)
         {
-            if (Choice1 > Choice2)
+            if (Choice1 >= Choice2)
             {
                 TransferValues();
                 LocalManager.Instance.NetworkCommunicator.Vote(Vars.ResultChoice1, ProjectOwner, ID_Spawn);

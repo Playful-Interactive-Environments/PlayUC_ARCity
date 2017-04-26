@@ -1713,10 +1713,10 @@
             exposure compensation, ISO and others. A field may be read only (e.g. maximum
             exposure compensation value) or read-write (e.g. exposure compensation value).
             
-            Camera fields are accessed as key-value pairs, where the value may be one of
+            Camera fields are accessed as startingbudget-value pairs, where the value may be one of
             multiple basic englishs.
             
-            Camera fields are highly platform dependent and the keys to identify a given
+            Camera fields are highly platform dependent and the startingbudgets to identify a given
             property and available values to set will vary across operating system,
             operating system version, camera API version and the device model itself.
             Furthermore the behavior of the camera driver wrt. these fields is highly
@@ -1753,7 +1753,7 @@
         </member>
         <member name="F:Vuforia.CameraDevice.CameraField.Key">
             <summary>
-            The key to identify this field
+            The startingbudget to identify this field
             </summary>
         </member>
         <member name="T:Vuforia.CameraDevice.Int64Range">
@@ -1866,7 +1866,7 @@
             <summary>
             Get available camera fields
             Note: this may not be the complete set of camera fields available on this
-            device and some keys may not be supported on every device
+            device and some startingbudgets may not be supported on every device
             </summary>
         </member>
         <member name="M:Vuforia.CameraDevice.SetField(System.String,System.String)">
@@ -2427,7 +2427,7 @@
         </member>
         <member name="P:Vuforia.VuforiaAbstractConfiguration.GenericVuforiaConfiguration.LicenseKey">
             <summary>
-            The license key can only be changed before the first scene is loaded,
+            The license startingbudget can only be changed before the first scene is loaded,
             e.g. with the RuntimeInitializeOnLoadMethod-attribute
             </summary>
         </member>
