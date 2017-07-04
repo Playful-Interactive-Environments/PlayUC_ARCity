@@ -402,16 +402,25 @@ public class UIManager : AManager<UIManager>
 
     public void PlaceProject()
     {
-        if (CameraControl.Instance.LastTouchedCell != null && ProjectManager.Instance.CurrentDummy.CanPlace)
+
+        if (CameraControl.Instance.LastTouchedCell != null && ProjectManager.Instance.CurrentDummy.CanPlace &&
+            SaveStateManager.Instance.GetBudget(LocalManager.Instance.RoleType) >=
+            Mathf.Abs(ProjectManager.Instance.GetBudgetInt(ProjectManager.Instance.CurrentDummy.Id_CSV)))
         {
+            PlacementText.text = "";
+
             LocalManager.Instance.NetworkCommunicator.ActivateProject
-                ("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId,
+            ("CreateProject", CameraControl.Instance.LastTouchedCell.GetComponent<CellLogic>().CellId,
                 ProjectManager.Instance.CurrentDummy.CurrentPos,
                 ProjectManager.Instance.CurrentDummy.CurrentRot,
                 LocalManager.Instance.RoleType,
                 ProjectManager.Instance.CurrentDummy.Id_CSV);
             CancelPlacement();
             LocalManager.Instance.NetworkCommunicator.SetGlobalState(Vars.DiscussionStart);
+        }
+        else
+        {
+            PlacementText.text = "Not enough funding!";
         }
     }
 

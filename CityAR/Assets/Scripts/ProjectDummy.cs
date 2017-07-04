@@ -40,10 +40,6 @@ public class ProjectDummy : MonoBehaviour {
 		CurrentRot = new Vector3(0, yRot, 0);
 		representation.transform.localEulerAngles = CurrentRot;
 		CurrentPos = transform.position;
-		if (CanPlace)
-			UIManager.Instance.PlacementText.text = "";
-		if (!CanPlace)
-			UIManager.Instance.PlacementText.text = "Can't place here!";
 	}
 
 	public void CreateRepresentation()
@@ -76,18 +72,22 @@ public class ProjectDummy : MonoBehaviour {
 			child.material = blockedMat;
 		}
 		CanPlace = false;
-	}
+        UIManager.Instance.PlacementText.text = "Can't place here!";
 
-	public void Free()
+    }
+
+    public void Free()
 	{
 		foreach (Renderer child in allRenderers)
 		{
 			child.material = placementMat;
 		}
 		CanPlace = true;
-	}
+        UIManager.Instance.PlacementText.text = "";
 
-	void OnTriggerEnter(Collider other)
+    }
+
+    void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.transform.tag.Equals("Project") || other.gameObject.transform.tag.Equals("Quest"))
 			Blocked();

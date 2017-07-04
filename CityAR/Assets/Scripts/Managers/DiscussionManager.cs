@@ -181,15 +181,18 @@ public class DiscussionManager : AManager<DiscussionManager>
 
     public void VoteApprove()
     {
-        ProjectManager.Instance.SelectedProject.Approved = true;
-        LocalManager.Instance.NetworkCommunicator.UpdateProjectVars((int)FinanceSlider.value, (int)SocialSlider.value, (int)EnvironmentSlider.value);
-        LocalManager.Instance.NetworkCommunicator.Vote(Vars.Choice1, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
-        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, -ExtraCost);
-        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, ExtraInfluence);
-        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MoneySpent", ExtraCost);
-        //UIManager.Instance.GameDebugText.text += "\n" + LocalManager.Instance.RoleType + " extra cost " + ExtraCost;
-        UIManager.Instance.CreateText(Color.red, ExtraCost.ToString(), 50, .5f, 2f, new Vector2(UIManager.Instance.BudgetTextPos.x, UIManager.Instance.BudgetTextPos.y), new Vector2(UIManager.Instance.BudgetTextPos.x, 0));
-        ShowVotes();
+        if (SaveStateManager.Instance.GetBudget(LocalManager.Instance.RoleType) >= Mathf.Abs(ExtraCost))
+        {
+            ProjectManager.Instance.SelectedProject.Approved = true;
+            LocalManager.Instance.NetworkCommunicator.UpdateProjectVars((int)FinanceSlider.value, (int)SocialSlider.value, (int)EnvironmentSlider.value);
+            LocalManager.Instance.NetworkCommunicator.Vote(Vars.Choice1, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, -ExtraCost);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, ExtraInfluence);
+            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MoneySpent", ExtraCost);
+            //UIManager.Instance.GameDebugText.text += "\n" + LocalManager.Instance.RoleType + " extra cost " + ExtraCost;
+            UIManager.Instance.CreateText(Color.red, ExtraCost.ToString(), 50, .5f, 2f, new Vector2(UIManager.Instance.BudgetTextPos.x, UIManager.Instance.BudgetTextPos.y), new Vector2(UIManager.Instance.BudgetTextPos.x, 0));
+            ShowVotes();
+        }
     }
 
     public void VoteDeny()
