@@ -9,17 +9,18 @@ public class GameManager : NetworkBehaviour
 
     //states: "Game", "MiniGame", "NewStart", "DiscussionStart", "DiscussionEnd", "Occupied"} ;
     [SyncVar]
-    public string EnvironmentState;
-    [SyncVar]
-    public string FinanceState;
-    [SyncVar]
-    public string SocialState;
-    [SyncVar]
     public float CurrentTime;
     [SyncVar]
     public int ClientsConnected;
+    public string GlobalState;
+    [SyncVar]
+    public int SocialPlayers;
+    [SyncVar]
+    public int FinancePlayers;
+    [SyncVar]
+    public int EnvironmentPlayers;
 
-    private string MyState;
+    public string MyState;
     private int currentEvent;
     public float eventTime;
     public static GameManager Instance;
@@ -28,6 +29,8 @@ public class GameManager : NetworkBehaviour
     //animate placement mat
     private float lerpVal;
     public Material placementMat;
+
+
 
     void Awake()
     {
@@ -43,34 +46,28 @@ public class GameManager : NetworkBehaviour
         EventDispatcher.StartListening(Vars.LocalClientDisconnect, LocalClientDisconnect);
         EventDispatcher.StartListening(Vars.ServerHandleDisconnect, ServerHandleDisconnect);
         InvokeRepeating("CheckWinState", 0, 1f);
-        InvokeRepeating("CheckPlayers", 0, 1f);
-
         UiM = UIManager.Instance;
         SaveData = SaveStateManager.Instance;
         LocalManager.Instance.GameRunning = true;
-        CameraControl.Instance.Invoke("ShowAll",1f);
+        CameraControl.Instance.Invoke("ShowAll", 1f);
     }
-    
+
     void Update()
     {
         if (isServer && ClientsConnected >= Vars.Instance.MinPlayers)
         {
             CurrentTime += Time.deltaTime;
         }
-        if (ClientsConnected < Vars.Instance.MinPlayers && UiM.CurrentState != UIManager.UiState.Network &&
-            UiM.CurrentState != UIManager.UiState.Role)
-        {
-            UIManager.Instance.WaitingPlayers.SetActive(true);
-            UIManager.Instance.WaitingText.text = "Waiting for players... " + ClientsConnected + "/" + Vars.Instance.MinPlayers;
-        }
-        if (ClientsConnected >= Vars.Instance.MinPlayers)
-        {
-            UIManager.Instance.WaitingPlayers.SetActive(false);
-        }
         if (ClientsConnected < 0)
         {
             ClientsConnected = 0;
         }
+        UIManager.Instance.GameDebugText.text = "\n" + GlobalState;
+
+        UiM.FinancePlayers.text = "" + FinancePlayers;
+        UiM.SocialPlayers.text = "" + SocialPlayers;
+        UiM.EnvironmentPlayers.text = "" + EnvironmentPlayers;
+
         UiM.TimeText.text = Utilities.DisplayTime(CurrentTime);
         lerpVal = Mathf.PingPong(Time.time, 1f) / 1f;
         placementMat.color = new Color(lerpVal, lerpVal, lerpVal, .5f);
@@ -80,7 +77,7 @@ public class GameManager : NetworkBehaviour
     {
         if (MyState != "GameEnd")
         {
-            ResetDiscussion();
+            GlobalState = Vars.DiscussionEnd;
         }
     }
 
@@ -88,26 +85,9 @@ public class GameManager : NetworkBehaviour
     {
         if (MyState != "GameEnd")
         {
-            ResetDiscussion();
             if (isServer)
-                LocalManager.Instance.NetworkCommunicator.SendEvent(Vars.ServerHandleDisconnect);
-        }
-    }
-
-    public void ResetDiscussion()
-    {
-        UiM.HideProjectDisplay();
-        UiM.HideDiscussionPanel();
-        StopAllCoroutines();
-    }
-    void CheckPlayers()
-    {
-        ClientsConnected = 0;
-        foreach (SaveStateManager.PlayerStats playerdata in SaveStateManager.Instance.Players)
-        {
-            if (playerdata.Taken)
             {
-                ClientsConnected += 1;
+                LocalManager.Instance.NetworkCommunicator.SetGlobalState(Vars.DiscussionEnd);
             }
         }
     }
@@ -132,6 +112,7 @@ public class GameManager : NetworkBehaviour
             CalculateAchievements();
         }
         //MAYOR END
+        /*
         foreach (SaveStateManager.PlayerStats player in SaveData.Players)
         {
             if (player.Rank == Vars.Instance.MayorLevel)
@@ -159,14 +140,14 @@ public class GameManager : NetworkBehaviour
                     }
                 }
                 CalculateAchievements();
-            }
-        }
+            
+        }}*/
     }
 
     void CalculateAchievements()
     {
         //End Game
-        LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "GameEnd");
+        LocalManager.Instance.NetworkCommunicator.SetPlayerState("GameEnd");
         EventDispatcher.TriggerEvent("GameEnd");
         CancelInvoke("CheckWinState");
         StopAllCoroutines();
@@ -194,12 +175,6 @@ public class GameManager : NetworkBehaviour
     #region Discussion State
     void CheckMyState()
     {
-        if (LocalManager.Instance.RoleType == Vars.Player1)
-            MyState = FinanceState;
-        if (LocalManager.Instance.RoleType == Vars.Player2)
-            MyState = SocialState;
-        if (LocalManager.Instance.RoleType == Vars.Player3)
-            MyState = EnvironmentState;
         if (MyState == "GameEnd")
             StopAllCoroutines();
     }
@@ -207,18 +182,11 @@ public class GameManager : NetworkBehaviour
     IEnumerator StartDiscussion()
     {
         //if user is occupied wait until they finish
-        CheckMyState();
-        while (MyState == "MiniGame")
+        while (MyState != "Game")
         {
             CheckMyState();
-            yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.1f);
         }
-        while (MyState == "Quest")
-        {
-            CheckMyState();
-            yield return new WaitForSeconds(.5f);
-        }
-        EventDispatcher.TriggerEvent("StartDiscussion");
         yield return new WaitForSeconds(.1f);
         UIManager.Instance.Change(UIManager.UiState.Game);
         UiM.ShowProjectDisplay();
@@ -228,41 +196,34 @@ public class GameManager : NetworkBehaviour
 
     IEnumerator EndDiscussion()
     {
-        yield return new WaitForSeconds(3f);
+        StopCoroutine(StartDiscussion());
+        while (MyState != "Game")
+        {
+            CheckMyState();
+            yield return new WaitForSeconds(.1f);
+        }
+        UiM.GameUI();
+        yield return new WaitForSeconds(1f);
         UiM.HideProjectDisplay();
         UiM.HideDiscussionPanel();
-        yield return new WaitForSeconds(1f);
-        UiM.GameUI();
     }
 
-    public void SetState(string player, string state)
+    public void SetGlobalState(string state)
     {
-        if (isServer)
+        GlobalState = state;
+        TriggerGlobal(state);
+    }
+
+    public void TriggerGlobal(string global)
+    {
+        switch (global)
         {
-            switch (player)
-            {
-                case Vars.Player1:
-                    FinanceState = state;
-                    break;
-                case Vars.Player2:
-                    SocialState = state;
-                    break;
-                case Vars.Player3:
-                    EnvironmentState = state;
-                    break;
-            }
-        }
-        if (isClient)
-        {
-            switch (state)
-            {
-                case "DiscussionStart":
-                    StartCoroutine(StartDiscussion());
-                    break;
-                case "DiscussionEnd":
-                    StartCoroutine(EndDiscussion());
-                    break;
-            }
+            case Vars.DiscussionStart:
+                StartCoroutine(StartDiscussion());
+                break;
+            case Vars.DiscussionEnd:
+                StartCoroutine(EndDiscussion());
+                break;
         }
     }
     #endregion

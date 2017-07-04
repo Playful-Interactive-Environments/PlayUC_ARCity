@@ -21,6 +21,7 @@ public class ProjectInfo : MonoBehaviour
 
     void Start()
     {
+
     }
 
     void Update()

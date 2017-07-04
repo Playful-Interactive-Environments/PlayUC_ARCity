@@ -171,7 +171,7 @@ public class MGManager : AManager<MGManager>
                 MG_1_GO.SetActive(true);
                 MG_1_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg1_Description;
-                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState("MiniGame");
                 break;
             case MGState.Mg2:
                 MGCanvas.SetActive(true);
@@ -179,7 +179,7 @@ public class MGManager : AManager<MGManager>
                 MG_2_Mng.StartCoroutine("InitGame");
                 MG_2_GO.SetActive(true);
                 GameDescription.text = TextManager.Instance.Mg2_Description;
-                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState("MiniGame");
                 break;
             case MGState.Mg3:
                 MGCanvas.SetActive(true);
@@ -187,7 +187,7 @@ public class MGManager : AManager<MGManager>
                 MG_3_GO.SetActive(true);
                 MG_3_Mng.InitGame();
                 GameDescription.text = TextManager.Instance.Mg3_Description;
-                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "MiniGame");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState("MiniGame");
                 break;
             case MGState.None:
                 Started = false;
@@ -197,7 +197,7 @@ public class MGManager : AManager<MGManager>
                 CameraControl.Instance.CurrentCam = MainCam;
                 if (NetworkingManager.Instance.isNetworkActive)
                 {
-                    LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Game");
+                    LocalManager.Instance.NetworkCommunicator.SetPlayerState("Game");
                 }
                 break;
         }

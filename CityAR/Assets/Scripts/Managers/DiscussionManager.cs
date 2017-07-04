@@ -19,9 +19,12 @@ public class DiscussionManager : AManager<DiscussionManager>
     public TextMeshProUGUI InfluenceText;
     public TextMeshProUGUI CostText;
 
-    public GameObject SocialVote;
-    public GameObject EnvironmentVote;
-    public GameObject FinanceVote;
+    public GameObject Votes;
+    public GameObject YesVotesIcon;
+    public GameObject NoVotesIcon;
+    public TextMeshProUGUI VotersText;
+    public TextMeshProUGUI YesVotesText;
+    public TextMeshProUGUI NoVotesText;
 
     public Button ApproveButton;
     public Button DenyButton;
@@ -34,10 +37,9 @@ public class DiscussionManager : AManager<DiscussionManager>
     public int Budget;
     public int Influence;
 
-    private int currentExtraInfluence;
+    private int ExtraInfluence;
     public int TotalInfluence;
-    private int currentExtraCost;
-    public int ExtraCost;
+    private int ExtraCost;
     private int sharedCost;
 
     void Start()
@@ -52,12 +54,24 @@ public class DiscussionManager : AManager<DiscussionManager>
         if (ProjectManager.Instance.SelectedProject != null)
             CancelVote();
     }
+
     void LocalClientDisconnect()
     {
         if (ProjectManager.Instance.SelectedProject != null)
             Reset();
     }
-    public void ChangeVoterState(string voter, string state)
+
+    public void ChangeInfoScreen(string text)
+    {
+        UIManager.Instance.ShowInfoScreen();
+        UIManager.Instance.InfoText.text = text;
+        if (text == "Project Approved!")
+            UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
+        if (text == "Project Rejected!")
+            UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
+    }
+
+    public void ChangeInfoScreen(string voter, string state)
     {
         UIManager.Instance.ShowInfoScreen();
         UIManager.Instance.InfoText.text = "<color=red><b>" + voter + " </color></b>" + TextManager.Instance.InfoTextVoted;
@@ -66,36 +80,30 @@ public class DiscussionManager : AManager<DiscussionManager>
             case Vars.Player1:
                 if (state == Vars.Approved)
                 {
-                    FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                 }
                 if (state == Vars.Denied)
                 {
-                    FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                 }
                 break;
             case Vars.Player2:
                 if (state == Vars.Approved)
                 {
-                    SocialVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                 }
                 if (state == Vars.Denied)
                 {
-                    SocialVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                 }
                 break;
             case Vars.Player3:
                 if (state == Vars.Approved)
                 {
-                    EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ApproveSprite;
                 }
                 if (state == Vars.Denied)
                 {
-                    EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                     UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.DenySprite;
                 }
                 break;
@@ -108,7 +116,6 @@ public class DiscussionManager : AManager<DiscussionManager>
             UpdateVars();
     }
 
-
     public void SetupDiscussion(int id)
     {
         ProjectId = id;
@@ -119,10 +126,13 @@ public class DiscussionManager : AManager<DiscussionManager>
         Influence = ProjectManager.Instance.SelectedProject.Influence;
         Budget = ProjectManager.Instance.SelectedProject.Budget;
         sharedCost = 0;
-        currentExtraCost = 0;
+        ExtraCost = 0;
         UIManager.Instance.InfoText.text = TextManager.Instance.InfoTextProposed + ": \n<color=red><b>" + Proposer + "</color></b>";
         UIManager.Instance.InfoIcon.GetComponent<Image>().sprite = UIManager.Instance.ExclamationSprite;
         BlockInteraction.SetActive(true);
+        ApproveButton.interactable = true;
+        DenyButton.interactable = true;
+        //Votes.SetActive(false);
     }
 
     void UpdateVars()
@@ -132,40 +142,54 @@ public class DiscussionManager : AManager<DiscussionManager>
         int envVal = Mathf.RoundToInt(Mathf.Abs(EnvironmentSlider.value));
 
         if (FinanceSlider.value >= 0)
-            FinanceText.text = "" + Finance + " + <color=green><b>" + finVal + "</color></b>";
+            FinanceText.text = "+ <color=green><b>" + finVal + "</color></b>";
         if (FinanceSlider.value < 0)
-            FinanceText.text = "" + Finance + " - <color=red><b>" + finVal + "</color></b>";
+            FinanceText.text = "- <color=red><b>" + finVal + "</color></b>";
 
         if (SocialSlider.value >= 0)
-            SocialText.text = "" + Social + " + <color=green><b>" + socVal + "</color></b>";
+            SocialText.text = "+ <color=green><b>" + socVal + "</color></b>";
         if (SocialSlider.value < 0)
-            SocialText.text = "" + Social + " - <color=red><b>" + socVal + "</color></b>";
+            SocialText.text = "- <color=red><b>" + socVal + "</color></b>";
 
         if (EnvironmentSlider.value >= 0)
-            EnvironmentText.text = "" + Environment + " + <color=green><b>" + envVal + "</color></b>";
+            EnvironmentText.text = "+ <color=green><b>" + envVal + "</color></b>";
         if (EnvironmentSlider.value < 0)
-            EnvironmentText.text = "" + Environment + " - <color=red><b>" + envVal + "</color></b>";
+            EnvironmentText.text = "- <color=red><b>" + envVal + "</color></b>";
 
         //base influence + adjustments
-        currentExtraInfluence = (finVal + socVal + envVal) * 5;
-        InfluenceText.text = "<color=green><b>+" + (Influence + currentExtraInfluence) + "</color></b>";
+        ExtraInfluence = (finVal + socVal + envVal) * 5; //multiplier 5
+        InfluenceText.text = "<color=green><b>+" + ExtraInfluence + "</color></b>";
 
-        //base cost/number of positive votes + extra cost from adjustments
+        //basic cost + extra financing
         if (ProjectManager.Instance.SelectedProject != null)
-            sharedCost =
-                Mathf.Abs(Mathf.RoundToInt((float)ProjectManager.Instance.SelectedProject.Budget / (ProjectManager.Instance.SelectedProject.Choice1 + 1)));
-        currentExtraCost = (finVal + socVal + envVal) * 100;
-        CostText.text = "<color=red>-" + (sharedCost + currentExtraCost) + "</color></b>";
+        {
+            ExtraCost = (finVal + socVal + envVal) * 100; //multiplier 100
+            CostText.text = "<color=red>-" + ExtraCost + "</color></b>";
+        }
+            //sharedCost =Mathf.Abs(Mathf.RoundToInt((float)ProjectManager.Instance.SelectedProject.Budget / (ProjectManager.Instance.SelectedProject.Choice1 + 1)));
+        //update voters number
+        if (ProjectManager.Instance.SelectedProject != null)
+        {
+            VotersText.text = "Voters: " +
+              (ProjectManager.Instance.SelectedProject.Choice1 +
+               ProjectManager.Instance.SelectedProject.Choice2) + "/" +
+              ProjectManager.Instance.SelectedProject.VotesNeeded;
+            YesVotesText.text = "" + ProjectManager.Instance.SelectedProject.Choice1;
+            NoVotesText.text = "" + ProjectManager.Instance.SelectedProject.Choice2;
+        }
     }
 
     public void VoteApprove()
     {
-        ExtraCost = currentExtraCost;
-        TotalInfluence = currentExtraInfluence + Influence;
         ProjectManager.Instance.SelectedProject.Approved = true;
         LocalManager.Instance.NetworkCommunicator.UpdateProjectVars((int)FinanceSlider.value, (int)SocialSlider.value, (int)EnvironmentSlider.value);
         LocalManager.Instance.NetworkCommunicator.Vote(Vars.Choice1, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
-        HideButtons();
+        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, -ExtraCost);
+        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, ExtraInfluence);
+        LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MoneySpent", ExtraCost);
+        //UIManager.Instance.GameDebugText.text += "\n" + LocalManager.Instance.RoleType + " extra cost " + ExtraCost;
+        UIManager.Instance.CreateText(Color.red, ExtraCost.ToString(), 50, .5f, 2f, new Vector2(UIManager.Instance.BudgetTextPos.x, UIManager.Instance.BudgetTextPos.y), new Vector2(UIManager.Instance.BudgetTextPos.x, 0));
+        ShowVotes();
     }
 
     public void VoteDeny()
@@ -173,22 +197,19 @@ public class DiscussionManager : AManager<DiscussionManager>
         ProjectManager.Instance.SelectedProject.Approved = false;
         LocalManager.Instance.NetworkCommunicator.Vote(Vars.Choice2, LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
         LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, Influence);
-        HideButtons();
+        ShowVotes();
     }
 
-    void CancelVote()
+    public void CancelVote()
     {
         LocalManager.Instance.NetworkCommunicator.Vote("Cancel", LocalManager.Instance.RoleType, ProjectManager.Instance.SelectedProject.ID_Spawn);
         Reset();
     }
 
-    void HideButtons()
+    void ShowVotes()
     {
-        SocialVote.GetComponent<Image>().enabled = true;
-        FinanceVote.GetComponent<Image>().enabled = true;
-        EnvironmentVote.GetComponent<Image>().enabled = true;
-        ApproveButton.gameObject.SetActive(false);
-        DenyButton.gameObject.SetActive(false);
+        ApproveButton.interactable = false;
+        DenyButton.interactable = false;
     }
 
     public void Reset()
@@ -202,14 +223,7 @@ public class DiscussionManager : AManager<DiscussionManager>
         FinanceSlider.value = 0;
         SocialSlider.value = 0;
         EnvironmentSlider.value = 0;
-        SocialVote.GetComponent<Image>().sprite = UIManager.Instance.DefaultSprite;
-        FinanceVote.GetComponent<Image>().sprite = UIManager.Instance.DefaultSprite;
-        EnvironmentVote.GetComponent<Image>().sprite = UIManager.Instance.DefaultSprite;
-        SocialVote.GetComponent<Image>().enabled = false;
-        FinanceVote.GetComponent<Image>().enabled = false;
-        EnvironmentVote.GetComponent<Image>().enabled = false;
-        ApproveButton.gameObject.SetActive(true);
-        DenyButton.gameObject.SetActive(true);
+
     }
     //Debugs
 

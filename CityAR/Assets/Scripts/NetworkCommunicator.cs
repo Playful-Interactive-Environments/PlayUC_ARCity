@@ -11,6 +11,9 @@ using Debug = UnityEngine.Debug;
 public class NetworkCommunicator : NetworkBehaviour
 {
     public int ConnectionId;
+    private string RoleType;
+    [SyncVar]
+    public string MyState;
 
     public override void OnStartLocalPlayer()
     {
@@ -19,29 +22,30 @@ public class NetworkCommunicator : NetworkBehaviour
             LocalManager.Instance.NetworkCommunicator = this;
     }
 
-    void Start ()
+    void Start()
     {
         if (isClient)
             //connectionToServer.logNetworkMessages = true;
-
-        if (isServer)
-            ConnectionId = connectionToClient.connectionId;
+            if (isServer)
+                ConnectionId = connectionToClient.connectionId;
     }
 
-    void Update () {
-        if (isLocalPlayer)
-            LocalManager.Instance.NetworkCommunicator = this;
-
-        if (isServer)
-            ConnectionId = connectionToClient.connectionId;
-    }
-
-    public void SendEvent(string name)
+    public override void OnNetworkDestroy()
     {
         if (isServer)
+            TakeRole(RoleType, "disconnect");
+    }
+
+    void Update()
+    {
+        if (isLocalPlayer)
         {
-            RpcTriggerEvent(name);
+            LocalManager.Instance.NetworkCommunicator = this;
+            GameManager.Instance.MyState = MyState;
         }
+
+        if (isServer)
+            ConnectionId = connectionToClient.connectionId;
     }
 
     public void UpdateProjectVars(int fin, int soc, int env)
@@ -51,6 +55,7 @@ public class NetworkCommunicator : NetworkBehaviour
             ProjectManager.Instance.SelectedProject.Finance += fin;
             ProjectManager.Instance.SelectedProject.Social += soc;
             ProjectManager.Instance.SelectedProject.Environment += env;
+
         }
         if (isClient && !isServer)
         {
@@ -58,17 +63,33 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void SetPlayerState(string player, string state)
+    public void SetGlobalState(string state)
     {
         if (isServer)
         {
-            GameManager.Instance.SetState(player, state);
-            RpcSetPlayerState(player, state);
+            GameManager.Instance.SetGlobalState(state);
+            RpcGlobalState(state);
         }
-
         if (isClient && !isServer)
         {
-            CmdSetPlayerState(player, state);
+            CmdSetGlobalState(state);
+        }
+    }
+
+    [ClientRpc]
+    void RpcGlobalState(string state)
+    {
+        GameManager.Instance.SetGlobalState(state);
+    }
+    public void SetPlayerState(string state)
+    {
+        if (isServer)
+        {
+            MyState = state;
+        }
+        if (isClient && !isServer)
+        {
+            CmdSetPlayerState(state);
         }
     }
 
@@ -115,7 +136,7 @@ public class NetworkCommunicator : NetworkBehaviour
                     CellManager.Instance.UpdateSocial(cellid, amount);
                     break;
                 case Vars.Player3:
-                    CellManager.Instance.UpdateEnvironment(cellid, amount); 
+                    CellManager.Instance.UpdateEnvironment(cellid, amount);
                     break;
             }
         }
@@ -125,16 +146,52 @@ public class NetworkCommunicator : NetworkBehaviour
         }
     }
 
-    public void TakeRole(string role)
+    public void TakeRole(string role, string action)
     {
         if (isServer)
         {
-            SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
+            RoleType = role;
+            if (action == "connect")
+            {
+                GameManager.Instance.ClientsConnected += 1;
+                switch (role)
+                {
+                    case Vars.Player1:
+                        GameManager.Instance.FinancePlayers += 1;
+                        break;
+                    case Vars.Player2:
+                        GameManager.Instance.SocialPlayers += 1;
+                        break;
+                    case Vars.Player3:
+                        GameManager.Instance.EnvironmentPlayers += 1;
+                        break;
+                }
+            }
+            else
+            {
+                GameManager.Instance.ClientsConnected -= 1;
+                switch (role)
+                {
+                    case Vars.Player1:
+                        GameManager.Instance.FinancePlayers -= 1;
+                        break;
+                    case Vars.Player2:
+                        GameManager.Instance.SocialPlayers -= 1;
+                        break;
+                    case Vars.Player3:
+                        GameManager.Instance.EnvironmentPlayers -= 1;
+                        break;
+                }
+            }
+            // SaveStateManager.Instance.SetTaken(role, true, ConnectionId);
         }
         if (isClient && !isServer)
         {
-            CmdTakeRole(role);
+            CmdTakeRole(role, action);
         }
+        if (GameManager.Instance != null)
+            UIManager.Instance.GameDebugText.text += "\nT " + GameManager.Instance.ClientsConnected + " F " +
+             GameManager.Instance.FinancePlayers + " S " + GameManager.Instance.SocialPlayers + " E " + GameManager.Instance.EnvironmentPlayers;
     }
 
     public void Vote(string vote, string voter, int projectnum)
@@ -145,13 +202,13 @@ public class NetworkCommunicator : NetworkBehaviour
             {
                 case Vars.Choice1:
                     ProjectManager.Instance.SelectedProject.Choice1 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Approved);
+                    DiscussionManager.Instance.ChangeInfoScreen(voter, Vars.Approved);
                     SaveStateManager.Instance.UpdateData(voter, Vars.Approved, 0);
                     RpcVote(vote, voter, projectnum);
                     break;
                 case Vars.Choice2:
                     ProjectManager.Instance.SelectedProject.Choice2 += 1;
-                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Denied);
+                    DiscussionManager.Instance.ChangeInfoScreen(voter, Vars.Denied);
                     SaveStateManager.Instance.UpdateData(voter, Vars.Denied, 0);
                     RpcVote(vote, voter, projectnum);
                     break;
@@ -178,6 +235,12 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
+    void CmdSetGlobalState(string state)
+    {
+        SetGlobalState(state);
+    }
+
+    [Command]
     void CmdUpdateProjectVars(int fin, int soc, int env)
     {
         UpdateProjectVars(fin, soc, env);
@@ -196,15 +259,15 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdActivateProject(string action, int cellid,Vector3 pos, Vector3 rotation, string owner, int id)
+    void CmdActivateProject(string action, int cellid, Vector3 pos, Vector3 rotation, string owner, int id)
     {
         ActivateProject(action, cellid, pos, rotation, owner, id);
     }
 
     [Command]
-    public void CmdTakeRole(string role)
+    public void CmdTakeRole(string role, string action)
     {
-        TakeRole(role);
+        TakeRole(role, action);
     }
 
     [Command]
@@ -214,16 +277,9 @@ public class NetworkCommunicator : NetworkBehaviour
     }
 
     [Command]
-    void CmdSetPlayerState(string player, string state)
+    void CmdSetPlayerState(string state)
     {
-        SetPlayerState(player, state);
-    }
-
-    [ClientRpc]
-    void RpcSetPlayerState(string player, string state)
-    {
-        if (!isServer)
-            GameManager.Instance.SetState(player, state);
+        SetPlayerState(state);
     }
 
     [ClientRpc]
@@ -234,10 +290,10 @@ public class NetworkCommunicator : NetworkBehaviour
             switch (vote)
             {
                 case Vars.Choice1:
-                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Approved);
+                    DiscussionManager.Instance.ChangeInfoScreen(voter, Vars.Approved);
                     break;
                 case Vars.Choice2:
-                    DiscussionManager.Instance.ChangeVoterState(voter, Vars.Denied);
+                    DiscussionManager.Instance.ChangeInfoScreen(voter, Vars.Denied);
                     break;
                 case Vars.ResultChoice1:
                     ProjectManager.Instance.ProjectApproved(projectnum);
@@ -250,11 +306,5 @@ public class NetworkCommunicator : NetworkBehaviour
                     break;
             }
         }
-    }
-    [ClientRpc]
-    void RpcTriggerEvent(string name)
-    {
-        if (name == Vars.ServerHandleDisconnect)
-            GameManager.Instance.ResetDiscussion();
     }
 }

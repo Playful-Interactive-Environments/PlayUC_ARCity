@@ -30,7 +30,7 @@ public class CellLogic : MonoBehaviour {
     void Start()
     {
         _interface = GetComponent<CellInterface>();
-        _renderer = CellRepresentation.GetComponent<Renderer>();
+        _renderer = GetComponent<Renderer>();
         _renderer.material = colors[0];
         EventDispatcher.StartListening("Grey", Default);
         EventDispatcher.StartListening("SocialMap", SocialMap);
@@ -38,8 +38,8 @@ public class CellLogic : MonoBehaviour {
         EventDispatcher.StartListening("FinanceMap", FinanceMap);
         float _cubeX = ValueManager.Instance.MapWidth / CellGrid.Instance.Columns;
         float _cubeZ = ValueManager.Instance.MapHeight / CellGrid.Instance.Rows;
-        CellRepresentation.transform.localScale = new Vector3(_cubeX, .1f, _cubeZ);
-        GetComponent<BoxCollider>().size = new Vector3(_cubeX, 1f, _cubeZ);
+       // CellRepresentation.transform.localScale = new Vector3(_cubeX, .1f, _cubeZ);
+        //GetComponent<BoxCollider>().size = new Vector3(_cubeX, 1f, _cubeZ);
     }
 
     public void Default()

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Bolt;
 using UnityEngine;
@@ -6,13 +7,9 @@ using UnityEngine;
 [BoltGlobalBehaviour(BoltNetworkModes.Client)]
 public class ClientCallbacks : GlobalEventListener {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public override void BoltStartDone()
+    {
+        BoltNetwork.EnableLanBroadcast((ushort)7777);
+        //BoltManager.Instance.Debug += "Client Started " + Network.player.ipAddress;
+    }
 }

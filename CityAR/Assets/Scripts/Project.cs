@@ -63,6 +63,8 @@ public class Project : NetworkBehaviour
     private Vector3 CellPos;
     [SyncVar]
     public int CellId;
+    [SyncVar]
+    public int VotesNeeded;
     public bool Approved;
     private Material placementMat;
     private GameObject buildingRep;
@@ -74,22 +76,21 @@ public class Project : NetworkBehaviour
         transform.parent = LocalManager.Instance.ImageTarget.transform;
         ProjectManager.Instance.LockButton(Id_CSV);
         CreateRepresentation();
-
         ProjectManager.Instance.Projects.Add(this);
         ProjectManager.Instance.SelectedProject = this;
+        VotesNeeded = GameManager.Instance.ClientsConnected;
         if (isServer)
         {
             SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
             SaveStateManager.Instance.AddProjectAction(ProjectOwner, "Propose");
-            //Choice1 += 1;
         }
     }
 
     void Update()
     {
-        if (isServer && !VoteFinished && Choice1 + Choice2 >= Vars.Instance.MinPlayers)
+        if (isServer && !VoteFinished && Choice1 + Choice2 >= VotesNeeded)
         {
-            if (Choice1 >= Choice2)
+            if (Choice1 > Choice2)
             {
                 TransferValues();
                 LocalManager.Instance.NetworkCommunicator.Vote(Vars.ResultChoice1, ProjectOwner, ID_Spawn);
@@ -100,9 +101,18 @@ public class Project : NetworkBehaviour
                 LocalManager.Instance.NetworkCommunicator.Vote(Vars.ResultChoice2, ProjectOwner, ID_Spawn);
                 VoteFinished = true;
             }
-            LocalManager.Instance.NetworkCommunicator.SetPlayerState(ProjectOwner, "DiscussionEnd");
-
+            if (Choice1 == Choice2)
+            {
+                int random = Utilities.RandomInt(0, 2);
+                if (random == 0)
+                    Choice1 += 1;
+                if (random == 1)
+                    Choice2 += 1;
+            }
+            LocalManager.Instance.NetworkCommunicator.SetGlobalState(Vars.DiscussionEnd);
         }
+        if (VotesNeeded > GameManager.Instance.ClientsConnected)
+            VotesNeeded = GameManager.Instance.ClientsConnected;
         transform.position = projectPos;
     }
 
@@ -126,6 +136,11 @@ public class Project : NetworkBehaviour
         RepresentationId = reprID;
         reprRot = rot;
         projectPos = pos;
+        LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, Vars.MainValue1, Budget);
+        LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "MoneySpent", Mathf.Abs(Budget));
+        LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, Vars.MainValue2, Influence);
+        //UIManager.Instance.GameDebugText.text += "\nProposed for:" + Budget;
+        UIManager.Instance.CreateText(Color.red, Budget.ToString(), 50, .5f, 2f, new Vector2(UIManager.Instance.BudgetTextPos.x, UIManager.Instance.BudgetTextPos.y), new Vector2(UIManager.Instance.BudgetTextPos.x, 0));
     }
 
     public void ChangeLanguage(string title, string content)
@@ -224,14 +239,8 @@ public class Project : NetworkBehaviour
                 mainModule.startColor = new Color(166f / 255, 199f / 255, 56f / 255, 255f / 255);
                 break;
         }
-        //Only approved pay
-        if (Approved)
-        {
-            int toPay = Mathf.RoundToInt(Mathf.Abs(Budget / Choice1) + DiscussionManager.Instance.ExtraCost);
-            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, -toPay);
-            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue2, DiscussionManager.Instance.TotalInfluence);
-            LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, "MoneySpent", toPay);
-        }
+        DiscussionManager.Instance.ChangeInfoScreen("Project Approved!");
+        //UIManager.Instance.GameDebugText.text += "\n" + VotesNeeded + " voters: " + "Yes " + Choice1 + " No " + Choice2;
         if (isServer)
             LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Successful", 0);
         TransparentOff();
@@ -245,6 +254,8 @@ public class Project : NetworkBehaviour
         mainModule.startColor = Color.red;
         ParticlesResult.Play();
         TransparentOff();
+        DiscussionManager.Instance.ChangeInfoScreen("Project Rejected!");
+
         if (isServer)
         {
             LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "Failed", 0);
@@ -255,6 +266,10 @@ public class Project : NetworkBehaviour
 
     public void TriggerCanceled()
     {
+        if (isServer)
+        {
+            LocalManager.Instance.NetworkCommunicator.SetGlobalState(Vars.DiscussionEnd);
+        }
         Invoke("RemoveProject", 0f);
         Invoke("DestroyObject", .5f);
     }

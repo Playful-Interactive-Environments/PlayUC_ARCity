@@ -53,6 +53,8 @@ public class Vars : AManager<Vars>
     [Header("Event Messages")]
     public const string LocalClientDisconnect = "LocalClientDisconnect";
     public const string ServerHandleDisconnect = "ServerHandleDisconnect";
+    public const string DiscussionStart = "DiscussionStart";
+    public const string DiscussionEnd = "DiscussionEnd";
 
 
 

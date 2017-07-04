@@ -24,12 +24,6 @@ public class ProjectDummy : MonoBehaviour {
 		ProjectManager.Instance.CurrentDummy = this;
         placementMat = GameManager.Instance.placementMat;
         CreateRepresentation();
-        EventDispatcher.StartListening("StartDiscussion", StartDiscussion);
-	}
-
-	void StartDiscussion()
-	{
-	   DestroySelf();
 	}
 
 	void Update () {
@@ -38,6 +32,10 @@ public class ProjectDummy : MonoBehaviour {
 		{
 			transform.position = CameraControl.Instance.GetLastCell();
 		}
+	    if (GameManager.Instance.GlobalState == Vars.DiscussionStart)
+	    {
+	        DestroySelf();
+	    }
 		yRot += Time.deltaTime * 50f;
 		CurrentRot = new Vector3(0, yRot, 0);
 		representation.transform.localEulerAngles = CurrentRot;
@@ -45,7 +43,7 @@ public class ProjectDummy : MonoBehaviour {
 		if (CanPlace)
 			UIManager.Instance.PlacementText.text = "";
 		if (!CanPlace)
-			UIManager.Instance.PlacementText.text = "Mg3 occupied!";
+			UIManager.Instance.PlacementText.text = "Can't place here!";
 	}
 
 	public void CreateRepresentation()

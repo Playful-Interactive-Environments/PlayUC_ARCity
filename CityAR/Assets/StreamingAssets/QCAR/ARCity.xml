@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="Paris5" size="297.000000 209.939697" />
+    <ImageTarget name="Paris4" size="297.000000 216.183670" />
+    <ImageTarget name="Paris3" size="297.000000 225.697540" />
+    <ImageTarget name="Paris2" size="297.000000 225.697540" />
+    <ImageTarget name="Paris1" size="297.000000 187.915115" />
+    <ImageTarget name="ParisMap" size="297.000000 187.915115" />
+    <ImageTarget name="A0_Vienna" size="297.000000 210.085556" />
     <ImageTarget name="Wien_GoogleMaps_Neutral-01" size="297.000000 207.885742" />
   </Tracking>
 </QCARConfig>

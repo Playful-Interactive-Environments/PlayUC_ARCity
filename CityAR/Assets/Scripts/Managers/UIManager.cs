@@ -35,6 +35,9 @@ public class UIManager : AManager<UIManager>
     public Button Environment;
     public Button Finance;
     public Button Social;
+    public Text FinancePlayers;
+    public Text SocialPlayers;
+    public Text EnvironmentPlayers;
 
     [Header("QUEST UI")]
     public Text Title;
@@ -113,10 +116,13 @@ public class UIManager : AManager<UIManager>
     public Button GameEndPrevButton;
     public Button GameEndNextButton;
     public Button GameEndNextRestartButton;
+    public GameObject AnimateText;
     public GameObject WaitingPlayers;
-
+    [HideInInspector]
+    public Vector2 BudgetTextPos;
     public Text RoleDescriptionText;
     public Text DebugText;
+    public Text GameDebugText;
     public Text WaitingText;
     public Text FinDebugTxt;
     public Text SocDebugTxt;
@@ -136,18 +142,19 @@ public class UIManager : AManager<UIManager>
     void Awake()
     {
         Application.targetFrameRate = 30;
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
     }
     void Start()
     {
         ResetMenus();
         InvokeRepeating("RefreshPlayerVars", .2f, .5f);
         GameEndNextRestartButton.gameObject.SetActive(false);
+        ObjectPool.CreatePool(AnimateText, 5);
+        BudgetTextPos = BudgetText.gameObject.GetComponent<RectTransform>().anchoredPosition;
     }
 
     void Update()
     {
-        UpdateRoleButtons();
+        //UpdateRoleButtons();
         if (ProjectManager.Instance != null)
             Projects = ProjectManager.Instance;
     }
@@ -213,11 +220,16 @@ public class UIManager : AManager<UIManager>
             case UiState.Network:
                 NetworkCanvas.enabled = true;
                 PlayerVariables.SetActive(false);
+                if (NetworkingManager.Instance.isNetworkActive)
+                    LocalManager.Instance.NetworkCommunicator.SetPlayerState("Network");
+
                 break;
             case UiState.Role:
                 RoleCanvas.enabled = true;
                 PlayerVariables.SetActive(false);
                 MenuButton.gameObject.SetActive(false);
+                if (NetworkingManager.Instance.isNetworkActive)
+                    LocalManager.Instance.NetworkCommunicator.SetPlayerState("Role");
                 break;
             case UiState.Game:
                 GameCanvas.enabled = true;
@@ -225,7 +237,7 @@ public class UIManager : AManager<UIManager>
                 ProjectButton.gameObject.SetActive(true);
                 GlobalStateButton.gameObject.SetActive(true);
                 GlobalStateButton.enabled = true;
-                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Game");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState("Game");
                 break;
             case UiState.Level:
                 LevelCanvas.enabled = true;
@@ -239,7 +251,7 @@ public class UIManager : AManager<UIManager>
                 PlacementCanvas.enabled = true;
                 break;
             case UiState.Quest:
-                LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "Quest");
+                LocalManager.Instance.NetworkCommunicator.SetPlayerState("Quest");
                 QuestCanvas.enabled = true;
                 break;
             case UiState.Result:
@@ -362,7 +374,6 @@ public class UIManager : AManager<UIManager>
             case Vars.Player3:
                 num = 2;
                 break;
-
             case Vars.MainValue1:
                 num = 1;
                 break;
@@ -400,8 +411,7 @@ public class UIManager : AManager<UIManager>
                 LocalManager.Instance.RoleType,
                 ProjectManager.Instance.CurrentDummy.Id_CSV);
             CancelPlacement();
-
-            LocalManager.Instance.NetworkCommunicator.SetPlayerState(LocalManager.Instance.RoleType, "DiscussionStart");
+            LocalManager.Instance.NetworkCommunicator.SetGlobalState(Vars.DiscussionStart);
         }
     }
 
@@ -456,8 +466,9 @@ public class UIManager : AManager<UIManager>
     #region Choose Roles
     public void ChooseEnvironment()
     {
-        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player3);
+        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player3, "connect");
         LocalManager.Instance.RoleType = Vars.Player3;
+        GameManager.Instance.TriggerGlobal(GameManager.Instance.GlobalState);
         EventDispatcher.TriggerEvent("EnvironmentMap");
         RoleDescriptionText.text = "\u2022 You are responsible for environment, green and open space, " +
                                    "transportation and mobility.\n\u2022 The value represents the number of open" +
@@ -470,8 +481,9 @@ public class UIManager : AManager<UIManager>
 
     public void ChooseFinance()
     {
-        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player1);
+        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player1, "connect");
         LocalManager.Instance.RoleType = Vars.Player1;
+        GameManager.Instance.TriggerGlobal(GameManager.Instance.GlobalState);
         EventDispatcher.TriggerEvent("FinanceMap");
         RoleDescriptionText.text = "\u2022 You are responsible for economy, real estate and industrial development." +
                                    "\n\u2022 The value represents value in Millions of Euros.\n\u2022" +
@@ -484,9 +496,10 @@ public class UIManager : AManager<UIManager>
 
     public void ChooseSocial()
     {
-        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player2);
+        LocalManager.Instance.NetworkCommunicator.TakeRole(Vars.Player2, "connect");
         LocalManager.Instance.RoleType = Vars.Player2;
         EventDispatcher.TriggerEvent("SocialMap");
+        GameManager.Instance.TriggerGlobal(GameManager.Instance.GlobalState);
         RoleDescriptionText.text = "\u2022 You are responsible for social infrastructure and urban development." +
                                    "\n\u2022 The value represents the amount of employed people.\n\u2022 " +
                                    "More social projects increase employment and social stability.";
@@ -604,6 +617,11 @@ public class UIManager : AManager<UIManager>
     }
 
     #endregion
+    public void CreateText(Color color, string txt, int size, float move, float anim, Vector2 animStartPos, Vector2 animEndPos)
+    {
+        GameObject textObject = ObjectPool.Spawn(AnimateText);
+        textObject.GetComponent<AnimateText>().Init(color, txt, size, move, anim, animStartPos, animEndPos);
+    }
 
     public void ResetMenus()
     {
@@ -611,7 +629,6 @@ public class UIManager : AManager<UIManager>
         Finance.interactable = true;
         Social.interactable = true;
         Environment.interactable = true;
-        WaitingPlayers.SetActive(false);
         HideProjectDisplay();
         HideDiscussionPanel();
     }

@@ -129,13 +129,12 @@ public class NetworkingManager : NetworkManager
     {
         base.OnServerDisconnect(conn);
         // IpText.text = "Server Disconnected" + conn.lastError;
-        SaveStateManager.Instance.SetTaken(conn.connectionId, false);
+        //SaveStateManager.Instance.SetTaken(conn.connectionId, false);
         NetworkServer.SetClientNotReady(conn);
         NetworkServer.DestroyPlayersForConnection(conn);
         EventDispatcher.TriggerEvent(Vars.ServerHandleDisconnect);
         DebugText.text = "OnServerDisconnect" + conn.lastError;
     }
-
     #endregion
 
     #region Client

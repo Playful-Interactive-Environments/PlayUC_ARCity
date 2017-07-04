@@ -22,8 +22,8 @@ public class CellGrid : AManager<CellGrid>
 		float _cubeZ = ValueManager.Instance.MapHeight/Rows;
 		//PrefabCube.transform.localScale = new Vector3(_cubeX, 1, _cubeZ);
 		// init start position for the cube grid, based on size of the map and size of the cube.
-		StartPosition = new Vector3(-ValueManager.Instance.MapWidth / 2, 0, -ValueManager.Instance.MapHeight / 2);
-		Grid = new GameObject[Columns][];
+		//StartPosition = new Vector3(-ValueManager.Instance.MapWidth / 2, 0, -ValueManager.Instance.MapHeight / 2);
+		/*Grid = new GameObject[Columns][];
 		for (int i = 0; i < Columns; i++)
 		{
 			Grid[i] = new GameObject[Rows];
@@ -37,7 +37,13 @@ public class CellGrid : AManager<CellGrid>
 				GridCells.Add(Grid[i][j]);
 				Count ++;
 			}
-		}
+		}*/
+	    foreach (GameObject piece in GridCells)
+	    {
+	        piece.GetComponent<CellLogic>().CellId = Count;
+	        piece.transform.name = "" + Count;
+	        Count++;
+	    }
 		this.transform.position = StartPosition;
 	}
 	

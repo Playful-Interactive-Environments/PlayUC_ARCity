@@ -147,6 +147,7 @@ public class SaveStateManager : NetworkBehaviour
             MoneySpent = money;
         }
     }
+
     public struct MiniGameStats
     {
         public string Player;
@@ -196,6 +197,7 @@ public class SaveStateManager : NetworkBehaviour
         PlayerMiniGames.Remove(dataOld);
         PlayerMiniGames.Add(dataNew);
     }
+
     public void AddMiniGameTime(string owner, int time)
     {
         MiniGameStats dataOld = new MiniGameStats();
@@ -496,7 +498,6 @@ public class SaveStateManager : NetworkBehaviour
     #endregion
 
     #region EndGame Calculations
-
     public int GetAllSucessful(string data)
     {
         int number = 0;
@@ -514,7 +515,6 @@ public class SaveStateManager : NetworkBehaviour
         int player3 = 0;
         int playerMe = 0;
         int chosenVal;
-
         switch (type)
         {
             case "MostSuccessfulProjects":
