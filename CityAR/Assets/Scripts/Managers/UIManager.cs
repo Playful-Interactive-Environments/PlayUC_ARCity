@@ -310,7 +310,7 @@ public class UIManager : AManager<UIManager>
 
     public void RestartApp()
     {
-        NetworkingManager.Instance.StopHosting();
+        NetMng.Instance.StopHosting();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     #endregion

@@ -43,10 +43,8 @@ public class NetMng : NetworkManager
 
     public void SearchGame()
     {
-        Discovery.Initialize();
-        Discovery.StartAsClient();
-        DisableButtons();
         StartCoroutine(CheckConnection());
+
     }
 
     public void StopHosting()
@@ -72,7 +70,12 @@ public class NetMng : NetworkManager
 
     IEnumerator CheckConnection()
     {
-        yield return new WaitForSeconds(3f);
+        Discovery.Initialize();
+        DisableButtons();
+        yield return new WaitForSeconds(1f);
+        Discovery.StartAsClient();
+
+        yield return new WaitForSeconds(1f);
         if (IsClientConnected())
         {
             isClient = true;
