@@ -42,7 +42,7 @@ public class LevelDescription : MonoBehaviour
             }
             if (BonusType == Vars.MainValue1 && !bonusUnlocked)
             {
-                if (NetworkingManager.Instance.isNetworkActive)
+                if (NetMng.Instance.isNetworkActive)
                 {
                     LocalManager.Instance.NetworkCommunicator.UpdateData(LocalManager.Instance.RoleType, Vars.MainValue1, ConvertString(BonusValue));
                     UIManager.Instance.CreateText(Color.green, BonusValue, 50, .5f, 2f, new Vector2(UIManager.Instance.BudgetTextPos.x, UIManager.Instance.BudgetTextPos.y), new Vector2(UIManager.Instance.BudgetTextPos.x, 0));

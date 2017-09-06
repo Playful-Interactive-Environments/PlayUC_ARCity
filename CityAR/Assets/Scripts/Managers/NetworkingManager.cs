@@ -4,8 +4,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using UnityEngine.Networking.NetworkSystem;
+
 
 public class NetworkingManager : NetworkManager
 {
@@ -23,11 +22,11 @@ public class NetworkingManager : NetworkManager
     public Text DebugText;
     public Text IpText;
     public GameObject GameManagerPrefab;
-    public ServerBroadcast broadcast;
-    public ClientListen listen;
+   // public ServerBroadcast broadcast;
+   // public ClientListen listen;
     bool AutoConnectEnabled;
     private int _autoConnectAttempts;
-    public ConnectionConfig connConf;
+    public NetworkDiscovery Discovery;
 
     void Awake()
     {
@@ -35,20 +34,11 @@ public class NetworkingManager : NetworkManager
             Instance = this;
         else if (Instance != this)
             Destroy(gameObject);
-        networkPort = ConnectionPort;
     }
 
     void Start()
     {
         IpText.text = "My IP: " + Network.player.ipAddress;
-        connectionConfig.AcksType = ConnectionAcksType.Acks128;
-        connectionConfig.InitialBandwidth = 3000;
-        connectionConfig.PingTimeout = 500;
-        connectionConfig.DisconnectTimeout = 5000;
-        connectionConfig.PacketSize = 1470;
-        connectionConfig.InitialBandwidth = 5000;
-        connectionConfig.NetworkDropThreshold = 50;
-        connectionConfig.OverflowDropThreshold = 50;
     }
 
     void Update()
@@ -61,14 +51,17 @@ public class NetworkingManager : NetworkManager
         GameObject gamemng = Instantiate(GameManagerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         NetworkServer.Spawn(gamemng);
         isServer = true;
+        Discovery.Initialize();
+        Discovery.StartAsServer();
+        /*
         broadcast.StartServerBroadcast();
         if (listen.listenStarted)
         {
             listen.StopListenning();
             AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
-        }
+        }*/
     }
-
+    
     public void StopHosting()
     {
         if (isServer)
@@ -82,7 +75,7 @@ public class NetworkingManager : NetworkManager
             StopHost();
             StopClient();
         }
-        ResetBroadcasting();
+       // ResetBroadcasting();
         StopAllCoroutines();
         NetworkServer.Reset();
         AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
@@ -107,13 +100,11 @@ public class NetworkingManager : NetworkManager
         base.OnStopServer();
         isServer = false;
         LocalManager.Instance.GameRunning = false;
-        broadcast.StopBroadcasting();
+       // broadcast.StopBroadcasting();
         AutoConnectButton.interactable = true;
         HostButton.interactable = true;
-        if (listen.listenStarted)
-        {
-            listen.StopListenning();
-        }
+       // if (listen.listenStarted)
+          //  listen.StopListenning();
         Debug.Log("Server Stopped");
         DebugText.text = "OnStopServer";
     }
@@ -140,15 +131,17 @@ public class NetworkingManager : NetworkManager
     #region Client
     public void AutoConnect()
     {
-        StopAllCoroutines();
-        StartCoroutine(TryConnect());
+        Discovery.Initialize();
+        Discovery.StartAsClient();
+        //StopAllCoroutines();
+        //StartCoroutine(TryConnect());
     }
-
+    /*
     IEnumerator TryConnect()
     {
         AutoConnectButton.interactable = false;
         HostButton.interactable = false;
-        listen.StartClientListen();
+       // listen.StartClientListen();
 
         int loopT = 3;
         for (int i = 0; i <= loopT; i++)
@@ -207,7 +200,7 @@ public class NetworkingManager : NetworkManager
             AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
             AutoConnectButton.interactable = true;
             HostButton.interactable = true;
-            listen.StopListenning();
+           // listen.StopListenning();
         }
     }
 
@@ -226,7 +219,8 @@ public class NetworkingManager : NetworkManager
             networkAddress = ConnectionIP;
             return true;
         }
-    }
+    }*/
+
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
@@ -268,12 +262,13 @@ public class NetworkingManager : NetworkManager
         }
         //Debug.Log("OnStopClient");
     }
+    /*
     public void ResetBroadcasting()
     {
         if (listen.listenStarted)
             listen.StopListenning();
         if (broadcast.broadcastStarted)
             broadcast.StopBroadcasting();
-    }
+    }*/
     #endregion
 }

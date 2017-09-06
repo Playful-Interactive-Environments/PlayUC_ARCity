@@ -1,0 +1,252 @@
+fileFormatVersion: 2
+guid: 7af2a509661458b4fad50ae400c93a0f
+timeCreated: 1489416340
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: back
+    100002: //RootNode
+    100004: left
+    100006: persp1
+    100008: tracorUnit
+    100010: tracorUnit 1
+    100012: tracorUnit 2
+    100014: tractor_unit
+    100016: tractor_unit 1
+    100018: tractor_unit 2
+    100020: trailer
+    100022: trailer 1
+    100024: trailer 2
+    100026: trailerUnit
+    100028: trailerUnit 1
+    100030: trailerUnit 2
+    100032: truck
+    100034: truck1
+    100036: truck2
+    100038: wheel
+    100040: wheel 1
+    100042: wheel 2
+    100044: wheel1
+    100046: wheel1 1
+    100048: wheel1 2
+    100050: wheel2
+    100052: wheel2 1
+    100054: wheel2 2
+    100056: wheel3
+    100058: wheel3 1
+    100060: wheel3 2
+    100062: wheel4
+    100064: wheel4 1
+    100066: wheel4 2
+    100068: wheel5
+    100070: wheel5 1
+    100072: wheel5 2
+    100074: wheel6
+    100076: wheel6 1
+    100078: wheel6 2
+    100080: wheel7
+    100082: wheel7 1
+    100084: wheel7 2
+    400000: back
+    400002: //RootNode
+    400004: left
+    400006: persp1
+    400008: tracorUnit
+    400010: tracorUnit 1
+    400012: tracorUnit 2
+    400014: tractor_unit
+    400016: tractor_unit 1
+    400018: tractor_unit 2
+    400020: trailer
+    400022: trailer 1
+    400024: trailer 2
+    400026: trailerUnit
+    400028: trailerUnit 1
+    400030: trailerUnit 2
+    400032: truck
+    400034: truck1
+    400036: truck2
+    400038: wheel
+    400040: wheel 1
+    400042: wheel 2
+    400044: wheel1
+    400046: wheel1 1
+    400048: wheel1 2
+    400050: wheel2
+    400052: wheel2 1
+    400054: wheel2 2
+    400056: wheel3
+    400058: wheel3 1
+    400060: wheel3 2
+    400062: wheel4
+    400064: wheel4 1
+    400066: wheel4 2
+    400068: wheel5
+    400070: wheel5 1
+    400072: wheel5 2
+    400074: wheel6
+    400076: wheel6 1
+    400078: wheel6 2
+    400080: wheel7
+    400082: wheel7 1
+    400084: wheel7 2
+    2300000: tractor_unit
+    2300002: tractor_unit 1
+    2300004: tractor_unit 2
+    2300006: trailer
+    2300008: trailer 1
+    2300010: trailer 2
+    2300012: wheel
+    2300014: wheel 1
+    2300016: wheel 2
+    2300018: wheel1
+    2300020: wheel1 1
+    2300022: wheel1 2
+    2300024: wheel2
+    2300026: wheel2 1
+    2300028: wheel2 2
+    2300030: wheel3
+    2300032: wheel3 1
+    2300034: wheel3 2
+    2300036: wheel4
+    2300038: wheel4 1
+    2300040: wheel4 2
+    2300042: wheel5
+    2300044: wheel5 1
+    2300046: wheel5 2
+    2300048: wheel6
+    2300050: wheel6 1
+    2300052: wheel6 2
+    2300054: wheel7
+    2300056: wheel7 1
+    2300058: wheel7 2
+    3300000: tractor_unit
+    3300002: tractor_unit 1
+    3300004: tractor_unit 2
+    3300006: trailer
+    3300008: trailer 1
+    3300010: trailer 2
+    3300012: wheel
+    3300014: wheel 1
+    3300016: wheel 2
+    3300018: wheel1
+    3300020: wheel1 1
+    3300022: wheel1 2
+    3300024: wheel2
+    3300026: wheel2 1
+    3300028: wheel2 2
+    3300030: wheel3
+    3300032: wheel3 1
+    3300034: wheel3 2
+    3300036: wheel4
+    3300038: wheel4 1
+    3300040: wheel4 2
+    3300042: wheel5
+    3300044: wheel5 1
+    3300046: wheel5 2
+    3300048: wheel6
+    3300050: wheel6 1
+    3300052: wheel6 2
+    3300054: wheel7
+    3300056: wheel7 1
+    3300058: wheel7 2
+    4300000: wheel4
+    4300002: wheel6
+    4300004: wheel5
+    4300006: wheel7
+    4300008: trailer
+    4300010: tractor_unit
+    4300012: wheel
+    4300014: wheel1
+    4300016: wheel2
+    4300018: wheel3
+    4300020: wheel4
+    4300022: wheel6
+    4300024: wheel5
+    4300026: wheel7
+    4300028: trailer
+    4300030: tractor_unit
+    4300032: wheel
+    4300034: wheel1
+    4300036: wheel2
+    4300038: wheel3
+    4300040: wheel4
+    4300042: wheel6
+    4300044: wheel5
+    4300046: wheel7
+    4300048: trailer
+    4300050: tractor_unit
+    4300052: wheel
+    4300054: wheel1
+    4300056: wheel2
+    4300058: wheel3
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

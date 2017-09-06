@@ -220,7 +220,7 @@ public class UIManager : AManager<UIManager>
             case UiState.Network:
                 NetworkCanvas.enabled = true;
                 PlayerVariables.SetActive(false);
-                if (NetworkingManager.Instance.isNetworkActive)
+                if (NetMng.Instance.isNetworkActive)
                     LocalManager.Instance.NetworkCommunicator.SetPlayerState("Network");
 
                 break;
@@ -228,7 +228,7 @@ public class UIManager : AManager<UIManager>
                 RoleCanvas.enabled = true;
                 PlayerVariables.SetActive(false);
                 MenuButton.gameObject.SetActive(false);
-                if (NetworkingManager.Instance.isNetworkActive)
+                if (NetMng.Instance.isNetworkActive)
                     LocalManager.Instance.NetworkCommunicator.SetPlayerState("Role");
                 break;
             case UiState.Game:

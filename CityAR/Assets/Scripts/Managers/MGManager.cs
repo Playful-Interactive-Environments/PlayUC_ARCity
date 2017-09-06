@@ -195,7 +195,7 @@ public class MGManager : AManager<MGManager>
                 MainCam.gameObject.SetActive(true);
                 MainCanvas.SetActive(true);
                 CameraControl.Instance.CurrentCam = MainCam;
-                if (NetworkingManager.Instance.isNetworkActive)
+                if (NetMng.Instance.isNetworkActive)
                 {
                     LocalManager.Instance.NetworkCommunicator.SetPlayerState("Game");
                 }
