@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-
 public class NetMng : NetworkManager
 {
     public static NetMng Instance;
@@ -44,7 +43,6 @@ public class NetMng : NetworkManager
     public void SearchGame()
     {
         StartCoroutine(CheckConnection());
-
     }
 
     public void StopHosting()
@@ -60,7 +58,6 @@ public class NetMng : NetworkManager
             StopHost();
             StopClient();
         }
-        // ResetBroadcasting();
         StopAllCoroutines();
         NetworkServer.Reset();
         AutoConnectButton.GetComponentInChildren<Text>().text = TextManager.Instance.Search;
@@ -72,18 +69,19 @@ public class NetMng : NetworkManager
     {
         Discovery.Initialize();
         DisableButtons();
-        yield return new WaitForSeconds(1f);
+        DebugText.text = "Searching... Please Wait.";
+        yield return new WaitForSeconds(.5f);
         Discovery.StartAsClient();
-
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(4.5f);
         if (IsClientConnected())
         {
             isClient = true;
-            DebugText.text = "Connected";
+            DebugText.text = "Connected!";
+            yield return new WaitForSeconds(1f);
         }
         else
         {
-            DebugText.text = "Nothing found. Trying input";
+            DebugText.text = "Nothing found. Trying manual input...";
             if (IPInput.text != null)
             {
                 StopClient();
@@ -95,11 +93,11 @@ public class NetMng : NetworkManager
                 if (IsClientConnected())
                 {
                     isClient = true;
-                    DebugText.text = "Connected";
+                    DebugText.text = "Connected!";
                 }
                 else
                 {
-                    DebugText.text = "Nothing found. Try again";
+                    DebugText.text = "Nothing found. Try again.";
                     StopClient();
                     EnableButtons();
                 }

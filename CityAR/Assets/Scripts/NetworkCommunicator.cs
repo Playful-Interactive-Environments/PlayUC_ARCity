@@ -189,9 +189,9 @@ public class NetworkCommunicator : NetworkBehaviour
         {
             CmdTakeRole(role, action);
         }
-        if (GameManager.Instance != null)
-            UIManager.Instance.GameDebugText.text += "\nT " + GameManager.Instance.ClientsConnected + " F " +
-             GameManager.Instance.FinancePlayers + " S " + GameManager.Instance.SocialPlayers + " E " + GameManager.Instance.EnvironmentPlayers;
+        //if (GameManager.Instance != null)
+        //    UIManager.Instance.GameDebugText.text += "\nT " + GameManager.Instance.ClientsConnected + " F " +
+        //     GameManager.Instance.FinancePlayers + " S " + GameManager.Instance.SocialPlayers + " E " + GameManager.Instance.EnvironmentPlayers;
     }
 
     public void Vote(string vote, string voter, int projectnum)
