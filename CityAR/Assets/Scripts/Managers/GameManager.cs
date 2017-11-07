@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 [NetworkSettings(channel = 0, sendInterval = 0.2f)]
 public class GameManager : NetworkBehaviour
 {
-
     //states: "Game", "MiniGame", "NewStart", "DiscussionStart", "DiscussionEnd", "Occupied"} ;
     [SyncVar]
     public float CurrentTime;
@@ -19,7 +18,6 @@ public class GameManager : NetworkBehaviour
     public int FinancePlayers;
     [SyncVar]
     public int EnvironmentPlayers;
-
     public string MyState;
     private int currentEvent;
     public float eventTime;
@@ -29,8 +27,6 @@ public class GameManager : NetworkBehaviour
     //animate placement mat
     private float lerpVal;
     public Material placementMat;
-
-
 
     void Awake()
     {
