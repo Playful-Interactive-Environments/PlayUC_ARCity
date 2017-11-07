@@ -69,6 +69,9 @@ public class Project : NetworkBehaviour
     private Material placementMat;
     private GameObject buildingRep;
     private GameObject transparentRep;
+    private Vector3 SavedPos;
+    private Vector3 SavedScale;
+    private Vector3 SavedRotation;
 
     void Start()
     {
@@ -83,6 +86,17 @@ public class Project : NetworkBehaviour
         {
             SaveStateManager.Instance.LogEvent("PLAYER " + ProjectOwner + " PROJECT " + Title);
             SaveStateManager.Instance.AddProjectAction(ProjectOwner, "Propose");
+        }
+    }
+
+    void CheckParent()
+    {
+        if (transform.parent != LocalManager.Instance.ImageTarget.transform)
+        {
+            transform.parent = LocalManager.Instance.ImageTarget.transform;
+            transform.localScale = SavedScale;
+            transform.localPosition = SavedPos;
+            transform.localRotation = Quaternion.Euler(SavedRotation);
         }
     }
 
@@ -136,6 +150,7 @@ public class Project : NetworkBehaviour
         RepresentationId = reprID;
         reprRot = rot;
         projectPos = pos;
+
         LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, Vars.MainValue1, Budget);
         LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, "MoneySpent", Mathf.Abs(Budget));
         LocalManager.Instance.NetworkCommunicator.UpdateData(ProjectOwner, Vars.MainValue2, Influence);
@@ -178,7 +193,10 @@ public class Project : NetworkBehaviour
         ProjectSignText2.text = Title;
         ProjectSign.transform.position = new Vector3(transform.position.x + 10, transform.position.y, transform.position.z + 10);
         ProjectSign.transform.localEulerAngles = new Vector3(reprRot.x, reprRot.y + 100f, reprRot.z);
-
+        SavedScale = transform.localScale;
+        SavedPos = transform.localPosition;
+        SavedRotation = transform.rotation.eulerAngles;
+        InvokeRepeating("CheckParent", 1f, 3f);
         foreach (Renderer child in transparentRep.GetComponentsInChildren<Renderer>())
         {
             child.material = placementMat;

@@ -141,7 +141,8 @@ public class UIManager : AManager<UIManager>
 
     void Awake()
     {
-        Application.targetFrameRate = 30;
+        //Application.targetFrameRate = 30;
+        QualitySettings.vSyncCount = 2;
     }
     void Start()
     {
@@ -400,6 +401,7 @@ public class UIManager : AManager<UIManager>
             Change(UiState.Game);
     }
 
+
     public void PlaceProject()
     {
 
@@ -469,6 +471,10 @@ public class UIManager : AManager<UIManager>
         InfoScreen.GetComponent<Animator>().SetBool("Show", true);
         yield return new WaitForSeconds(5f);
         InfoScreen.GetComponent<Animator>().SetBool("Show", false);
+    }
+    IEnumerator AnimateProjectButton()
+    {
+        yield return new WaitForSeconds(1f);
     }
     #endregion
 

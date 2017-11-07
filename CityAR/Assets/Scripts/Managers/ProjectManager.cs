@@ -56,8 +56,27 @@ public class ProjectManager : NetworkBehaviour
         projectButton.transform.localScale = new Vector3(1, 1, 1);
         projectButton.GetComponent<ProjectButton>().SetupProjectButton(id);
         ProjectButtons.Add(projectButton);
+        StopCoroutine(AnimateProjectButton());
+        StartCoroutine(AnimateProjectButton());
+    }
+
+    IEnumerator AnimateProjectButton()
+    {
+        UIManager.Instance.ProjectButton.image.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        UIManager.Instance.ProjectButton.image.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        UIManager.Instance.ProjectButton.image.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        UIManager.Instance.ProjectButton.image.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        UIManager.Instance.ProjectButton.image.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        UIManager.Instance.ProjectButton.image.color = Color.white;
+        yield return new WaitForSeconds(.5f);
         UIManager.Instance.ProjectButton.image.color = Color.red;
     }
+
     //called only on server
     public void SpawnProject(int cellid, Vector3 pos, Vector3 rot, string owner, int id)
     {
